@@ -3,33 +3,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/hpx.hpp>
-#include <hpx/hpx_init.hpp>
-//
-#include <hpx/parallel/algorithms/for_loop.hpp>
-#include <hpx/parallel/execution.hpp>
-//
-#include <hpx/runtime/resource/partitioner.hpp>
-#include <hpx/runtime/threads/cpu_mask.hpp>
-#include <hpx/runtime/threads/detail/scheduled_thread_pool_impl.hpp>
-#include <hpx/runtime/threads/executors/pool_executor.hpp>
-//
-#include <hpx/include/iostreams.hpp>
-#include <hpx/include/runtime.hpp>
-//
-#include <cmath>
-#include <cstddef>
-#include <iostream>
-#include <memory>
-#include <set>
-#include <string>
-#include <utility>
-//
-#include "shared_priority_scheduler.hpp"
-#include "system_characteristics.hpp"
-//
-#include <iostream>
-#include <opencv2/opencv.hpp>
+#include "hpx_image_load.hpp"
 
 static bool use_opencv_pool = false;
 static int opencv_tp_num_threads = 1;
@@ -40,160 +14,50 @@ static std::string opencv_tp_name("opencv");
 using high_priority_sched = hpx::threads::policies::shared_priority_scheduler<>;
 using namespace hpx::threads::policies;
 
-// Force an instantiation of the pool type templated on our custom scheduler
-// we need this to ensure that the pool has the generated member functions needed
-// by the linker for this pool type
-// template class hpx::threads::detail::scheduled_thread_pool<high_priority_sched>;
+cv::Mat load_image(const std::string &path) {
+    hpx::cout << "load_image from " << path << std::endl;
+    cv::Mat image = cv::imread(path, 1);
+    if ( !image.data )
+        throw std::runtime_error("No image data \n");
 
-// dummy function we will call using async
-void do_stuff(std::size_t n, bool printout)
-{
-    if (printout)
-        hpx::cout << "[do stuff] " << n << "\n";
-    for (std::size_t i(0); i < n; ++i)
-    {
-        double f = std::sin(2 * M_PI * i / n);
-        if (printout)
-            hpx::cout << "sin(" << i << ") = " << f << ", ";
-    }
-    if (printout)
-        hpx::cout << "\n";
+    return image;
 }
 
-void print_system_params(){
-    // print partition characteristics
-    std::cout << "\n\n[hpx_main] print resource_partitioner characteristics : "
-              << "\n";
-    hpx::resource::get_partitioner().print_init_pool_data(std::cout);
-
-    // print partition characteristics
-    std::cout << "\n\n[hpx_main] print thread-manager pools : "
-              << "\n";
-    hpx::threads::get_thread_manager().print_pools(std::cout);
-
-    // print system characteristics
-    std::cout << "\n\n[hpx_main] print System characteristics : "
-              << "\n";
-    print_system_characteristics();
+// Warning - for now it is blocking forever (until user closes the window).
+// Should be run in a separate thread?
+void show_image(const cv::Mat &image, std::string win_name) {
+    hpx::cout << "show_image in " << win_name << std::endl;
+    cv::namedWindow(win_name, cv::WINDOW_AUTOSIZE );
+    imshow(win_name, image);
+    cv::waitKey(0);
 }
 
-void test_with_parallel_for(std::size_t loop_count,
-                            const hpx::threads::executors::default_executor &
-                            high_priority_executor,
-                            const hpx::threads::scheduled_executor
-                            &opencv_executor,
-                            const hpx::threads::executors::default_executor &
-                            normal_priority_executor){
-    hpx::lcos::local::mutex m;
-    std::set<std::thread::id> thread_set;
-
-    // test a parallel algorithm on custom pool with high priority
-    hpx::cout << "Test a parallel algorithm on a custom pool with a high priority.\n";
-    hpx::parallel::execution::static_chunk_size fixed(1);
-    hpx::parallel::for_loop_strided(
-        hpx::parallel::execution::par.with(fixed).on(high_priority_executor), 0,
-        loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<hpx::lcos::local::mutex> lock(m);
-            if (thread_set.insert(std::this_thread::get_id()).second)
-            {
-                hpx::cout << std::hex << hpx::this_thread::get_id() << " "
-                          << std::hex << std::this_thread::get_id()
-                          << " high priority i " << std::dec << i << std::endl;
-            }
-        });
-    hpx::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
-    thread_set.clear();
-
-    // test a parallel algorithm on custom pool with normal priority
-    hpx::parallel::for_loop_strided(
-            hpx::parallel::execution::par.with(fixed).on(normal_priority_executor),
-            0, loop_count, 1, [&](std::size_t i) {
-                std::lock_guard<hpx::lcos::local::mutex> lock(m);
-                if (thread_set.insert(std::this_thread::get_id()).second)
-                {
-                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
-                              << std::hex << std::this_thread::get_id()
-                              << " normal priority i " << std::dec << i
-                              << std::endl;
-                }
-            });
-    hpx::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
-    thread_set.clear();
-
-    // test a parallel algorithm on opencv_executor
-    hpx::parallel::for_loop_strided(
-            hpx::parallel::execution::par.with(fixed).on(opencv_executor), 0,
-            loop_count, 1, [&](std::size_t i) {
-                std::lock_guard<hpx::lcos::local::mutex> lock(m);
-                if (thread_set.insert(std::this_thread::get_id()).second)
-                {
-                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
-                              << std::hex << std::this_thread::get_id()
-                              << " opencv pool i " << std::dec << i << std::endl;
-                }
-            });
-    hpx::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
-    thread_set.clear();
-
-//     auto high_priority_async_policy =
-//         hpx::launch::async_policy(hpx::threads::thread_priority_critical);
-//     auto normal_priority_async_policy = hpx::launch::async_policy();
-
-    // test a parallel algorithm on custom pool with high priority
-    hpx::parallel::for_loop_strided(
-            hpx::parallel::execution::par
-                    .with(fixed /*, high_priority_async_policy*/)
-                    .on(opencv_executor),
-            0, loop_count, 1,
-            [&](std::size_t i)
-            {
-                std::lock_guard<hpx::lcos::local::mutex> lock(m);
-                if (thread_set.insert(std::this_thread::get_id()).second)
-                {
-                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
-                              << std::hex << std::this_thread::get_id()
-                              << " high priority opencv i " << std::dec << i
-                              << std::endl;
-                }
-            });
-    hpx::cout << "thread set contains " << std::dec << thread_set.size()
-              << std::endl;
-    thread_set.clear();
+void save_image(const cv::Mat &image, const std::string &path) {
+    cv::imwrite( "../../images/Gray_Image.jpg", image );
 }
+
+cv::Mat transform_to_grey(cv::Mat image) {
+    hpx::cout << "transform to grey" << std::endl;
+    cv::Mat grey_image;
+    cv::cvtColor(image, grey_image, cv::COLOR_RGB2GRAY);
+    return grey_image;
+}
+
 
 // this is called on an hpx thread after the runtime starts up
 int hpx_main(boost::program_options::variables_map& vm)
 {
-    {
-        cv::Mat image;
-        std::string path = vm["img-path"].as<std::string>();
-        image = cv::imread( path, 1 );
-        if ( !image.data )
-        {
-            printf("No image data \n");
-            return -1;
-        }
-        cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
-        imshow("Display Image", image);
-        cv::waitKey(0);
-    }
-
     if (vm.count("use-opencv-pool"))
         use_opencv_pool = true;
 
-    std::cout << "[hpx_main] starting ...\n"
+    hpx::cout << "[hpx_main] starting ...\n"
               << "use_opencv_pool " << use_opencv_pool << "\n";
 
     std::size_t num_threads = hpx::get_num_worker_threads();
-    std::cout << "HPX using threads = " << num_threads << std::endl;
+    hpx::cout << "HPX using threads = " << num_threads << std::endl;
 
-    std::size_t loop_count = num_threads * 1;
-    std::size_t async_count = num_threads * 1;
-
-    // create an executor with high priority for important tasks
+    // create an executor with high priority and normal priority executors for
+    // important tasks
     hpx::threads::executors::default_executor high_priority_executor(
         hpx::threads::thread_priority_critical);
     hpx::threads::executors::default_executor normal_priority_executor;
@@ -214,40 +78,24 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     print_system_params();
 
-    // use executor to schedule work on custom pool
-    hpx::future<void> future_1 = hpx::async(opencv_executor, &do_stuff, 5, true);
+    std::string img_path = vm["img-path"].as<std::string>();
 
-    hpx::future<void> future_2 = future_1.then(
-        opencv_executor, [](hpx::future<void>&& f) { do_stuff(5, true); });
+    // schedule image loading on the opencv pool
+    hpx::future<cv::Mat> f_image = hpx::async(opencv_executor, &load_image,
+            img_path);
 
-    hpx::future<void> future_3 = future_2.then(opencv_executor,
-        [opencv_executor, high_priority_executor, async_count](
-            hpx::future<void>&& f) mutable {
-            hpx::future<void> future_4, future_5;
-            for (std::size_t i = 0; i < async_count; i++)
-            {
-                if (i % 2 == 0)
-                {
-                    future_4 =
-                        hpx::async(opencv_executor, &do_stuff, async_count, false);
-                }
-                else
-                {
-                    future_5 = hpx::async(
-                        high_priority_executor, &do_stuff, async_count, false);
-                }
-            }
-            // the last futures we made are stored in here
-            if (future_4.valid())
-                future_4.get();
-            if (future_5.valid())
-                future_5.get();
-        });
+    cv::Mat image = f_image.get();
 
-    future_3.get();
+    cv::Mat grey_image;
+    //schedule image processing on the default pool
+    hpx::future<cv::Mat> f_grey_img = hpx::async(normal_priority_executor,
+                                                &transform_to_grey, image);
 
-//    test_with_parallel_for(loop_count, high_priority_executor,
-//                           opencv_executor, normal_priority_executor);
+    grey_image = f_grey_img.get();
+
+    // schedule image show on the opencv pool
+    hpx::future<void> f_imshow_grey = hpx::async(opencv_executor,
+            &show_image, grey_image, "grey_image");
 
     return hpx::finalize();
 }
@@ -301,7 +149,7 @@ int main(int argc, char* argv[])
             std::size_t pool_index, std::string const& pool_name)
         -> std::unique_ptr<hpx::threads::thread_pool_base>
         {
-            std::cout << "User defined scheduler creation callback "
+            hpx::cout << "User defined scheduler creation callback "
                       << std::endl;
 
             std::unique_ptr<high_priority_sched> scheduler(
@@ -375,4 +223,120 @@ int main(int argc, char* argv[])
     }
 
     return hpx::init();
+    std::cout << "[main] Exiting program...";
+}
+
+
+void do_stuff(std::size_t n, bool printout) {
+    if (printout)
+        hpx::cout << "[do stuff] " << n << "\n";
+    for (std::size_t i(0); i < n; ++i)
+    {
+        double f = std::sin(2 * M_PI * i / n);
+        if (printout)
+            hpx::cout << "sin(" << i << ") = " << f << ", ";
+    }
+    if (printout)
+        hpx::cout << "\n";
+}
+
+void print_system_params() {
+    // print partition characteristics
+    hpx::cout << "\n\n[hpx_main] print resource_partitioner characteristics : "
+              << "\n";
+    hpx::resource::get_partitioner().print_init_pool_data(std::cout);
+
+    // print partition characteristics
+    hpx::cout << "\n\n[hpx_main] print thread-manager pools : "
+              << "\n";
+    hpx::threads::get_thread_manager().print_pools(std::cout);
+
+    // print system characteristics
+    hpx::cout << "\n\n[hpx_main] print System characteristics : "
+              << "\n";
+    print_system_characteristics();
+}
+
+void test_with_parallel_for(std::size_t loop_count,
+                            const hpx::threads::executors::default_executor &high_priority_executor,
+                            const hpx::threads::scheduled_executor &opencv_executor,
+                            const hpx::threads::executors::default_executor &normal_priority_executor) {
+    hpx::lcos::local::mutex m;
+    std::set<std::thread::id> thread_set;
+
+    // test a parallel algorithm on custom pool with high priority
+    hpx::cout << "Test a parallel algorithm on a custom pool with a high priority.\n";
+    hpx::parallel::execution::static_chunk_size fixed(1);
+    hpx::parallel::for_loop_strided(
+            hpx::parallel::execution::par.with(fixed).on(high_priority_executor), 0,
+            loop_count, 1, [&](std::size_t i) {
+                std::lock_guard<hpx::lcos::local::mutex> lock(m);
+                if (thread_set.insert(std::this_thread::get_id()).second)
+                {
+                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
+                              << std::hex << std::this_thread::get_id()
+                              << " high priority i " << std::dec << i << std::endl;
+                }
+            });
+    hpx::cout << "thread set contains " << std::dec << thread_set.size()
+              << std::endl;
+    thread_set.clear();
+
+    // test a parallel algorithm on custom pool with normal priority
+    hpx::parallel::for_loop_strided(
+            hpx::parallel::execution::par.with(fixed).on(normal_priority_executor),
+            0, loop_count, 1, [&](std::size_t i) {
+                std::lock_guard<hpx::lcos::local::mutex> lock(m);
+                if (thread_set.insert(std::this_thread::get_id()).second)
+                {
+                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
+                              << std::hex << std::this_thread::get_id()
+                              << " normal priority i " << std::dec << i
+                              << std::endl;
+                }
+            });
+    hpx::cout << "thread set contains " << std::dec << thread_set.size()
+              << std::endl;
+    thread_set.clear();
+
+    // test a parallel algorithm on opencv_executor
+    hpx::parallel::for_loop_strided(
+            hpx::parallel::execution::par.with(fixed).on(opencv_executor), 0,
+            loop_count, 1, [&](std::size_t i) {
+                std::lock_guard<hpx::lcos::local::mutex> lock(m);
+                if (thread_set.insert(std::this_thread::get_id()).second)
+                {
+                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
+                              << std::hex << std::this_thread::get_id()
+                              << " opencv pool i " << std::dec << i << std::endl;
+                }
+            });
+    hpx::cout << "thread set contains " << std::dec << thread_set.size()
+              << std::endl;
+    thread_set.clear();
+
+//     auto high_priority_async_policy =
+//         hpx::launch::async_policy(hpx::threads::thread_priority_critical);
+//     auto normal_priority_async_policy = hpx::launch::async_policy();
+
+    // test a parallel algorithm on custom pool with high priority
+    hpx::parallel::for_loop_strided(
+            hpx::parallel::execution::par
+                    .with(fixed /*, high_priority_async_policy*/)
+                    .on(opencv_executor),
+            0, loop_count, 1,
+            [&](std::size_t i)
+            {
+                std::lock_guard<hpx::lcos::local::mutex> lock(m);
+                if (thread_set.insert(std::this_thread::get_id()).second)
+                {
+                    hpx::cout << std::hex << hpx::this_thread::get_id() << " "
+                              << std::hex << std::this_thread::get_id()
+                              << " high priority opencv i " << std::dec << i
+                              << std::endl;
+                }
+            });
+    hpx::cout << "thread set contains " << std::dec << thread_set.size()
+              << std::endl;
+    thread_set.clear();
 }

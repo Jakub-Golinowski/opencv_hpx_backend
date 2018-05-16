@@ -1,5 +1,5 @@
 # Require a recent version of cmake
-cmake_minimum_required(VERSION 2.8.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
 
 # This project is C++ based.
 project(hpx_image_load CXX)
@@ -15,7 +15,8 @@ set(hpx_image_load_FLAGS DEPENDENCIES iostreams_component)
 # Build your application using HPX
 add_hpx_executable(hpx_image_load
         ESSENTIAL
-        SOURCES hpx_image_load.cpp system_characteristics.hpp shared_priority_scheduler.hpp
+        SOURCES hpx_image_load.cpp system_characteristics.hpp
+        shared_priority_scheduler.hpp hpx_image_load.hpp
         #DEPENDENCIES iostreams_component
         COMPONENT_DEPENDENCIES iostreams)
 
@@ -24,9 +25,3 @@ target_link_libraries(hpx_image_load_exe ${OpenCV_LIBS} )
 if(MSVC)
     add_definitions(-D_USE_MATH_DEFINES)
 endif()
-
-
-#find_package( OpenCV REQUIRED )
-#include_directories( ${OpenCV_INCLUDE_DIRS} )
-#add_executable(opencv_imgfilter main.cpp)
-#target_link_libraries( opencv_imgfilter ${OpenCV_LIBS} )
