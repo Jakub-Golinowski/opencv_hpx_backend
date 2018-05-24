@@ -1,10 +1,52 @@
-#include "hpx_mandelbrot.hpp"
+#include <hpx/hpx.hpp>
+#include <hpx/hpx_init.hpp>
+//
+#include <hpx/parallel/algorithms/for_loop.hpp>
+#include <hpx/parallel/execution.hpp>
+//
+#include <hpx/runtime/resource/partitioner.hpp>
+#include <hpx/runtime/threads/cpu_mask.hpp>
+#include <hpx/runtime/threads/detail/scheduled_thread_pool_impl.hpp>
+#include <hpx/runtime/threads/executors/pool_executor.hpp>
+//
+#include <hpx/include/iostreams.hpp>
+#include <hpx/include/runtime.hpp>
+//
+#include "system_characteristics.hpp"
+//
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <stdexcept>
+//
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+///////////////////////////////////////////////////////////////////////////
+/// Global Variables (Parameters)
 
 static int opencv_tp_num_threads = 1;
-
 static const std::string opencv_tp_name("opencv");
+static int dflt_mandelbrot_size = 500;
 
-using namespace hpx::threads::policies;
+///////////////////////////////////////////////////////////////////////////
+/// Function Declarations
+
+cv::Mat load_image(const std::string &path);
+void show_image(const cv::Mat &image, std::string win_name);
+void save_image(const cv::Mat &image, const std::string &);
+
+int mandelbrot(const std::complex<float> &z0, const int max);
+int mandelbrotFormula(const std::complex<float> &z0, const int maxIter=500);
+
+void print_system_params();
+
+///////////////////////////////////////////////////////////////////////////
+/// Function Definitions
 
 cv::Mat load_image(const std::string &path) {
     hpx::cout << "load_image from " << path << "\n";
@@ -39,7 +81,25 @@ int mandelbrot(const std::complex<float> &z0, const int max) {
     return max;
 }
 
-int mandelbrotFormula(const std::complex<float> &z0, const int maxIter=500) {
+void print_system_params() {
+    // print partition characteristics
+    hpx::cout << "\n\n" <<
+              "[hpx_main] print resource_partitioner characteristics : "
+              << "\n";
+    hpx::resource::get_partitioner().print_init_pool_data(std::cout);
+
+    // print partition characteristics
+    hpx::cout << "\n\n[hpx_main] print thread-manager pools : "
+              << "\n";
+    hpx::threads::get_thread_manager().print_pools(std::cout);
+
+    // print system characteristics
+    hpx::cout << "\n\n[hpx_main] print System characteristics : "
+              << "\n";
+    print_system_characteristics();
+}
+
+int mandelbrotFormula(const std::complex<float> &z0, const int maxIter) {
     int value = mandelbrot(z0, maxIter);
     if(maxIter - value == 0)
     {
@@ -49,7 +109,10 @@ int mandelbrotFormula(const std::complex<float> &z0, const int maxIter=500) {
     return cvRound(sqrt(value / (float) maxIter) * 255);
 }
 
-// this is called on an hpx thread after the runtime starts up
+///////////////////////////////////////////////////////////////////////////
+using namespace hpx::threads::policies;
+
+///////////////////////////////////////////////////////////////////////////
 int hpx_main(boost::program_options::variables_map& vm)
 {
     hpx::cout << "[hpx_main] starting ..." << "\n";
@@ -65,7 +128,8 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     print_system_params();
 
-    cv::Mat mandelbrotImg(vm["mb-size"].as<int>(), vm["mb-size"].as<int>(), CV_8U);
+    cv::Mat mandelbrotImg(vm["mb-size"].as<int>(),
+                          vm["mb-size"].as<int>(), CV_8U);
     float x1 = -2.1f, x2 = 0.6f;
     float y1 = -1.2f, y2 = 1.2f;
     float scaleX = mandelbrotImg.cols / (x2 - x1);
@@ -73,7 +137,8 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     int num_pixels = mandelbrotImg.rows * mandelbrotImg.cols;
 
-    hpx::parallel::execution::static_chunk_size fixed(1);
+    hpx::parallel::execution::static_chunk_size fixed
+            (4*num_pixels/num_work_threads);
     hpx::parallel::for_loop_strided(
             hpx::parallel::execution::par.with(fixed).on(default_executor), 0,
             num_pixels, 1, [&](std::size_t r) {
@@ -95,6 +160,7 @@ int hpx_main(boost::program_options::variables_map& vm)
     return hpx::finalize();
 }
 
+///////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
@@ -126,9 +192,8 @@ int main(int argc, char* argv[]) {
     std::cout << "[main] obtained reference to the resource_partitioner"
               << std::endl;
 
-    rp.create_thread_pool("default");
     rp.create_thread_pool(opencv_tp_name,
-                              hpx::resource::scheduling_policy::local_priority_fifo);
+                          hpx::resource::scheduling_policy::local_priority_fifo);
     std::cout << "[main] " << "thread_pool " << opencv_tp_name
               << " created" << std::endl;
 
@@ -153,22 +218,4 @@ int main(int argc, char* argv[]) {
     std::cout << "[main] resources added to thread_pools" << std::endl;
 
     return hpx::init();
-}
-
-void print_system_params() {
-    // print partition characteristics
-    hpx::cout << "\n\n" <<
-                 "[hpx_main] print resource_partitioner characteristics : "
-              << "\n";
-    hpx::resource::get_partitioner().print_init_pool_data(std::cout);
-
-    // print partition characteristics
-    hpx::cout << "\n\n[hpx_main] print thread-manager pools : "
-              << "\n";
-    hpx::threads::get_thread_manager().print_pools(std::cout);
-
-    // print system characteristics
-    hpx::cout << "\n\n[hpx_main] print System characteristics : "
-              << "\n";
-    print_system_characteristics();
 }
