@@ -33,27 +33,17 @@
 
 
 ///////////////////////////////////////////////////////////////////////////
-<<<<<<< HEAD
 /// Function Declarations
 
-=======
-// Function Declarations
->>>>>>> 912c9d2ca98efa0ecb0add1406463050839d49e0
 // dummy function we will call using async
 void do_stuff(std::size_t n, bool printout);
 
 void print_system_params();
 
 cv::Mat load_image(const std::string &path);
-<<<<<<< HEAD
 
 void show_image(const cv::Mat &image, std::string win_name);
 
-=======
-
-void show_image(const cv::Mat &image, std::string win_name);
-
->>>>>>> 912c9d2ca98efa0ecb0add1406463050839d49e0
 void save_image(const cv::Mat &image, const std::string &);
 
 cv::Mat transform_to_grey(cv::Mat image);
@@ -122,7 +112,6 @@ void print_system_params() {
     hpx::cout << "\n\n[hpx_main] print thread-manager pools : "
               << "\n";
     hpx::threads::get_thread_manager().print_pools(std::cout);
-<<<<<<< HEAD
 
     // print system characteristics
     hpx::cout << "\n\n[hpx_main] print System characteristics : "
@@ -130,15 +119,6 @@ void print_system_params() {
     print_system_characteristics();
 }
 
-=======
-
-    // print system characteristics
-    hpx::cout << "\n\n[hpx_main] print System characteristics : "
-              << "\n";
-    print_system_characteristics();
-}
-
->>>>>>> 912c9d2ca98efa0ecb0add1406463050839d49e0
 ///////////////////////////////////////////////////////////////////////////
 /// hpx_main is called on an hpx thread after the runtime starts up
 int hpx_main(boost::program_options::variables_map& vm)
