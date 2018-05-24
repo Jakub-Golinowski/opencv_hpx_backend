@@ -16,7 +16,6 @@ set(hpx_image_load_FLAGS DEPENDENCIES iostreams_component)
 add_hpx_executable(hpx_image_load
         ESSENTIAL
         SOURCES hpx_image_load.cpp system_characteristics.hpp
-        shared_priority_scheduler.hpp hpx_image_load.hpp
         #DEPENDENCIES iostreams_component
         COMPONENT_DEPENDENCIES iostreams)
 
