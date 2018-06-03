@@ -89,6 +89,26 @@ void print_system_params()
     print_system_characteristics();
 }
 
+void add_pus_to_custom_pool(std::string pool_name, int num_pus,
+                            hpx::resource::partitioner& rp){
+    int count = 0;
+    for (const hpx::resource::numa_domain& d : rp.numa_domains())
+    {
+        for (const hpx::resource::core& c : d.cores())
+        {
+            for (const hpx::resource::pu& p : c.pus())
+            {
+                if (count < num_pus)
+                {
+                    std::cout << "[main] Added pu " << count++ << " to "
+                              << blocking_tp_name << "thread pool" << std::endl;
+                    rp.add_resource(p, pool_name);
+                }
+            }
+        }
+    }
+}
+
 int mandelbrotFormula(const std::complex<float>& z0, const int maxIter)
 {
     int value = mandelbrot(z0, maxIter);
@@ -169,7 +189,9 @@ int main(int argc, char* argv[])
         ("mb-size,s", po::value<int>()->default_value(500),
         "Specify the edge length of square mandelbrot image")
         ("use-io-tp,i", po::value<bool>()->default_value(false),
-         "Use io-pool instead of custom blocking thread pool");
+         "Use io-pool instead of custom blocking thread pool")
+        ("oversubscription,o", po::value<bool>()->default_value(false),
+         "Assign all PUs to default and oversubscribe blocking-tp to same PUs");
 
     // HPX uses a boost program options variable map, but we need it before
     // hpx-main, so we will create another one here and throw it away after use
@@ -191,40 +213,54 @@ int main(int argc, char* argv[])
 
     int blocking_tp_num_threads = vm["blocking_tp_num_threads"].as<int>();
     bool use_io_pool = vm["use-io-tp"].as<bool>();
+    bool use_oversubscription = vm["oversubscription"].as<bool>();
 
     if(!use_io_pool){
         std::cout << "[main] Using custom pool: " << blocking_tp_name
                   << "\n";
+        if(use_oversubscription){
+            // Create the resource partitioner
+            hpx::resource::partitioner rp(
+                    desc_cmdline, argc, argv,
+                    hpx::resource::mode_allow_oversubscription);
 
-        // Create the resource partitioner
-        hpx::resource::partitioner rp(desc_cmdline, argc, argv);
-        std::cout << "[main] obtained reference to the resource_partitioner"
-                  << "\n";
+            std::cout << "[main] Obtained reference to the resource_partitioner"
+                      << " with oversubscription" << "\n";
 
-        rp.create_thread_pool(
-                blocking_tp_name,
-                hpx::resource::scheduling_policy::local_priority_fifo);
+            rp.create_thread_pool("default");
+            rp.add_resource(rp.numa_domains(), "default");
 
-        std::cout << "[main] thread pool " << blocking_tp_name << " created"
-                  << "\n";
+            std::cout << "[main] Created default thread pool on all PUs"
+                      << "\n";;
 
-        // add N cores to custom blocking pool
-        int count = 0;
-        for (const hpx::resource::numa_domain& d : rp.numa_domains())
-        {
-            for (const hpx::resource::core& c : d.cores())
-            {
-                for (const hpx::resource::pu& p : c.pus())
-                {
-                    if (count < blocking_tp_num_threads)
-                    {
-                        std::cout << "[main] Added pu " << count++ << " to "
-                                  << blocking_tp_name << "thread pool" <<
-                                  "\n";
-                        rp.add_resource(p, blocking_tp_name);
-                    }
-                }
-            }
+            rp.create_thread_pool(
+                    blocking_tp_name,
+                    hpx::resource::scheduling_policy::local_priority_fifo);
+
+            std::cout << "[main] Created " << blocking_tp_name <<
+                         " thread pool." << "\n";;
+
+            add_pus_to_custom_pool(blocking_tp_name,
+                                   blocking_tp_num_threads,
+                                   rp);
+
+        } else{
+            // Create the resource partitioner
+            hpx::resource::partitioner rp(desc_cmdline, argc, argv);
+
+            std::cout << "[main] Obtained reference to the resource_partitioner"
+                      << " without oversubscription" << "\n";
+
+            rp.create_thread_pool(
+                    blocking_tp_name,
+                    hpx::resource::scheduling_policy::local_priority_fifo);
+
+            std::cout << "[main] Created " << blocking_tp_name <<
+                      " thread pool." << "\n";;
+
+            add_pus_to_custom_pool(blocking_tp_name,
+                                   blocking_tp_num_threads,
+                                   rp);
         }
     } else {
         std::cout << "[main] Using built-in io-pool" << "\n";
