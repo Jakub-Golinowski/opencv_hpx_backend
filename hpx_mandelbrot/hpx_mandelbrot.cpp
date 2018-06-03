@@ -15,10 +15,7 @@
 
 ///////////////////////////////////////////////////////////////////////////
 /// Global Variables (Parameters)
-
-static int opencv_tp_num_threads = 1;
-static const std::string opencv_tp_name("opencv");
-static int dflt_mandelbrot_size = 500;
+static const std::string blocking_tp_name("blocking-tp");
 
 ///////////////////////////////////////////////////////////////////////////
 /// Function Declarations
@@ -109,18 +106,24 @@ using namespace hpx::threads::policies;
 ///////////////////////////////////////////////////////////////////////////
 int hpx_main(boost::program_options::variables_map& vm)
 {
-    hpx::cout << "[hpx_main] starting ..."
-              << "\n";
+    hpx::cout << "[hpx_main] starting ..." << "\n";
 
     std::size_t num_work_threads = hpx::get_num_worker_threads();
     hpx::cout << "HPX using threads = " << num_work_threads << "\n";
 
     hpx::threads::executors::default_executor default_executor;
-    hpx::threads::scheduled_executor opencv_executor;
-    hpx::threads::executors::pool_executor opencv_exec(opencv_tp_name);
-    opencv_executor = opencv_exec;
-    hpx::cout << "[hpx_main] got opencv executor "
-              << "\n";
+
+    bool use_io_tp = vm["use-io-tp"].as<bool>();
+
+    hpx::threads::scheduled_executor blocking_tp_executor;
+    if(use_io_tp) {
+        hpx::cout << "Assigning io-pool to execute blocking calls = " << num_work_threads << "\n";
+        hpx::threads::executors::io_pool_executor io_pool_executor;
+        blocking_tp_executor = io_pool_executor;
+    } else {
+        hpx::threads::executors::pool_executor custom_exec(blocking_tp_name);
+        blocking_tp_executor = custom_exec;
+    }
 
     print_system_params();
 
@@ -134,11 +137,11 @@ int hpx_main(boost::program_options::variables_map& vm)
     int num_pixels = mandelbrotImg.rows * mandelbrotImg.cols;
 
     hpx::parallel::execution::static_chunk_size fixed(
-        4 * num_pixels / num_work_threads);
+            (num_pixels / num_work_threads) / 4);
+
     hpx::parallel::for_loop_strided(
         hpx::parallel::execution::par.with(fixed).on(default_executor), 0,
         num_pixels, 1, [&](std::size_t r) {
-            // std::lock_guard<hpx::lcos::local::mutex> lock(m);
             std::size_t i = r / mandelbrotImg.cols;
             std::size_t j = r % mandelbrotImg.cols;
             float x0 = j / scaleX + x1;
@@ -149,8 +152,8 @@ int hpx_main(boost::program_options::variables_map& vm)
         });
 
     hpx::future<void> f_save_image = hpx::async(
-        opencv_executor, &save_image, mandelbrotImg, "mandelbrot.bmp");
-    hpx::async(opencv_executor, &show_image, mandelbrotImg, "Mandelbrot");
+        blocking_tp_executor, &save_image, mandelbrotImg, "mandelbrot.bmp");
+    hpx::async(blocking_tp_executor, &show_image, mandelbrotImg, "Mandelbrot");
 
     return hpx::finalize();
 }
@@ -160,11 +163,13 @@ int main(int argc, char* argv[])
 {
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
-    desc_cmdline.add_options()("opencv_tp_num_threads,m",
-        po::value<int>()->default_value(1),
-        "Number of threads to assign to opencv pool")("mb-size",
-        po::value<int>()->default_value(500),
-        "Specify the edge length of square mandelbrot image");
+    desc_cmdline.add_options()
+        ("blocking_tp_num_threads,b", po::value<int>()->default_value(1),
+        "Number of threads to assign to custom blocking tp")
+        ("mb-size,s", po::value<int>()->default_value(500),
+        "Specify the edge length of square mandelbrot image")
+        ("use-io-tp,i", po::value<bool>()->default_value(false),
+         "Use io-pool instead of custom blocking thread pool");
 
     // HPX uses a boost program options variable map, but we need it before
     // hpx-main, so we will create another one here and throw it away after use
@@ -179,42 +184,51 @@ int main(int argc, char* argv[])
     }
     catch (po::error& e)
     {
-        std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
-        std::cerr << desc_cmdline << std::endl;
+        std::cerr << "ERROR: " << e.what() << "\n" << "\n";
+        std::cerr << desc_cmdline << "\n";
         return -1;
     }
 
-    opencv_tp_num_threads = vm["opencv_tp_num_threads"].as<int>();
+    int blocking_tp_num_threads = vm["blocking_tp_num_threads"].as<int>();
+    bool use_io_pool = vm["use-io-tp"].as<bool>();
 
-    // Create the resource partitioner
-    hpx::resource::partitioner rp(desc_cmdline, argc, argv);
-    std::cout << "[main] obtained reference to the resource_partitioner"
-              << std::endl;
+    if(!use_io_pool){
+        std::cout << "[main] Using custom pool: " << blocking_tp_name
+                  << "\n";
 
-    rp.create_thread_pool(
-        opencv_tp_name, hpx::resource::scheduling_policy::local_priority_fifo);
-    std::cout << "[main] "
-              << "thread_pool " << opencv_tp_name << " created" << std::endl;
+        // Create the resource partitioner
+        hpx::resource::partitioner rp(desc_cmdline, argc, argv);
+        std::cout << "[main] obtained reference to the resource_partitioner"
+                  << "\n";
 
-    // add N cores to opencv pool
-    int count = 0;
-    for (const hpx::resource::numa_domain& d : rp.numa_domains())
-    {
-        for (const hpx::resource::core& c : d.cores())
+        rp.create_thread_pool(
+                blocking_tp_name,
+                hpx::resource::scheduling_policy::local_priority_fifo);
+
+        std::cout << "[main] thread pool " << blocking_tp_name << " created"
+                  << "\n";
+
+        // add N cores to custom blocking pool
+        int count = 0;
+        for (const hpx::resource::numa_domain& d : rp.numa_domains())
         {
-            for (const hpx::resource::pu& p : c.pus())
+            for (const hpx::resource::core& c : d.cores())
             {
-                if (count < opencv_tp_num_threads)
+                for (const hpx::resource::pu& p : c.pus())
                 {
-                    std::cout << "[main] Added pu " << count++ << " to "
-                              << opencv_tp_name << "thread pool" << std::endl;
-                    rp.add_resource(p, opencv_tp_name);
+                    if (count < blocking_tp_num_threads)
+                    {
+                        std::cout << "[main] Added pu " << count++ << " to "
+                                  << blocking_tp_name << "thread pool" <<
+                                  "\n";
+                        rp.add_resource(p, blocking_tp_name);
+                    }
                 }
             }
         }
+    } else {
+        std::cout << "[main] Using built-in io-pool" << "\n";
     }
 
-    std::cout << "[main] resources added to thread_pools" << std::endl;
-
-    return hpx::init();
+    return hpx::init(desc_cmdline, argc, argv);
 }
