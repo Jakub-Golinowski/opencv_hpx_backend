@@ -1,4 +1,6 @@
 cmake-build-debug/
+build/
+logs/
 .idea
 *.bmp
 *.jpeg
