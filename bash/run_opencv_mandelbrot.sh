@@ -47,9 +47,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 ### ===========================================================
 ###         			FUNCTIONS
 ### ===========================================================
-function build_opencv {
+function build_app {
 	local OpenCV_DIR=$1
 	local HPX_DIR=$2
+	local BACKEND_STARTSTOP=$3
 	
 	echo -e "\n===== BUILDING THE APPLICATION ====="
 	#change to repo root
@@ -61,7 +62,7 @@ function build_opencv {
 	mkdir build
 	cd build
 
-	cmake -DCMAKE_BUILD_TYPE=Debug -DOpenCV_DIR=$1 -DHPX_DIR=$2 ../
+	cmake -DCMAKE_BUILD_TYPE=Debug -DOpenCV_DIR=$1 -DHPX_DIR=$2 -DBACKEND_STARTSTOP=$3 ../
 	make -j7
 	echo "++++++++++++++++++++++++++++++++++"
 }
@@ -72,6 +73,7 @@ function run_mandelbrot_app {
 	local num_loops=$3
 	local num_repetitions=$4
 	local backend=$5
+	local num_cores=$6
 
 	local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${TIMESTAMP}-${backend}-mandelbrot.log
 
@@ -85,8 +87,11 @@ function run_mandelbrot_app {
 			width=$(($scaling * $base_width))
 
 			echo "Executing mandelbrot_app with height=$height and width=$width"
-			./opencv_mandelbrot -h $height -w $width >> ${logfile}
-			echo -e "\n"	
+			./opencv_mandelbrot -h $height -w $width -b $backend >> ${logfile}
+			echo -e "\n"
+
+			echo "Copying images to the logs directory"
+			mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}	
 		done
 	done
 
@@ -98,6 +103,10 @@ function run_mandelbrot_app {
 
 TIMESTAMP=$(date +"%Y-%m-%d-%H.%M")
 
+LOGS_PATH=${LOGS_PATH}${TIMESTAMP}/
+mkdir ${REPO_ROOT_PATH}${LOGS_PATH}
+
+
 echo "Executing script: ${0}"
 echo "Used parameters:"
 echo "	MESSAGE = ${MESSAGE}"
@@ -105,16 +114,30 @@ echo "	LOGS_PATH = ${LOGS_PATH}"
 echo "	APP_PATH = ${APP_PATH}"
 echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
-build_opencv /home/jakub/opencv_repo/build/hpx/debug /home/jakub/hpx_repo/build/hpx_11/debug/lib/cmake/HPX
+mode="release"
+
+build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF
 echo "Heating up the cores with unlogged run."
 ./opencv_mandelbrot -h 1200 -w 1350
 #run the experiment
-run_mandelbrot_app 480 540 10 3 "hpx"
+run_mandelbrot_app 480 540 2 3 "hpx"
 
-build_opencv /home/jakub/opencv_repo/build/tbb/debug /home/jakub/hpx_repo/build/hpx_11/debug/lib/cmake/HPX
+build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF
 #run the experiment
-run_mandelbrot_app 480 540 10 3 "tbb"
+run_mandelbrot_app 480 540 2 3 "hpx_nstripes"
 
-build_opencv /home/jakub/opencv_repo/build/pthreads/debug /home/jakub/hpx_repo/build/hpx_11/debug/lib/cmake/HPX
+build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON
 #run the experiment
-run_mandelbrot_app 480 540 10 3 "pthreads"
+run_mandelbrot_app 480 540 2 3 "hpx_startstop"
+
+build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON
+#run the experiment
+run_mandelbrot_app 480 540 2 3 "hpx_nstripes_startstop"
+
+# build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX
+# #run the experiment
+# run_mandelbrot_app 480 540 2 3 "tbb"
+
+# build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX
+# #run the experiment
+# run_mandelbrot_app 480 540 2 3 "pthreads"
