@@ -1,7 +1,13 @@
+#include <config.hpp>
+//
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
+
+#ifndef BACKEND_STARTSTOP
 #include <hpx/hpx_main.hpp>
+#endif
+
 #include "boost/program_options.hpp"
 using namespace std;
 using namespace cv;
@@ -100,7 +106,9 @@ int main(int argc, char* argv[])
             ("height,h", po::value<int>()->default_value(1000),
              "Height of mandelbrot image")
             ("width,w", po::value<int>()->default_value(2000),
-             "width of mandelbrot image");
+             "width of mandelbrot image")
+            ("backend,b", po::value<std::string>()->default_value(""),
+            "name of backend used");
 
     po::variables_map vm;
     try
@@ -117,6 +125,7 @@ int main(int argc, char* argv[])
         std::cerr << desc_cmdline << "\n";
         return -1;
     }
+
 
     int mandelbrotHeight = vm["height"].as<int>();
     int mandelbrotWidth = vm["width"].as<int>();
@@ -171,8 +180,18 @@ int main(int argc, char* argv[])
     cout << "Sequential Mandelbrot: " << t2 << " s" << endl;
     cout << "Speed-up: " << t2/t1 << " X" << endl;
 
-    imwrite("Mandelbrot_parallel.png", mandelbrotImg);
-    imwrite("Mandelbrot_sequential.png", mandelbrotImgSequential);
+    std::string backend = vm["backend"].as<std::string>();
+
+    std::string par_name("Mandelbrot_h" + std::to_string(mandelbrotHeight)
+                + "_w" + std::to_string(mandelbrotWidth) + "_" +
+                         backend + "_parallel.png");
+
+    std::string seq_name("Mandelbrot_h" + std::to_string(mandelbrotHeight)
+                         + "_w" + std::to_string(mandelbrotWidth) + "_" +
+                         backend + "_sequential.png");
+
+    imwrite(par_name, mandelbrotImg);
+    imwrite(seq_name, mandelbrotImgSequential);
 
     return EXIT_SUCCESS;
 }
