@@ -3,10 +3,14 @@
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
+//
+#include <opencv2/core/parallel.hpp>
 
 #ifndef BACKEND_STARTSTOP
 #include <hpx/hpx_main.hpp>
 #endif
+
+#include <hpx/include/runtime.hpp>
 
 #include "boost/program_options.hpp"
 using namespace std;
@@ -97,8 +101,16 @@ void sequentialMandelbrot(Mat &img, const float x1, const float y1, const float 
 //! [mandelbrot-sequential]
 }
 
+void set_argc_argv(int argc, char* argv[])
+{
+    __argc = argc;
+    __argv = argv;
+}
+
 int main(int argc, char* argv[])
 {
+
+    set_argc_argv(argc, argv);
 
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
@@ -108,7 +120,9 @@ int main(int argc, char* argv[])
             ("width,w", po::value<int>()->default_value(2000),
              "width of mandelbrot image")
             ("backend,b", po::value<std::string>()->default_value(""),
-            "name of backend used");
+            "name of backend used")
+            ("hpx:threads,t", po::value<int>()->default_value(2),
+             "name of backend used");
 
     po::variables_map vm;
     try
@@ -126,12 +140,16 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-
+    std::string backend = vm["backend"].as<std::string>();
+    int num_pus = vm["hpx:threads"].as<int>();
     int mandelbrotHeight = vm["height"].as<int>();
     int mandelbrotWidth = vm["width"].as<int>();
 
     std::cout << "imsize: h=" << mandelbrotHeight << " w=" << mandelbrotWidth
-              <<  std::endl;
+              << " backend=" << backend
+              << " num_pus=" << num_pus
+              << std::endl;
+    
     //! [mandelbrot-transformation]
     Mat mandelbrotImg(mandelbrotHeight, mandelbrotWidth, CV_8U);
     float x1 = -2.1f, x2 = 0.6f;
@@ -179,8 +197,6 @@ int main(int argc, char* argv[])
     t2 = ((double) getTickCount() - t2) / getTickFrequency();
     cout << "Sequential Mandelbrot: " << t2 << " s" << endl;
     cout << "Speed-up: " << t2/t1 << " X" << endl;
-
-    std::string backend = vm["backend"].as<std::string>();
 
     std::string par_name("Mandelbrot_h" + std::to_string(mandelbrotHeight)
                 + "_w" + std::to_string(mandelbrotWidth) + "_" +

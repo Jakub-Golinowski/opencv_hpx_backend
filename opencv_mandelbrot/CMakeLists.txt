@@ -18,13 +18,10 @@ target_include_directories(opencv_mandelbrot_exe PRIVATE ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(opencv_mandelbrot_exe ${OpenCV_LIBS} )
 
 
-
 option(BACKEND_STARTSTOP "Use backend that is starting and stopping the HPX runtime on its own" OFF)
 if(BACKEND_STARTSTOP)
   set(BACKEND_STARTSTOP)
 endif(BACKEND_STARTSTOP)
-
-
 
 configure_file(config.hpp.in config.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
