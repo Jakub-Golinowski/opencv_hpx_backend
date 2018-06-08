@@ -101,16 +101,21 @@ void sequentialMandelbrot(Mat &img, const float x1, const float y1, const float 
 //! [mandelbrot-sequential]
 }
 
+#ifdef BACKEND_STARTSTOP
 void set_argc_argv(int argc, char* argv[])
 {
     __argc = argc;
     __argv = argv;
 }
+#endif
+
 
 int main(int argc, char* argv[])
 {
-
+#ifdef BACKEND_STARTSTOP
     set_argc_argv(argc, argv);
+#endif
+
 
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
@@ -141,9 +146,15 @@ int main(int argc, char* argv[])
     }
 
     std::string backend = vm["backend"].as<std::string>();
-    int num_pus = vm["hpx:threads"].as<int>();
+
     int mandelbrotHeight = vm["height"].as<int>();
     int mandelbrotWidth = vm["width"].as<int>();
+
+#ifndef BACKEND_STARTSTOP
+    int num_pus = hpx::get_num_worker_threads();
+#else
+    int num_pus = vm["hpx:threads"].as<int>();
+#endif
 
     std::cout << "imsize: h=" << mandelbrotHeight << " w=" << mandelbrotWidth
               << " backend=" << backend
