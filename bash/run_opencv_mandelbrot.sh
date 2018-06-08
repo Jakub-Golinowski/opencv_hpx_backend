@@ -51,8 +51,20 @@ function build_app {
 	local OpenCV_DIR=$1
 	local HPX_DIR=$2
 	local BACKEND_STARTSTOP=$3
-	
+	local mode=$4
+
+	if [ ${mode} = "debug" ]; then
+		build_type="Debug"
+	elif [ ${mode} = "release" ]; then
+    	build_type=Release
+	else
+		echo "ERROR: WRONG mode = ${mode}"
+		exit 1
+	fi
+
+	echo -e "======================================="
 	echo -e "\n===== BUILDING THE APPLICATION ====="
+	echo -e "======================================="
 	#change to repo root
 	cd ${REPO_ROOT_PATH}${APP_PATH}
 
@@ -62,35 +74,63 @@ function build_app {
 	mkdir build
 	cd build
 
-	cmake -DCMAKE_BUILD_TYPE=Debug -DOpenCV_DIR=$1 -DHPX_DIR=$2 -DBACKEND_STARTSTOP=$3 ../
+	cmake -DCMAKE_BUILD_TYPE=${build_type} -DOpenCV_DIR=$1 -DHPX_DIR=$2 -DBACKEND_STARTSTOP=$3 ../
 	make -j7
 	echo "++++++++++++++++++++++++++++++++++"
 }
 
-function run_mandelbrot_app {
+
+function run_mandelbrot_app_over_worksize {
 	local base_height=$1
 	local base_width=$2
 	local num_loops=$3
 	local num_repetitions=$4
 	local backend=$5
-	local num_cores=$6
+	local num_pus=$6
 
-	local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${TIMESTAMP}-${backend}-mandelbrot.log
 
+	local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-mandelbrot_over_workload.log
 	touch ${logfile}
 
-	echo -e "\n===== RUNNING THE APPLICATION WITH $5 BACKEND ====="
+	echo -e "\n===== RUNNING THE APPLICATION WITH $5 BACKEND (over workload size) ====="
 
 	for (( scaling=1; scaling<=$num_loops; scaling++ )); do
 		for ((rep=1; rep<=num_repetitions; rep++)); do
 			height=$(($scaling * $base_height))
 			width=$(($scaling * $base_width))
 
-			echo "Executing mandelbrot_app with height=$height and width=$width"
-			./opencv_mandelbrot -h $height -w $width -b $backend >> ${logfile}
+			echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus}"
+			./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} >> ${logfile}
 			echo -e "\n"
 
-			echo "Copying images to the logs directory"
+			echo "Moving images to the logs directory"
+			mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}	
+		done
+	done
+
+	echo "++++++++++++++++++++++++++++++++++"
+}
+
+function run_mandelbrot_app_over_num_pus {
+	local height=$1
+	local width=$2
+	local num_repetitions=$3
+	local backend=$4
+	local max_num_pus=$5
+
+	local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-mandelbrot_over_num_pus.log
+	touch ${logfile}
+
+	echo -e "\n===== RUNNING THE APPLICATION WITH $5 BACKEND (over num pus) ====="
+
+	for (( num_pus=1; num_pus<=max_num_pus; num_pus++ )); do
+		for ((rep=1; rep<=num_repetitions; rep++)); do
+			
+			echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus}"
+			./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} >> ${logfile}
+			echo -e "\n"
+
+			echo "Moving images to the logs directory"
 			mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}	
 		done
 	done
@@ -106,7 +146,6 @@ TIMESTAMP=$(date +"%Y-%m-%d-%H.%M")
 LOGS_PATH=${LOGS_PATH}${TIMESTAMP}/
 mkdir ${REPO_ROOT_PATH}${LOGS_PATH}
 
-
 echo "Executing script: ${0}"
 echo "Used parameters:"
 echo "	MESSAGE = ${MESSAGE}"
@@ -114,30 +153,64 @@ echo "	LOGS_PATH = ${LOGS_PATH}"
 echo "	APP_PATH = ${APP_PATH}"
 echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
+echo "============================================================================="
+echo "============================================================================="
+echo "===================     Iterating over workload size     ===================="
+echo "============================================================================="
+echo "============================================================================="
 mode="release"
 
-build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF
+num_reps=3
+num_scalings=7
+num_pus=8
+
+build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
 echo "Heating up the cores with unlogged run."
-./opencv_mandelbrot -h 1200 -w 1350
-#run the experiment
-run_mandelbrot_app 480 540 2 3 "hpx"
+./opencv_mandelbrot -h 1200 -w 1350 -b "heat-up_run"
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx" ${num_pus}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF
-#run the experiment
-run_mandelbrot_app 480 540 2 3 "hpx_nstripes"
+build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_nstripes" ${num_pus}
 
-build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON
-#run the experiment
-run_mandelbrot_app 480 540 2 3 "hpx_startstop"
+build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ${mode}
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_startstop" ${num_pus}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON
-#run the experiment
-run_mandelbrot_app 480 540 2 3 "hpx_nstripes_startstop"
+build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ${mode}
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_nstripes_startstop" ${num_pus}
 
-# build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX
-# #run the experiment
-# run_mandelbrot_app 480 540 2 3 "tbb"
+build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "tbb" ${num_pus}
 
-# build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX
-# #run the experiment
-# run_mandelbrot_app 480 540 2 3 "pthreads"
+build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "pthreads" ${num_pus}
+
+echo "============================================================================="
+echo "============================================================================="
+echo "===================     Iterating over workload size     ===================="
+echo "============================================================================="
+echo "============================================================================="
+
+mode="release"
+
+height=480*4
+width=540*4
+num_reps=3
+max_num_pus=8
+
+build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx" ${max_num_pus}
+
+build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_nstripes" ${max_num_pus}
+
+build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ${mode}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_startstop" ${max_num_pus}
+
+build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ${mode}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_nstripes_startstop" ${max_num_pus}
+
+# build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+# run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "tbb" ${max_num_pus}
+
+# build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF ${mode}
+# run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus}
