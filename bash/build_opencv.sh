@@ -75,7 +75,7 @@ function build_opencv {
 
 	if [ ${mode} = "debug" ]; then
 		build_type="Debug"
-	elif [ ${mode} = "release"]; then
+	elif [ ${mode} = "release" ]; then
     	build_type=Release
 	else
 		echo "ERROR: WRONG mode = ${mode}"
@@ -131,10 +131,10 @@ echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 mode="debug"
 # build_opencv "hpx" "OFF" "OFF" "${mode}"
 # build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
-build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
-build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
-build_opencv "tbb" "NA" "NA" "${mode}"
-build_opencv "pthreads" "NA" "NA" "${mode}"
+# build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
+# build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
+# build_opencv "tbb" "NA" "NA" "${mode}"
+# build_opencv "pthreads" "NA" "NA" "${mode}"
 
 mode="release"
 build_opencv "hpx" "OFF" "OFF" "${mode}"
