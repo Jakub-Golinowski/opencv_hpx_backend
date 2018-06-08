@@ -1,0 +1,84 @@
+imsize: h=480 w=540 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.18118 s
+Sequential Mandelbrot: 0.591738 s
+Speed-up: 3.26602 X
+imsize: h=480 w=540 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.194514 s
+Sequential Mandelbrot: 0.588922 s
+Speed-up: 3.02766 X
+imsize: h=480 w=540 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.194707 s
+Sequential Mandelbrot: 0.602004 s
+Speed-up: 3.09184 X
+imsize: h=960 w=1080 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.594442 s
+Sequential Mandelbrot: 2.26863 s
+Speed-up: 3.8164 X
+imsize: h=960 w=1080 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.638602 s
+Sequential Mandelbrot: 2.28795 s
+Speed-up: 3.58274 X
+imsize: h=960 w=1080 backend=tbb num_pus=8
+Parallel Mandelbrot: 0.690895 s
+Sequential Mandelbrot: 2.30491 s
+Speed-up: 3.33611 X
+imsize: h=1440 w=1620 backend=tbb num_pus=8
+Parallel Mandelbrot: 1.29331 s
+Sequential Mandelbrot: 6.53815 s
+Speed-up: 5.05538 X
+imsize: h=1440 w=1620 backend=tbb num_pus=8
+Parallel Mandelbrot: 2.05864 s
+Sequential Mandelbrot: 5.10964 s
+Speed-up: 2.48204 X
+imsize: h=1440 w=1620 backend=tbb num_pus=8
+Parallel Mandelbrot: 1.324 s
+Sequential Mandelbrot: 5.02515 s
+Speed-up: 3.79542 X
+imsize: h=1920 w=2160 backend=tbb num_pus=8
+Parallel Mandelbrot: 2.18831 s
+Sequential Mandelbrot: 9.27341 s
+Speed-up: 4.23769 X
+imsize: h=1920 w=2160 backend=tbb num_pus=8
+Parallel Mandelbrot: 3.69147 s
+Sequential Mandelbrot: 10.1754 s
+Speed-up: 2.75645 X
+imsize: h=1920 w=2160 backend=tbb num_pus=8
+Parallel Mandelbrot: 2.76422 s
+Sequential Mandelbrot: 9.00842 s
+Speed-up: 3.25893 X
+imsize: h=2400 w=2700 backend=tbb num_pus=8
+Parallel Mandelbrot: 3.78146 s
+Sequential Mandelbrot: 13.8851 s
+Speed-up: 3.6719 X
+imsize: h=2400 w=2700 backend=tbb num_pus=8
+Parallel Mandelbrot: 3.77693 s
+Sequential Mandelbrot: 14.3141 s
+Speed-up: 3.78987 X
+imsize: h=2400 w=2700 backend=tbb num_pus=8
+Parallel Mandelbrot: 3.72226 s
+Sequential Mandelbrot: 13.5863 s
+Speed-up: 3.65 X
+imsize: h=2880 w=3240 backend=tbb num_pus=8
+Parallel Mandelbrot: 5.25181 s
+Sequential Mandelbrot: 20.479 s
+Speed-up: 3.89942 X
+imsize: h=2880 w=3240 backend=tbb num_pus=8
+Parallel Mandelbrot: 6.05296 s
+Sequential Mandelbrot: 20.4794 s
+Speed-up: 3.38338 X
+imsize: h=2880 w=3240 backend=tbb num_pus=8
+Parallel Mandelbrot: 6.10635 s
+Sequential Mandelbrot: 20.9304 s
+Speed-up: 3.42765 X
+imsize: h=3360 w=3780 backend=tbb num_pus=8
+Parallel Mandelbrot: 7.49724 s
+Sequential Mandelbrot: 27.0014 s
+Speed-up: 3.6015 X
+imsize: h=3360 w=3780 backend=tbb num_pus=8
+Parallel Mandelbrot: 6.80811 s
+Sequential Mandelbrot: 28.1276 s
+Speed-up: 4.13148 X
+imsize: h=3360 w=3780 backend=tbb num_pus=8
+Parallel Mandelbrot: 6.51913 s
+Sequential Mandelbrot: 27.1274 s
+Speed-up: 4.1612 X
