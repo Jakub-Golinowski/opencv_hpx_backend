@@ -121,7 +121,7 @@ function run_mandelbrot_app_over_num_pus {
 	local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-mandelbrot_over_num_pus.log
 	touch ${logfile}
 
-	echo -e "\n===== RUNNING THE APPLICATION WITH $5 BACKEND (over num pus) ====="
+	echo -e "\n===== RUNNING THE APPLICATION WITH ${backend} BACKEND (over num pus) ====="
 
 	for (( num_pus=1; num_pus<=max_num_pus; num_pus++ )); do
 		for ((rep=1; rep<=num_repetitions; rep++)); do
@@ -192,8 +192,8 @@ echo "==========================================================================
 
 mode="release"
 
-height=480*4
-width=540*4
+height=$((480*4))
+width=$((540*4))
 num_reps=3
 max_num_pus=8
 
