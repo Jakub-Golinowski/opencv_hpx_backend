@@ -1,0 +1,120 @@
+imsize: h=480 w=540 backend=pthreads num_pus=8
+Parallel Mandelbrot: 0.435449 s
+Sequential Mandelbrot: 0.544893 s
+Speed-up: 1.25134 X
+imsize: h=480 w=540 backend=pthreads num_pus=8
+Parallel Mandelbrot: 0.439709 s
+Sequential Mandelbrot: 0.558154 s
+Speed-up: 1.26937 X
+imsize: h=480 w=540 backend=pthreads num_pus=8
+Parallel Mandelbrot: 0.445533 s
+Sequential Mandelbrot: 0.560246 s
+Speed-up: 1.25747 X
+imsize: h=960 w=1080 backend=pthreads num_pus=8
+Parallel Mandelbrot: 1.7105 s
+Sequential Mandelbrot: 2.0774 s
+Speed-up: 1.2145 X
+imsize: h=960 w=1080 backend=pthreads num_pus=8
+Parallel Mandelbrot: 1.7184 s
+Sequential Mandelbrot: 2.09595 s
+Speed-up: 1.21971 X
+imsize: h=960 w=1080 backend=pthreads num_pus=8
+Parallel Mandelbrot: 1.72297 s
+Sequential Mandelbrot: 2.22518 s
+Speed-up: 1.29148 X
+imsize: h=1440 w=1620 backend=pthreads num_pus=8
+Parallel Mandelbrot: 4.04706 s
+Sequential Mandelbrot: 4.5554 s
+Speed-up: 1.12561 X
+imsize: h=1440 w=1620 backend=pthreads num_pus=8
+Parallel Mandelbrot: 4.04715 s
+Sequential Mandelbrot: 4.53433 s
+Speed-up: 1.12037 X
+imsize: h=1440 w=1620 backend=pthreads num_pus=8
+Parallel Mandelbrot: 4.01258 s
+Sequential Mandelbrot: 4.5633 s
+Speed-up: 1.13725 X
+imsize: h=1920 w=2160 backend=pthreads num_pus=8
+Parallel Mandelbrot: 6.74021 s
+Sequential Mandelbrot: 8.02998 s
+Speed-up: 1.19135 X
+imsize: h=1920 w=2160 backend=pthreads num_pus=8
+Parallel Mandelbrot: 6.64671 s
+Sequential Mandelbrot: 8.2167 s
+Speed-up: 1.2362 X
+imsize: h=1920 w=2160 backend=pthreads num_pus=8
+Parallel Mandelbrot: 7.02937 s
+Sequential Mandelbrot: 7.96438 s
+Speed-up: 1.13302 X
+imsize: h=2400 w=2700 backend=pthreads num_pus=8
+Parallel Mandelbrot: 9.94371 s
+Sequential Mandelbrot: 12.4154 s
+Speed-up: 1.24857 X
+imsize: h=2400 w=2700 backend=pthreads num_pus=8
+Parallel Mandelbrot: 9.93302 s
+Sequential Mandelbrot: 12.3996 s
+Speed-up: 1.24832 X
+imsize: h=2400 w=2700 backend=pthreads num_pus=8
+Parallel Mandelbrot: 9.98995 s
+Sequential Mandelbrot: 12.3451 s
+Speed-up: 1.23575 X
+imsize: h=2880 w=3240 backend=pthreads num_pus=8
+Parallel Mandelbrot: 14.2284 s
+Sequential Mandelbrot: 17.7139 s
+Speed-up: 1.24497 X
+imsize: h=2880 w=3240 backend=pthreads num_pus=8
+Parallel Mandelbrot: 14.2247 s
+Sequential Mandelbrot: 17.7239 s
+Speed-up: 1.24599 X
+imsize: h=2880 w=3240 backend=pthreads num_pus=8
+Parallel Mandelbrot: 14.1877 s
+Sequential Mandelbrot: 17.7094 s
+Speed-up: 1.24822 X
+imsize: h=3360 w=3780 backend=pthreads num_pus=8
+Parallel Mandelbrot: 19.1657 s
+Sequential Mandelbrot: 24.0158 s
+Speed-up: 1.25306 X
+imsize: h=3360 w=3780 backend=pthreads num_pus=8
+Parallel Mandelbrot: 19.1612 s
+Sequential Mandelbrot: 24.1027 s
+Speed-up: 1.2579 X
+imsize: h=3360 w=3780 backend=pthreads num_pus=8
+Parallel Mandelbrot: 19.1536 s
+Sequential Mandelbrot: 24.0422 s
+Speed-up: 1.25523 X
+imsize: h=3840 w=4320 backend=pthreads num_pus=8
+Parallel Mandelbrot: 24.8651 s
+Sequential Mandelbrot: 31.2122 s
+Speed-up: 1.25526 X
+imsize: h=3840 w=4320 backend=pthreads num_pus=8
+Parallel Mandelbrot: 24.9083 s
+Sequential Mandelbrot: 31.2666 s
+Speed-up: 1.25527 X
+imsize: h=3840 w=4320 backend=pthreads num_pus=8
+Parallel Mandelbrot: 24.9004 s
+Sequential Mandelbrot: 31.3851 s
+Speed-up: 1.26042 X
+imsize: h=4320 w=4860 backend=pthreads num_pus=8
+Parallel Mandelbrot: 31.4926 s
+Sequential Mandelbrot: 39.6746 s
+Speed-up: 1.25981 X
+imsize: h=4320 w=4860 backend=pthreads num_pus=8
+Parallel Mandelbrot: 31.3542 s
+Sequential Mandelbrot: 39.5903 s
+Speed-up: 1.26268 X
+imsize: h=4320 w=4860 backend=pthreads num_pus=8
+Parallel Mandelbrot: 31.4093 s
+Sequential Mandelbrot: 39.5113 s
+Speed-up: 1.25795 X
+imsize: h=4800 w=5400 backend=pthreads num_pus=8
+Parallel Mandelbrot: 38.4603 s
+Sequential Mandelbrot: 48.8829 s
+Speed-up: 1.271 X
+imsize: h=4800 w=5400 backend=pthreads num_pus=8
+Parallel Mandelbrot: 38.5733 s
+Sequential Mandelbrot: 48.7335 s
+Speed-up: 1.2634 X
+imsize: h=4800 w=5400 backend=pthreads num_pus=8
+Parallel Mandelbrot: 38.6026 s
+Sequential Mandelbrot: 48.9342 s
+Speed-up: 1.26764 X
