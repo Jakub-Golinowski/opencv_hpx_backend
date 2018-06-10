@@ -19,9 +19,15 @@ target_link_libraries(opencv_mandelbrot_exe ${OpenCV_LIBS} )
 
 
 option(BACKEND_STARTSTOP "Use backend that is starting and stopping the HPX runtime on its own" OFF)
+option(BACKEND_NON_HPX "Use non-hpx backend" OFF)
+
 if(BACKEND_STARTSTOP)
   set(BACKEND_STARTSTOP)
 endif(BACKEND_STARTSTOP)
+
+if(BACKEND_NON_HPX)
+    set(BACKEND_NON_HPX)
+endif(BACKEND_NON_HPX)
 
 configure_file(config.hpp.in config.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

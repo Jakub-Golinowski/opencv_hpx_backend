@@ -2,5 +2,6 @@
 #define MANDELBROT_CONFIG
 
 #cmakedefine BACKEND_STARTSTOP
+#cmakedefine BACKEND_NON_HPX
 
 #endif // MANDELBROT_CONFIG

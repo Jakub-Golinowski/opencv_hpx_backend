@@ -101,7 +101,7 @@ void sequentialMandelbrot(Mat &img, const float x1, const float y1, const float 
 //! [mandelbrot-sequential]
 }
 
-#ifdef BACKEND_STARTSTOP
+#ifndef BACKEND_NON_HPX
 void set_argc_argv(int argc, char* argv[])
 {
     __argc = argc;
@@ -112,7 +112,7 @@ void set_argc_argv(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-#ifdef BACKEND_STARTSTOP
+#ifndef BACKEND_NON_HPX
     set_argc_argv(argc, argv);
 #endif
 
