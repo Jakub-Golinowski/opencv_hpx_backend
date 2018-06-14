@@ -13,14 +13,12 @@
 #include <hpx/include/runtime.hpp>
 
 #include "boost/program_options.hpp"
-using namespace std;
-using namespace cv;
 
 namespace {
     //! [mandelbrot-escape-time-algorithm]
-    int mandelbrot(const complex<float>& z0, const int max)
+    int mandelbrot(const std::complex<float>& z0, const int max)
     {
-        complex<float> z = z0;
+        std::complex<float> z = z0;
         for (int t = 0; t < max; t++)
         {
             if (z.real() * z.real() + z.imag() * z.imag() > 4.0f)
@@ -33,7 +31,7 @@ namespace {
     //! [mandelbrot-escape-time-algorithm]
 
     //! [mandelbrot-grayscale-value]
-    int mandelbrotFormula(const complex<float>& z0, const int maxIter = 500)
+    int mandelbrotFormula(const std::complex<float>& z0, const int maxIter = 500)
     {
         int value = mandelbrot(z0, maxIter);
         if (maxIter - value == 0)
@@ -46,7 +44,7 @@ namespace {
     //! [mandelbrot-grayscale-value]
 
     //! [mandelbrot-sequential]
-    void sequentialMandelbrot(Mat& img, const float x1, const float y1,
+    void sequentialMandelbrot(cv::Mat& img, const float x1, const float y1,
         const float scaleX, const float scaleY, const int maxIter = 500)
     {
         for (int i = 0; i < img.rows; i++)
@@ -56,7 +54,7 @@ namespace {
                 float x0 = j / scaleX + x1;
                 float y0 = i / scaleY + y1;
 
-                complex<float> z0(x0, y0);
+                std::complex<float> z0(x0, y0);
                 uchar value = (uchar) mandelbrotFormula(z0, maxIter);
                 img.ptr<uchar>(i)[j] = value;
             }
@@ -136,7 +134,7 @@ int main(int argc, char* argv[])
               << " sequential=" << std::to_string(sequential) << std::endl;
 
     //! [mandelbrot-transformation]
-    Mat mandelbrotImg(mandelbrotHeight, mandelbrotWidth, CV_8U);
+    cv::Mat mandelbrotImg(mandelbrotHeight, mandelbrotWidth, CV_8U);
     float x1 = -2.1f, x2 = 0.6f;
     float y1 = -1.2f, y2 = 1.2f;
     float scaleX = mandelbrotImg.cols / (x2 - x1);
@@ -145,20 +143,20 @@ int main(int argc, char* argv[])
 
     if (sequential)
     {
-        double t_seq = (double) getTickCount();
+        double t_seq = (double) cv::getTickCount();
         sequentialMandelbrot(
             mandelbrotImg, x1, y1, scaleX, scaleY, mandelbrotMaxIter);
-        t_seq = ((double) getTickCount() - t_seq) / getTickFrequency();
-        cout << "Sequential Mandelbrot Execution Time: " << t_seq << " s"
-             << endl;
+        t_seq = ((double) cv::getTickCount() - t_seq) / cv::getTickFrequency();
+        std::cout << "Sequential Mandelbrot Execution Time: " << t_seq << " s"
+             << std::endl;
     }
     else
     {
         cv::setNumThreads(num_threads);
 
-        double t1 = (double) getTickCount();
-        parallel_for_(Range(0, mandelbrotImg.rows * mandelbrotImg.cols),
-            [&](const Range& range) {
+        double t1 = (double) cv::getTickCount();
+        cv::parallel_for_(cv::Range(0, mandelbrotImg.rows * mandelbrotImg.cols),
+            [&](const cv::Range& range) {
                 for (int r = range.start; r < range.end; r++)
                 {
                     int i = r / mandelbrotImg.cols;
@@ -167,7 +165,7 @@ int main(int argc, char* argv[])
                     float x0 = j / scaleX + x1;
                     float y0 = i / scaleY + y1;
 
-                    complex<float> z0(x0, y0);
+                    std::complex<float> z0(x0, y0);
                     uchar value =
                         (uchar) mandelbrotFormula(z0, mandelbrotMaxIter);
                     mandelbrotImg.ptr<uchar>(i)[j] = value;
@@ -175,8 +173,9 @@ int main(int argc, char* argv[])
             },
             nstripes);
 
-        t1 = ((double) getTickCount() - t1) / getTickFrequency();
-        cout << "Parallel Mandelbrot Execution Time: " << t1 << " s" << endl;
+        t1 = ((double) cv::getTickCount() - t1) / cv::getTickFrequency();
+        std::cout << "Parallel Mandelbrot Execution Time: " << t1 << " s"
+                  << std::endl;
     }
 
     std::string im_name("Mandelbrot_h" + std::to_string(mandelbrotHeight) +
