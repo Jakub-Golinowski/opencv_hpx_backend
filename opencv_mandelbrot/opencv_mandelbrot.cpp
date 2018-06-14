@@ -81,21 +81,23 @@ int main(int argc, char* argv[])
 
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
-    desc_cmdline.add_options()("height,h",
-        po::value<int>()->default_value(1000),
-        "Height of mandelbrot image")("width,w",
-        po::value<int>()->default_value(2000), "Width of mandelbrot image")(
-        "backend,b", po::value<std::string>()->default_value(""),
+    desc_cmdline.add_options()
+        ("height,h", po::value<int>()->default_value(1000),
+        "Height of mandelbrot image")
+        ("width,w", po::value<int>()->default_value(2000),
+         "Width of mandelbrot image")
+        ("backend,b", po::value<std::string>()->default_value(""),
         "Name of backend used. (Should be in accordance with actually used "
-        "backend as it has no real influence but is just used for logging)")(
-        "hpx:threads,t", po::value<int>()->default_value(4),
+        "backend as it has no real influence but is just used for logging)")
+        ("hpx:threads,t", po::value<int>()->default_value(4),
         "name of backend used")("mandelbrot_iter,i",
         po::value<int>()->default_value(500),
-        "Number of iterations for single pixel of mandelbrot image")(
-        "nstripes,n", po::value<double>()->default_value(-1.),
+        "Number of iterations for single pixel of mandelbrot image")
+        ("nstripes,n", po::value<double>()->default_value(-1.),
         "Value of OpenCV nstripe parameter enforcing the chunkign on the "
-        "backend.")("sequential,s", po::value<bool>()->default_value(false),
-        "Run the mandelbrot sequentially, bypassing parallel backends");
+        "backend.")
+        ("sequential,s", po::value<bool>()->default_value(false),
+        "Run the mandelbrot sequentially with bypassing parallel backends");
 
     po::variables_map vm;
     try
