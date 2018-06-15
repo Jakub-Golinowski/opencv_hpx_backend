@@ -18,6 +18,10 @@ class Sweep(Enum):
     NUM_PUS = 1
 
 
+NUM_LINES_PER_ENTRY=2
+SEQ_BASELINE_BACKEND_NAME= "pthreads-seq_baseline"
+
+
 def plot_backends_over_key(backend_names, backends_perf_dict,
                             backends_std_dict, metric,
                             title="", xlabel="", ylabel="",
@@ -52,7 +56,7 @@ def plot_backends_over_key(backend_names, backends_perf_dict,
     plt.grid(True)
 
     if os.path.isdir(save_path):
-        file_name=title.replace(" ", "_")
+        file_name=title.replace(" ", "_") + ".png"
         full_save_path = os.path.join(save_path, file_name)
         print("Saving image to path: " + full_save_path)
         fig.savefig(full_save_path, dpi=300,
@@ -67,67 +71,104 @@ def parse_entry(lines, offset, sweep=Sweep.SIZE):
     #each entry is assumed to have 4 lines
 
     size_line_tokes = lines[0 + offset].split(" ")
-    height = int(size_line_tokes[1].split("=")[1])
-    width = int(size_line_tokes[2].split("=")[1])
-    num_pus = int(size_line_tokes[4].split("=")[1])
+    height = int(size_line_tokes[0].split("=")[1])
+    width = int(size_line_tokes[1].split("=")[1])
+    backend_name = size_line_tokes[2].split("=")[1]
+    num_pus = int(size_line_tokes[3].split("=")[1])
+    mandelbrot_iter = int(size_line_tokes[4].split("=")[1])
+    nstripes = int(size_line_tokes[5].split("=")[1])
+    sequential = bool(size_line_tokes[6].split("=")[1])
 
-    parallel_time = float(lines[0 + offset + 1].split(" ")[2])
-    sequential_time = float(lines[0 + offset + 2].split(" ")[2])
-    speedup = float(lines[0 + offset + 3].split(" ")[1])
+    time = float(lines[0 + offset + 1].split(" ")[-2])
 
     if sweep == Sweep.SIZE:
-        return [height*width, parallel_time, sequential_time, speedup]
+        return [height*width, time]
     else:
-        return [num_pus, parallel_time, sequential_time, speedup]
+        return [num_pus, time]
 
+
+def extract_time_single_backend(backend_name, sweep):
+    # Each entry of dict is a list of:
+    # 0 parallel time
+    backend_perf_dict = {}
+    backend_std_perf_dict = {}
+    logfile = ""
+    if sweep == Sweep.SIZE:
+        logfile = logs_path + "/" + backend_name + \
+                  "-mandelbrot_over_workload.log"
+    elif sweep == Sweep.NUM_PUS:
+        logfile = logs_path + "/" + backend_name + \
+                  "-mandelbrot_over_num_pus.log"
+    else:
+        print("ERROR: Wrong key: " + str(sweep))
+        exit(-1)
+
+    with open(logfile) as file:
+        lines = file.read().splitlines()
+
+        num_entries = round(len(lines) / NUM_LINES_PER_ENTRY)
+        for i in range(0, num_entries):
+            entry = parse_entry(lines, NUM_LINES_PER_ENTRY * i, sweep)
+            key = entry[0]
+            value = entry[1:]
+            if key in backend_perf_dict:
+                backend_perf_dict[key].append(value)
+            else:
+                backend_perf_dict[key] = [value]
+
+    for key in backend_perf_dict.keys():
+        averages = \
+            [float(sum(col)) / len(col) for col
+             in zip(*backend_perf_dict[key])]
+        stds = [np.std(np.asarray(col), axis=0)
+                for col in zip(*backend_perf_dict[key])]
+        backend_perf_dict[key] = averages
+        backend_std_perf_dict[key] = stds
+
+    return backend_perf_dict, backend_std_perf_dict
 
 def extract_perf(backend_names, sweep, ):
     backends_dict = {}
     backends_std_dict = {}
 
     for backend_name in backend_names:
-        # Each entry of dict is a list of:
-        # 0 parallel time
-        # 1 sequential time
-        # 2 speedup
-        backend_perf_dict = {}
-        backend_std_perf_dict = {}
-        logfile=""
-        if sweep == Sweep.SIZE:
-            logfile = logs_path + "/" + backend_name + \
-                      "-mandelbrot_over_workload.log"
-        elif sweep == Sweep.NUM_PUS:
-            logfile = logs_path + "/" + backend_name + \
-                      "-mandelbrot_over_num_pus.log"
-        else:
-            print("ERROR: Wrong key: " + str(sweep))
-            exit(-1)
-
-        with open(logfile) as file:
-            lines = file.read().splitlines()
-
-            num_entries = round(len(lines)/4)
-            for i in range(0, num_entries):
-                entry = parse_entry(lines, 4 * i, sweep)
-                key = entry[0]
-                value = entry[1:]
-                if key in backend_perf_dict:
-                    backend_perf_dict[key].append(value)
-                else:
-                    backend_perf_dict[key] = [value]
-
-
-        for key in backend_perf_dict.keys():
-            averages = \
-                    [float(sum(col)) / len(col) for col
-                     in zip(*backend_perf_dict[key])]
-            stds = [np.std(np.asarray(col), axis=0)
-                    for col in zip(*backend_perf_dict[key])]
-            backend_perf_dict[key] = averages
-            backend_std_perf_dict[key] = stds
+        backend_perf_dict, backend_std_perf_dict = \
+            extract_time_single_backend(backend_name, sweep)
 
         backends_dict[backend_name] = backend_perf_dict
         backends_std_dict[backend_name] = backend_std_perf_dict
+
+    seq_baseline_perf_dict, seq_baseline_std_dict = \
+        extract_time_single_backend(SEQ_BASELINE_BACKEND_NAME, sweep)
+
+    # Append sequential baseline to backend_perf_dict
+    for backend_name in backends_dict:
+        for key in backends_dict[backend_name].keys():
+            backends_dict[backend_name][key].append(
+                seq_baseline_perf_dict[key][0])
+
+    # Append std of sequential baseline to backend_perf_dict
+    for backend_name in backends_std_dict:
+        for key in backends_std_dict[backend_name].keys():
+            backends_std_dict[backend_name][key].append(
+                seq_baseline_std_dict[key][0])
+
+    # Append speedup to backend_perf_dict
+    for backend_name in backends_dict:
+        for key in backends_dict[backend_name].keys():
+            t_par = backends_dict[backend_name][key][0]
+            t_seq = backends_dict[backend_name][key][1]
+            speedup = t_seq / t_par
+            backends_dict[backend_name][key].append(speedup)
+
+    for backend_name in backends_std_dict:
+        for key in backends_std_dict[backend_name].keys():
+            t_par = backends_dict[backend_name][key][0]
+            t_seq = backends_dict[backend_name][key][1]
+            std_par = backends_std_dict[backend_name][key][0]
+            std_seq = backends_std_dict[backend_name][key][1]
+            std_speedup = ((std_seq/t_seq) + (std_par/t_par)) * speedup
+            backends_std_dict[backend_name][key].append(std_speedup)
 
     return backends_dict, backends_std_dict
 
@@ -145,6 +186,7 @@ if __name__ == "__main__":
     logs_path = args.logs_path
     im_save_path = args.im_save_path if args.im_save_path else ""
     pdf_save_path = args.pdf_save_path if args.pdf_save_path else ""
+
     pp = None
     if os.path.isdir(pdf_save_path):
         f_name = "mandelbrot_benchmark.pdf"
@@ -153,9 +195,8 @@ if __name__ == "__main__":
     # =========================================================================
     #                      SWEEP OVER THE WORKLOAD SIZE
     # =========================================================================
-    # backend_names = ["hpx", "hpx_startstop", "hpx_nstripes",
-    #                  "hpx_nstripes_startstop", "tbb", "pthreads"]
-    backend_names = ["hpx", "hpx_startstop", "tbb", "pthreads"]
+    backend_names = ["hpx", "hpx_startstop", "hpx_nstripes",
+                     "hpx_nstripes_startstop", "tbb", "omp", "pthreads"]
     backends_size_dict, backends_size_devs_dict = extract_perf(backend_names,
                                                                Sweep.SIZE)
 
@@ -197,7 +238,8 @@ if __name__ == "__main__":
     #               SWEEP OVER THE NUMBER OF Processing Units (PUs)
     # =========================================================================
 
-    backend_names = ["hpx", "hpx_startstop"]
+    backend_names = ["hpx", "hpx_startstop", "hpx_nstripes",
+                     "hpx_nstripes_startstop", "tbb", "omp", "pthreads"]
     backends_pus_dict, backends_pus_std_dict = extract_perf(backend_names,
                                                             Sweep.NUM_PUS)
 
