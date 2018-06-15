@@ -102,11 +102,17 @@ function build_opencv {
 	      -DWITH_TBB=ON \
 	      -DBUILD_TBB=ON \
 	      ../../../
+	elif [ ${backend_prefix} = "omp" ]; then
+		cmake -DCMAKE_BUILD_TYPE=${build_type} \
+			  -DWITH_OPENMP=ON \
+	          -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+	      ../../../
 	elif [ ${backend_prefix} = "pth" ]; then
 		cmake -DCMAKE_BUILD_TYPE=${build_type} \
 	      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
 	      ../../../
     fi
+
 	echo -e "\nBuilding OpenCV"      
 
 	make -j7
@@ -129,12 +135,13 @@ echo "	OPENCV_PATH = ${OPENCV_PATH}"
 echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
 mode="debug"
-# build_opencv "hpx" "OFF" "OFF" "${mode}"
-# build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
-# build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
-# build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
-# build_opencv "tbb" "NA" "NA" "${mode}"
-# build_opencv "pthreads" "NA" "NA" "${mode}"
+build_opencv "hpx" "OFF" "OFF" "${mode}"
+build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
+build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
+build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
+build_opencv "tbb" "NA" "NA" "${mode}"
+build_opencv "omp" "NA" "NA" "${mode}"
+build_opencv "pthreads" "NA" "NA" "${mode}"
 
 mode="release"
 build_opencv "hpx" "OFF" "OFF" "${mode}"
@@ -142,4 +149,5 @@ build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
 build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
 build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
 build_opencv "tbb" "NA" "NA" "${mode}"
+build_opencv "omp" "NA" "NA" "${mode}"
 build_opencv "pthreads" "NA" "NA" "${mode}"
