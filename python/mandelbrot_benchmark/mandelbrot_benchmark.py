@@ -16,6 +16,7 @@ class Metric(Enum):
 class Sweep(Enum):
     SIZE = 0
     NUM_PUS = 1
+    NSTRIPES = 2
 
 
 NUM_LINES_PER_ENTRY=2
@@ -68,23 +69,28 @@ def plot_backends_over_key(backend_names, backends_perf_dict,
 def parse_entry(lines, offset, sweep=Sweep.SIZE):
     # lines - list of lines from log file
     # offset - offset in the logfiles
-    #each entry is assumed to have 4 lines
+    #each entry is assumed to have 2 lines
 
-    size_line_tokes = lines[0 + offset].split(" ")
-    height = int(size_line_tokes[0].split("=")[1])
-    width = int(size_line_tokes[1].split("=")[1])
-    backend_name = size_line_tokes[2].split("=")[1]
-    num_pus = int(size_line_tokes[3].split("=")[1])
-    mandelbrot_iter = int(size_line_tokes[4].split("=")[1])
-    nstripes = int(size_line_tokes[5].split("=")[1])
-    sequential = bool(size_line_tokes[6].split("=")[1])
+    config_line_tokes = lines[0 + offset].split(" ")
+    height = int(config_line_tokes[0].split("=")[1])
+    width = int(config_line_tokes[1].split("=")[1])
+    backend_name = config_line_tokes[2].split("=")[1]
+    num_pus = int(config_line_tokes[3].split("=")[1])
+    mandelbrot_iter = int(config_line_tokes[4].split("=")[1])
+    nstripes = float(config_line_tokes[5].split("=")[1])
+    sequential = bool(config_line_tokes[6].split("=")[1])
 
     time = float(lines[0 + offset + 1].split(" ")[-2])
 
     if sweep == Sweep.SIZE:
         return [height*width, time]
-    else:
+    elif sweep == Sweep.NUM_PUS:
         return [num_pus, time]
+    elif sweep == Sweep.NSTRIPES:
+        return [nstripes, time]
+    else:
+        print("ERROR: Wrong Sweep: " + str(sweep))
+        exit(-1)
 
 
 def extract_time_single_backend(backend_name, sweep):
@@ -99,6 +105,9 @@ def extract_time_single_backend(backend_name, sweep):
     elif sweep == Sweep.NUM_PUS:
         logfile = logs_path + "/" + backend_name + \
                   "-mandelbrot_over_num_pus.log"
+    elif sweep == Sweep.NSTRIPES:
+        logfile = logs_path + "/" + backend_name + \
+                  "-mandelbrot_over_nstripes.log"
     else:
         print("ERROR: Wrong key: " + str(sweep))
         exit(-1)
@@ -127,7 +136,8 @@ def extract_time_single_backend(backend_name, sweep):
 
     return backend_perf_dict, backend_std_perf_dict
 
-def extract_perf(backend_names, sweep, ):
+
+def extract_perf(backend_names, sweep, use_sequential_baseline=True):
     backends_dict = {}
     backends_std_dict = {}
 
@@ -137,6 +147,9 @@ def extract_perf(backend_names, sweep, ):
 
         backends_dict[backend_name] = backend_perf_dict
         backends_std_dict[backend_name] = backend_std_perf_dict
+
+    if(not use_sequential_baseline):
+        return backends_dict, backends_std_dict
 
     seq_baseline_perf_dict, seq_baseline_std_dict = \
         extract_time_single_backend(SEQ_BASELINE_BACKEND_NAME, sweep)
@@ -165,6 +178,7 @@ def extract_perf(backend_names, sweep, ):
         for key in backends_std_dict[backend_name].keys():
             t_par = backends_dict[backend_name][key][0]
             t_seq = backends_dict[backend_name][key][1]
+            speedup = t_seq / t_par
             std_par = backends_std_dict[backend_name][key][0]
             std_seq = backends_std_dict[backend_name][key][1]
             std_speedup = ((std_seq/t_seq) + (std_par/t_par)) * speedup
@@ -271,6 +285,59 @@ if __name__ == "__main__":
                                  "number of PUs",
                                  xlabel="Number of processing units (PUs)",
                                  ylabel="Speed-up",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
+
+    # =========================================================================
+    #                          SWEEP OVER THE NSTRIPES
+    # =========================================================================
+    backend_names = ["hpx", "hpx_startstop"]
+    backends_nstripes_dict, backends_nstripes_stds_dict =\
+        extract_perf(backend_names, Sweep.NSTRIPES,
+                     use_sequential_baseline=False)
+    fig = plot_backends_over_key(backend_names, backends_nstripes_dict,
+                                 backends_nstripes_stds_dict,
+                                 Metric.PARALLEL_TIME,
+                                 title="Parallel processing time as function of "
+                                 "nstripes (hpx ignores nstripes)",
+                                 xlabel="nstripes",
+                                 ylabel="Processing time [s]",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
+    backend_names = ["hpx_nstripes",
+                     "hpx_nstripes_startstop"]
+    backends_nstripes_dict, backends_nstripes_stds_dict =\
+        extract_perf(backend_names, Sweep.NSTRIPES,
+                     use_sequential_baseline=False)
+    fig = plot_backends_over_key(backend_names, backends_nstripes_dict,
+                                 backends_nstripes_stds_dict,
+                                 Metric.PARALLEL_TIME,
+                                 title="Parallel processing time as function of "
+                                 "nstripes (hpx respects nstripes)",
+                                 xlabel="nstripes",
+                                 ylabel="Processing time [s]",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
+    backend_names = ["tbb", "omp", "pthreads"]
+    backends_nstripes_dict, backends_nstripes_stds_dict =\
+        extract_perf(backend_names, Sweep.NSTRIPES,
+                     use_sequential_baseline=False)
+    fig = plot_backends_over_key(backend_names, backends_nstripes_dict,
+                                 backends_nstripes_stds_dict,
+                                 Metric.PARALLEL_TIME,
+                                 title="Parallel processing time as function of "
+                                 "nstripes (other backends)",
+                                 xlabel="nstripes",
+                                 ylabel="Processing time [s]",
                                  save_path=im_save_path)
     if os.path.isdir(pdf_save_path):
         pp.savefig(fig)
