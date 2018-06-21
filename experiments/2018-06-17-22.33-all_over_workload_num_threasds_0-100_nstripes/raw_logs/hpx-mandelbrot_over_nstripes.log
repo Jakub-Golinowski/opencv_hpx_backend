@@ -1,0 +1,612 @@
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=-1 sequential=0
+Parallel Mandelbrot Execution Time: 1.46042 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=-1 sequential=0
+Parallel Mandelbrot Execution Time: 1.33893 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=-1 sequential=0
+Parallel Mandelbrot Execution Time: 1.38487 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=0 sequential=0
+Parallel Mandelbrot Execution Time: 1.34814 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=0 sequential=0
+Parallel Mandelbrot Execution Time: 1.23897 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=0 sequential=0
+Parallel Mandelbrot Execution Time: 0.969217 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=1 sequential=0
+Parallel Mandelbrot Execution Time: 2.65235 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=1 sequential=0
+Parallel Mandelbrot Execution Time: 2.65767 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=1 sequential=0
+Parallel Mandelbrot Execution Time: 2.66524 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=2 sequential=0
+Parallel Mandelbrot Execution Time: 1.35839 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=2 sequential=0
+Parallel Mandelbrot Execution Time: 1.35899 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=2 sequential=0
+Parallel Mandelbrot Execution Time: 1.35913 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=3 sequential=0
+Parallel Mandelbrot Execution Time: 1.23793 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=3 sequential=0
+Parallel Mandelbrot Execution Time: 1.24685 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=3 sequential=0
+Parallel Mandelbrot Execution Time: 1.25506 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=4 sequential=0
+Parallel Mandelbrot Execution Time: 0.876606 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=4 sequential=0
+Parallel Mandelbrot Execution Time: 0.877423 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=4 sequential=0
+Parallel Mandelbrot Execution Time: 0.876835 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=5 sequential=0
+Parallel Mandelbrot Execution Time: 0.998176 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=5 sequential=0
+Parallel Mandelbrot Execution Time: 0.775659 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=5 sequential=0
+Parallel Mandelbrot Execution Time: 0.7764 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=6 sequential=0
+Parallel Mandelbrot Execution Time: 0.751322 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=6 sequential=0
+Parallel Mandelbrot Execution Time: 0.752043 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=6 sequential=0
+Parallel Mandelbrot Execution Time: 0.919942 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=7 sequential=0
+Parallel Mandelbrot Execution Time: 0.812943 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=7 sequential=0
+Parallel Mandelbrot Execution Time: 0.821269 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=7 sequential=0
+Parallel Mandelbrot Execution Time: 0.993863 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=8 sequential=0
+Parallel Mandelbrot Execution Time: 0.923637 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=8 sequential=0
+Parallel Mandelbrot Execution Time: 0.923043 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=8 sequential=0
+Parallel Mandelbrot Execution Time: 0.932393 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=9 sequential=0
+Parallel Mandelbrot Execution Time: 0.996456 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=9 sequential=0
+Parallel Mandelbrot Execution Time: 1.06811 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=9 sequential=0
+Parallel Mandelbrot Execution Time: 1.09283 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=10 sequential=0
+Parallel Mandelbrot Execution Time: 0.748349 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=10 sequential=0
+Parallel Mandelbrot Execution Time: 0.835947 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=10 sequential=0
+Parallel Mandelbrot Execution Time: 0.731622 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=11 sequential=0
+Parallel Mandelbrot Execution Time: 0.729672 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=11 sequential=0
+Parallel Mandelbrot Execution Time: 0.730536 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=11 sequential=0
+Parallel Mandelbrot Execution Time: 0.768291 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=12 sequential=0
+Parallel Mandelbrot Execution Time: 0.696009 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=12 sequential=0
+Parallel Mandelbrot Execution Time: 0.695947 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=12 sequential=0
+Parallel Mandelbrot Execution Time: 0.805486 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=13 sequential=0
+Parallel Mandelbrot Execution Time: 0.734956 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=13 sequential=0
+Parallel Mandelbrot Execution Time: 0.785319 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=13 sequential=0
+Parallel Mandelbrot Execution Time: 0.901525 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=14 sequential=0
+Parallel Mandelbrot Execution Time: 0.722242 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=14 sequential=0
+Parallel Mandelbrot Execution Time: 0.722273 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=14 sequential=0
+Parallel Mandelbrot Execution Time: 0.756284 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=15 sequential=0
+Parallel Mandelbrot Execution Time: 0.806837 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=15 sequential=0
+Parallel Mandelbrot Execution Time: 0.720118 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=15 sequential=0
+Parallel Mandelbrot Execution Time: 0.756657 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=16 sequential=0
+Parallel Mandelbrot Execution Time: 0.689172 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=16 sequential=0
+Parallel Mandelbrot Execution Time: 0.689365 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=16 sequential=0
+Parallel Mandelbrot Execution Time: 0.689391 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=17 sequential=0
+Parallel Mandelbrot Execution Time: 0.735382 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=17 sequential=0
+Parallel Mandelbrot Execution Time: 0.736441 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=17 sequential=0
+Parallel Mandelbrot Execution Time: 0.876403 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=18 sequential=0
+Parallel Mandelbrot Execution Time: 1.07102 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=18 sequential=0
+Parallel Mandelbrot Execution Time: 1.32516 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=18 sequential=0
+Parallel Mandelbrot Execution Time: 1.11755 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=19 sequential=0
+Parallel Mandelbrot Execution Time: 1.04421 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=19 sequential=0
+Parallel Mandelbrot Execution Time: 1.04206 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=19 sequential=0
+Parallel Mandelbrot Execution Time: 1.0199 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=20 sequential=0
+Parallel Mandelbrot Execution Time: 0.731792 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=20 sequential=0
+Parallel Mandelbrot Execution Time: 0.748513 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=20 sequential=0
+Parallel Mandelbrot Execution Time: 0.731989 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=21 sequential=0
+Parallel Mandelbrot Execution Time: 0.75344 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=21 sequential=0
+Parallel Mandelbrot Execution Time: 0.778412 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=21 sequential=0
+Parallel Mandelbrot Execution Time: 0.814461 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=22 sequential=0
+Parallel Mandelbrot Execution Time: 0.761244 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=22 sequential=0
+Parallel Mandelbrot Execution Time: 0.775986 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=22 sequential=0
+Parallel Mandelbrot Execution Time: 0.7459 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=23 sequential=0
+Parallel Mandelbrot Execution Time: 0.713085 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=23 sequential=0
+Parallel Mandelbrot Execution Time: 0.713298 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=23 sequential=0
+Parallel Mandelbrot Execution Time: 0.714067 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=24 sequential=0
+Parallel Mandelbrot Execution Time: 0.696423 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=24 sequential=0
+Parallel Mandelbrot Execution Time: 0.695809 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=24 sequential=0
+Parallel Mandelbrot Execution Time: 0.695524 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=25 sequential=0
+Parallel Mandelbrot Execution Time: 0.811415 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=25 sequential=0
+Parallel Mandelbrot Execution Time: 0.69988 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=25 sequential=0
+Parallel Mandelbrot Execution Time: 0.735419 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=26 sequential=0
+Parallel Mandelbrot Execution Time: 0.831297 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=26 sequential=0
+Parallel Mandelbrot Execution Time: 0.716485 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=26 sequential=0
+Parallel Mandelbrot Execution Time: 0.759829 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=27 sequential=0
+Parallel Mandelbrot Execution Time: 0.801708 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=27 sequential=0
+Parallel Mandelbrot Execution Time: 0.732075 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=27 sequential=0
+Parallel Mandelbrot Execution Time: 0.756914 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=28 sequential=0
+Parallel Mandelbrot Execution Time: 0.982949 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=28 sequential=0
+Parallel Mandelbrot Execution Time: 1.00212 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=28 sequential=0
+Parallel Mandelbrot Execution Time: 0.978635 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=29 sequential=0
+Parallel Mandelbrot Execution Time: 0.978875 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=29 sequential=0
+Parallel Mandelbrot Execution Time: 0.975409 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=29 sequential=0
+Parallel Mandelbrot Execution Time: 1.13783 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=30 sequential=0
+Parallel Mandelbrot Execution Time: 0.952873 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=30 sequential=0
+Parallel Mandelbrot Execution Time: 0.882296 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=30 sequential=0
+Parallel Mandelbrot Execution Time: 0.944994 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=31 sequential=0
+Parallel Mandelbrot Execution Time: 0.870938 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=31 sequential=0
+Parallel Mandelbrot Execution Time: 0.864719 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=31 sequential=0
+Parallel Mandelbrot Execution Time: 0.969688 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=32 sequential=0
+Parallel Mandelbrot Execution Time: 0.795468 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=32 sequential=0
+Parallel Mandelbrot Execution Time: 0.932481 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=32 sequential=0
+Parallel Mandelbrot Execution Time: 0.80158 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=33 sequential=0
+Parallel Mandelbrot Execution Time: 0.861625 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=33 sequential=0
+Parallel Mandelbrot Execution Time: 0.801574 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=33 sequential=0
+Parallel Mandelbrot Execution Time: 0.876447 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=34 sequential=0
+Parallel Mandelbrot Execution Time: 0.790115 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=34 sequential=0
+Parallel Mandelbrot Execution Time: 0.75673 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=34 sequential=0
+Parallel Mandelbrot Execution Time: 0.760963 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=35 sequential=0
+Parallel Mandelbrot Execution Time: 0.748803 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=35 sequential=0
+Parallel Mandelbrot Execution Time: 0.742772 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=35 sequential=0
+Parallel Mandelbrot Execution Time: 0.729478 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=36 sequential=0
+Parallel Mandelbrot Execution Time: 0.708519 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=36 sequential=0
+Parallel Mandelbrot Execution Time: 0.703461 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=36 sequential=0
+Parallel Mandelbrot Execution Time: 0.728536 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=37 sequential=0
+Parallel Mandelbrot Execution Time: 0.74954 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=37 sequential=0
+Parallel Mandelbrot Execution Time: 0.735874 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=37 sequential=0
+Parallel Mandelbrot Execution Time: 0.74054 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=38 sequential=0
+Parallel Mandelbrot Execution Time: 0.728516 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=38 sequential=0
+Parallel Mandelbrot Execution Time: 0.724266 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=38 sequential=0
+Parallel Mandelbrot Execution Time: 0.761605 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=39 sequential=0
+Parallel Mandelbrot Execution Time: 0.715459 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=39 sequential=0
+Parallel Mandelbrot Execution Time: 0.791034 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=39 sequential=0
+Parallel Mandelbrot Execution Time: 0.730126 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=40 sequential=0
+Parallel Mandelbrot Execution Time: 0.890993 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=40 sequential=0
+Parallel Mandelbrot Execution Time: 0.757708 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=40 sequential=0
+Parallel Mandelbrot Execution Time: 0.838639 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=41 sequential=0
+Parallel Mandelbrot Execution Time: 0.821614 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=41 sequential=0
+Parallel Mandelbrot Execution Time: 0.884163 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=41 sequential=0
+Parallel Mandelbrot Execution Time: 0.885153 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=42 sequential=0
+Parallel Mandelbrot Execution Time: 0.778188 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=42 sequential=0
+Parallel Mandelbrot Execution Time: 0.763138 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=42 sequential=0
+Parallel Mandelbrot Execution Time: 0.758111 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=43 sequential=0
+Parallel Mandelbrot Execution Time: 0.783166 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=43 sequential=0
+Parallel Mandelbrot Execution Time: 0.767226 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=43 sequential=0
+Parallel Mandelbrot Execution Time: 0.775749 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=44 sequential=0
+Parallel Mandelbrot Execution Time: 0.759189 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=44 sequential=0
+Parallel Mandelbrot Execution Time: 0.789573 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=44 sequential=0
+Parallel Mandelbrot Execution Time: 0.739563 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=45 sequential=0
+Parallel Mandelbrot Execution Time: 0.746429 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=45 sequential=0
+Parallel Mandelbrot Execution Time: 0.760277 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=45 sequential=0
+Parallel Mandelbrot Execution Time: 0.782488 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=46 sequential=0
+Parallel Mandelbrot Execution Time: 0.754593 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=46 sequential=0
+Parallel Mandelbrot Execution Time: 0.817932 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=46 sequential=0
+Parallel Mandelbrot Execution Time: 0.835913 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=47 sequential=0
+Parallel Mandelbrot Execution Time: 0.918076 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=47 sequential=0
+Parallel Mandelbrot Execution Time: 0.806834 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=47 sequential=0
+Parallel Mandelbrot Execution Time: 0.816607 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=48 sequential=0
+Parallel Mandelbrot Execution Time: 0.768158 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=48 sequential=0
+Parallel Mandelbrot Execution Time: 0.759502 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=48 sequential=0
+Parallel Mandelbrot Execution Time: 0.784307 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=49 sequential=0
+Parallel Mandelbrot Execution Time: 0.776582 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=49 sequential=0
+Parallel Mandelbrot Execution Time: 0.760683 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=49 sequential=0
+Parallel Mandelbrot Execution Time: 0.737532 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=50 sequential=0
+Parallel Mandelbrot Execution Time: 0.773398 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=50 sequential=0
+Parallel Mandelbrot Execution Time: 0.758047 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=50 sequential=0
+Parallel Mandelbrot Execution Time: 0.776644 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=51 sequential=0
+Parallel Mandelbrot Execution Time: 0.759073 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=51 sequential=0
+Parallel Mandelbrot Execution Time: 0.771578 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=51 sequential=0
+Parallel Mandelbrot Execution Time: 0.75407 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=52 sequential=0
+Parallel Mandelbrot Execution Time: 0.822575 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=52 sequential=0
+Parallel Mandelbrot Execution Time: 0.730223 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=52 sequential=0
+Parallel Mandelbrot Execution Time: 0.813499 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=53 sequential=0
+Parallel Mandelbrot Execution Time: 0.718383 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=53 sequential=0
+Parallel Mandelbrot Execution Time: 0.754674 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=53 sequential=0
+Parallel Mandelbrot Execution Time: 0.732431 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=54 sequential=0
+Parallel Mandelbrot Execution Time: 0.791737 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=54 sequential=0
+Parallel Mandelbrot Execution Time: 0.807789 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=54 sequential=0
+Parallel Mandelbrot Execution Time: 0.820081 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=55 sequential=0
+Parallel Mandelbrot Execution Time: 0.756112 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=55 sequential=0
+Parallel Mandelbrot Execution Time: 0.786025 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=55 sequential=0
+Parallel Mandelbrot Execution Time: 0.780162 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=56 sequential=0
+Parallel Mandelbrot Execution Time: 0.799235 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=56 sequential=0
+Parallel Mandelbrot Execution Time: 0.797723 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=56 sequential=0
+Parallel Mandelbrot Execution Time: 0.800055 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=57 sequential=0
+Parallel Mandelbrot Execution Time: 0.806061 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=57 sequential=0
+Parallel Mandelbrot Execution Time: 0.783468 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=57 sequential=0
+Parallel Mandelbrot Execution Time: 0.820896 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=58 sequential=0
+Parallel Mandelbrot Execution Time: 0.774611 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=58 sequential=0
+Parallel Mandelbrot Execution Time: 0.837215 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=58 sequential=0
+Parallel Mandelbrot Execution Time: 0.750631 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=59 sequential=0
+Parallel Mandelbrot Execution Time: 0.741092 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=59 sequential=0
+Parallel Mandelbrot Execution Time: 0.775516 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=59 sequential=0
+Parallel Mandelbrot Execution Time: 0.74904 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=60 sequential=0
+Parallel Mandelbrot Execution Time: 0.754648 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=60 sequential=0
+Parallel Mandelbrot Execution Time: 0.76082 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=60 sequential=0
+Parallel Mandelbrot Execution Time: 0.842837 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=61 sequential=0
+Parallel Mandelbrot Execution Time: 0.767156 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=61 sequential=0
+Parallel Mandelbrot Execution Time: 0.805299 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=61 sequential=0
+Parallel Mandelbrot Execution Time: 0.733385 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=62 sequential=0
+Parallel Mandelbrot Execution Time: 0.736129 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=62 sequential=0
+Parallel Mandelbrot Execution Time: 0.74801 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=62 sequential=0
+Parallel Mandelbrot Execution Time: 0.721715 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=63 sequential=0
+Parallel Mandelbrot Execution Time: 0.709786 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=63 sequential=0
+Parallel Mandelbrot Execution Time: 0.739264 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=63 sequential=0
+Parallel Mandelbrot Execution Time: 0.880563 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=64 sequential=0
+Parallel Mandelbrot Execution Time: 0.77392 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=64 sequential=0
+Parallel Mandelbrot Execution Time: 0.820868 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=64 sequential=0
+Parallel Mandelbrot Execution Time: 0.722457 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=65 sequential=0
+Parallel Mandelbrot Execution Time: 0.804815 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=65 sequential=0
+Parallel Mandelbrot Execution Time: 0.808788 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=65 sequential=0
+Parallel Mandelbrot Execution Time: 0.739539 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=66 sequential=0
+Parallel Mandelbrot Execution Time: 0.808403 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=66 sequential=0
+Parallel Mandelbrot Execution Time: 0.778815 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=66 sequential=0
+Parallel Mandelbrot Execution Time: 0.800708 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=67 sequential=0
+Parallel Mandelbrot Execution Time: 0.842186 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=67 sequential=0
+Parallel Mandelbrot Execution Time: 0.784855 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=67 sequential=0
+Parallel Mandelbrot Execution Time: 0.848596 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=68 sequential=0
+Parallel Mandelbrot Execution Time: 0.755091 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=68 sequential=0
+Parallel Mandelbrot Execution Time: 0.727694 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=68 sequential=0
+Parallel Mandelbrot Execution Time: 0.816633 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=69 sequential=0
+Parallel Mandelbrot Execution Time: 0.656545 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=69 sequential=0
+Parallel Mandelbrot Execution Time: 0.863342 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=69 sequential=0
+Parallel Mandelbrot Execution Time: 0.781038 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=70 sequential=0
+Parallel Mandelbrot Execution Time: 0.827865 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=70 sequential=0
+Parallel Mandelbrot Execution Time: 0.832013 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=70 sequential=0
+Parallel Mandelbrot Execution Time: 0.775411 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=71 sequential=0
+Parallel Mandelbrot Execution Time: 0.817873 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=71 sequential=0
+Parallel Mandelbrot Execution Time: 0.774306 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=71 sequential=0
+Parallel Mandelbrot Execution Time: 0.746189 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=72 sequential=0
+Parallel Mandelbrot Execution Time: 0.745533 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=72 sequential=0
+Parallel Mandelbrot Execution Time: 0.762536 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=72 sequential=0
+Parallel Mandelbrot Execution Time: 0.798869 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=73 sequential=0
+Parallel Mandelbrot Execution Time: 0.791138 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=73 sequential=0
+Parallel Mandelbrot Execution Time: 0.767834 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=73 sequential=0
+Parallel Mandelbrot Execution Time: 0.796709 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=74 sequential=0
+Parallel Mandelbrot Execution Time: 0.851388 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=74 sequential=0
+Parallel Mandelbrot Execution Time: 0.87845 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=74 sequential=0
+Parallel Mandelbrot Execution Time: 0.846789 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=75 sequential=0
+Parallel Mandelbrot Execution Time: 0.823703 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=75 sequential=0
+Parallel Mandelbrot Execution Time: 0.860242 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=75 sequential=0
+Parallel Mandelbrot Execution Time: 0.704489 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=76 sequential=0
+Parallel Mandelbrot Execution Time: 0.715272 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=76 sequential=0
+Parallel Mandelbrot Execution Time: 0.742289 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=76 sequential=0
+Parallel Mandelbrot Execution Time: 0.715107 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=77 sequential=0
+Parallel Mandelbrot Execution Time: 0.709017 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=77 sequential=0
+Parallel Mandelbrot Execution Time: 0.777642 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=77 sequential=0
+Parallel Mandelbrot Execution Time: 0.7092 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=78 sequential=0
+Parallel Mandelbrot Execution Time: 0.702682 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=78 sequential=0
+Parallel Mandelbrot Execution Time: 0.721995 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=78 sequential=0
+Parallel Mandelbrot Execution Time: 0.729946 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=79 sequential=0
+Parallel Mandelbrot Execution Time: 0.789253 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=79 sequential=0
+Parallel Mandelbrot Execution Time: 0.696213 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=79 sequential=0
+Parallel Mandelbrot Execution Time: 0.696225 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=80 sequential=0
+Parallel Mandelbrot Execution Time: 0.689234 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=80 sequential=0
+Parallel Mandelbrot Execution Time: 0.757392 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=80 sequential=0
+Parallel Mandelbrot Execution Time: 0.689561 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=81 sequential=0
+Parallel Mandelbrot Execution Time: 0.732113 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=81 sequential=0
+Parallel Mandelbrot Execution Time: 0.795508 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=81 sequential=0
+Parallel Mandelbrot Execution Time: 0.804679 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=82 sequential=0
+Parallel Mandelbrot Execution Time: 0.786119 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=82 sequential=0
+Parallel Mandelbrot Execution Time: 0.726605 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=82 sequential=0
+Parallel Mandelbrot Execution Time: 0.844059 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=83 sequential=0
+Parallel Mandelbrot Execution Time: 0.82148 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=83 sequential=0
+Parallel Mandelbrot Execution Time: 0.948899 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=83 sequential=0
+Parallel Mandelbrot Execution Time: 1.23466 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=84 sequential=0
+Parallel Mandelbrot Execution Time: 1.04319 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=84 sequential=0
+Parallel Mandelbrot Execution Time: 1.12879 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=84 sequential=0
+Parallel Mandelbrot Execution Time: 1.04103 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=85 sequential=0
+Parallel Mandelbrot Execution Time: 0.985783 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=85 sequential=0
+Parallel Mandelbrot Execution Time: 1.04144 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=85 sequential=0
+Parallel Mandelbrot Execution Time: 0.764215 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=86 sequential=0
+Parallel Mandelbrot Execution Time: 0.917781 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=86 sequential=0
+Parallel Mandelbrot Execution Time: 0.926796 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=86 sequential=0
+Parallel Mandelbrot Execution Time: 0.88033 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=87 sequential=0
+Parallel Mandelbrot Execution Time: 0.878967 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=87 sequential=0
+Parallel Mandelbrot Execution Time: 0.846881 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=87 sequential=0
+Parallel Mandelbrot Execution Time: 0.872414 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=88 sequential=0
+Parallel Mandelbrot Execution Time: 0.849113 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=88 sequential=0
+Parallel Mandelbrot Execution Time: 0.87281 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=88 sequential=0
+Parallel Mandelbrot Execution Time: 0.805258 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=89 sequential=0
+Parallel Mandelbrot Execution Time: 0.819469 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=89 sequential=0
+Parallel Mandelbrot Execution Time: 0.856406 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=89 sequential=0
+Parallel Mandelbrot Execution Time: 0.86438 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=90 sequential=0
+Parallel Mandelbrot Execution Time: 0.759277 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=90 sequential=0
+Parallel Mandelbrot Execution Time: 0.754399 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=90 sequential=0
+Parallel Mandelbrot Execution Time: 0.719245 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=91 sequential=0
+Parallel Mandelbrot Execution Time: 0.744612 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=91 sequential=0
+Parallel Mandelbrot Execution Time: 0.726531 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=91 sequential=0
+Parallel Mandelbrot Execution Time: 0.771897 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=92 sequential=0
+Parallel Mandelbrot Execution Time: 0.784794 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=92 sequential=0
+Parallel Mandelbrot Execution Time: 0.761757 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=92 sequential=0
+Parallel Mandelbrot Execution Time: 0.748731 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=93 sequential=0
+Parallel Mandelbrot Execution Time: 0.799151 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=93 sequential=0
+Parallel Mandelbrot Execution Time: 0.746287 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=93 sequential=0
+Parallel Mandelbrot Execution Time: 0.768183 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=94 sequential=0
+Parallel Mandelbrot Execution Time: 0.903211 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=94 sequential=0
+Parallel Mandelbrot Execution Time: 0.807615 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=94 sequential=0
+Parallel Mandelbrot Execution Time: 0.818972 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=95 sequential=0
+Parallel Mandelbrot Execution Time: 0.810563 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=95 sequential=0
+Parallel Mandelbrot Execution Time: 0.804912 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=95 sequential=0
+Parallel Mandelbrot Execution Time: 0.766331 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=96 sequential=0
+Parallel Mandelbrot Execution Time: 0.766114 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=96 sequential=0
+Parallel Mandelbrot Execution Time: 0.822819 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=96 sequential=0
+Parallel Mandelbrot Execution Time: 0.760961 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=97 sequential=0
+Parallel Mandelbrot Execution Time: 0.785118 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=97 sequential=0
+Parallel Mandelbrot Execution Time: 0.835753 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=97 sequential=0
+Parallel Mandelbrot Execution Time: 0.75679 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=98 sequential=0
+Parallel Mandelbrot Execution Time: 0.878832 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=98 sequential=0
+Parallel Mandelbrot Execution Time: 0.772884 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=98 sequential=0
+Parallel Mandelbrot Execution Time: 0.797813 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=99 sequential=0
+Parallel Mandelbrot Execution Time: 0.853434 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=99 sequential=0
+Parallel Mandelbrot Execution Time: 0.744883 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=99 sequential=0
+Parallel Mandelbrot Execution Time: 0.825976 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=100 sequential=0
+Parallel Mandelbrot Execution Time: 0.855074 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=100 sequential=0
+Parallel Mandelbrot Execution Time: 0.929405 s
+h=4800 w=5400 backend=hpx num_threads=4 mandelbrot_iter=10 nstripes=100 sequential=0
+Parallel Mandelbrot Execution Time: 0.782068 s
