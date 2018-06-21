@@ -209,8 +209,7 @@ if __name__ == "__main__":
     # =========================================================================
     #                      SWEEP OVER THE WORKLOAD SIZE
     # =========================================================================
-    backend_names = ["hpx", "hpx_startstop", "hpx_nstripes",
-                     "hpx_nstripes_startstop", "tbb", "omp", "pthreads"]
+    backend_names = ["hpx", "hpx_startstop", "tbb", "omp", "pthreads"]
     backends_size_dict, backends_size_devs_dict = extract_perf(backend_names,
                                                                Sweep.SIZE)
 
@@ -252,8 +251,7 @@ if __name__ == "__main__":
     #               SWEEP OVER THE NUMBER OF Processing Units (PUs)
     # =========================================================================
 
-    backend_names = ["hpx", "hpx_startstop", "hpx_nstripes",
-                     "hpx_nstripes_startstop", "tbb", "omp", "pthreads"]
+    backend_names = ["hpx", "hpx_startstop", "tbb", "omp", "pthreads"]
     backends_pus_dict, backends_pus_std_dict = extract_perf(backend_names,
                                                             Sweep.NUM_PUS)
 
@@ -303,23 +301,6 @@ if __name__ == "__main__":
                                  Metric.PARALLEL_TIME,
                                  title="Parallel processing time as function of "
                                  "nstripes (hpx ignores nstripes)",
-                                 xlabel="nstripes",
-                                 ylabel="Processing time [s]",
-                                 save_path=im_save_path)
-    if os.path.isdir(pdf_save_path):
-        pp.savefig(fig)
-    plt.show()
-
-    backend_names = ["hpx_nstripes",
-                     "hpx_nstripes_startstop"]
-    backends_nstripes_dict, backends_nstripes_stds_dict =\
-        extract_perf(backend_names, Sweep.NSTRIPES,
-                     use_sequential_baseline=False)
-    fig = plot_backends_over_key(backend_names, backends_nstripes_dict,
-                                 backends_nstripes_stds_dict,
-                                 Metric.PARALLEL_TIME,
-                                 title="Parallel processing time as function of "
-                                 "nstripes (hpx respects nstripes)",
                                  xlabel="nstripes",
                                  ylabel="Processing time [s]",
                                  save_path=im_save_path)
