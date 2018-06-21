@@ -258,8 +258,8 @@ if __name__ == "__main__":
     fig = plot_backends_over_key(backend_names, backends_pus_dict,
                                  backends_pus_std_dict, Metric.PARALLEL_TIME,
                                  title="Parallel processing time as function of "
-                                 "number of PUs",
-                                 xlabel="Number of processing units (PUs)",
+                                 "number of threads",
+                                 xlabel="Number of threads",
                                  ylabel="Processing time [s]",
                                  save_path=im_save_path)
     if os.path.isdir(pdf_save_path):
@@ -269,8 +269,8 @@ if __name__ == "__main__":
     fig = plot_backends_over_key(backend_names, backends_pus_dict,
                                  backends_pus_std_dict, Metric.SEQUENTIAL_TIME,
                                  title="Sequential processing time as function of "
-                                 "number of PUs",
-                                 xlabel="Number of processing units (PUs)",
+                                 "number of threads",
+                                 xlabel="Number of threads",
                                  ylabel="Processing time [s]",
                                  save_path=im_save_path)
     if os.path.isdir(pdf_save_path):
@@ -280,8 +280,8 @@ if __name__ == "__main__":
     fig = plot_backends_over_key(backend_names, backends_pus_dict,
                                  backends_pus_std_dict, Metric.SPEEDUP,
                                  title="Speed-up as function of "
-                                 "number of PUs",
-                                 xlabel="Number of processing units (PUs)",
+                                 "number of threads",
+                                 xlabel="Number of threads",
                                  ylabel="Speed-up",
                                  save_path=im_save_path)
     if os.path.isdir(pdf_save_path):
