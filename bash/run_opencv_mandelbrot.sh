@@ -211,8 +211,8 @@ echo "==========================================================================
 echo "============================================================================="
 mode="release"
 
-num_reps=3
-num_scalings=10
+num_reps=5
+num_scalings=15
 num_pus=4
 sequential=false
 
@@ -227,14 +227,8 @@ run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "pthreads" 
 build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
 run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx" ${num_pus} ${sequential}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_nstripes" ${num_pus} ${sequential}
-
 build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
 run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_startstop" ${num_pus} ${sequential}
-
-build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_nstripes_startstop" ${num_pus} ${sequential}
 
 build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
 run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "tbb" ${num_pus} ${sequential}
@@ -253,9 +247,9 @@ echo "==========================================================================
 
 mode="release"
 
-height=$((480*4))
-width=$((540*4))
-num_reps=3
+height=$((480*10))
+width=$((540*10))
+num_reps=5
 max_num_pus=8
 sequential=false
 
@@ -266,14 +260,8 @@ run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_
 build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
 run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx" ${max_num_pus} ${sequential}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_nstripes" ${max_num_pus} ${sequential}
-
 build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
 run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_startstop" ${max_num_pus} ${sequential}
-
-build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_nstripes_startstop" ${max_num_pus} ${sequential}
 
 build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
 run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "tbb" ${max_num_pus} ${sequential}
@@ -284,34 +272,53 @@ run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "omp" ${max_num_p
 build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
 run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus} ${sequential}
 
-# echo "============================================================================="
-# echo "============================================================================="
-# echo "===================       Iterating over nstripes        ===================="
-# echo "============================================================================="
-# echo "============================================================================="
+echo "============================================================================="
+echo "============================================================================="
+echo "================== Iterating over nstripes (small range) ===================="
+echo "============================================================================="
+echo "============================================================================="
 
 mode="release"
 
-height=$((480*1))
-width=$((540*1))
-num_reps=1
+height=$((480*10))
+width=$((540*10))
+num_reps=3
 num_pus=4
-mandelbrot_iter=500
-nstripes_start=0
-nstripes_stop=5
-nstripes_step=2
+mandelbrot_iter=10
+nstripes_start="-1"
+nstripes_stop=$((100))
+nstripes_step=$((1))
 
 build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
 run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_nstripes" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
-
 build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
 run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
 
-build_app /home/jakub/opencv_repo/build/hpx_nstripes_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_nstripes_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+
+build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "omp" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+
+build_app /home/jakub/opencv_repo/build/pthreads/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+
+echo "============================================================================="
+echo "============================================================================="
+echo "================== Iterating over nstripes (full range) ===================="
+echo "============================================================================="
+echo "============================================================================="
+
+nstripes_start="-1"
+nstripes_stop=$((${height} * ${width}))
+nstripes_step=$(((${nstripes_stop}-${nstripes_start})/50))
+
+build_app /home/jakub/opencv_repo/build/hpx/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX OFF OFF ${mode}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+
+build_app /home/jakub/opencv_repo/build/hpx_startstop/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON OFF ${mode}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
 
 build_app /home/jakub/opencv_repo/build/tbb/${mode} /home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX ON ON ${mode}
 run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}

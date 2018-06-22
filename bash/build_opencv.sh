@@ -49,9 +49,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 ### ===========================================================
 function build_opencv {
 	local backend_name=$1
-	local with_nstripes=$2
-	local with_startstop=$3
-	local mode=$4
+	local with_startstop=$2
+	local mode=$3
 
 	echo -e "\n===== BUILDING OpenCV ${backend_name} in ${mode} mode ====="
 
@@ -92,8 +91,7 @@ function build_opencv {
 		cmake -DCMAKE_BUILD_TYPE=${build_type} \
 		      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
 		      -DWITH_HPX=ON \
-			  -DWITH_HPX_NSTRIPES=$2 \
-	          -DWITH_HPX_STARTSTOP=$3 \
+	          -DWITH_HPX_STARTSTOP=${with_startstop} \
 		      -DHPX_DIR=/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX \
 		      ../../../
 	elif [ ${backend_prefix} = tbb ]; then
@@ -135,19 +133,15 @@ echo "	OPENCV_PATH = ${OPENCV_PATH}"
 echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
 mode="debug"
-build_opencv "hpx" "OFF" "OFF" "${mode}"
-build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
-build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
-build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
-build_opencv "tbb" "NA" "NA" "${mode}"
-build_opencv "omp" "NA" "NA" "${mode}"
-build_opencv "pthreads" "NA" "NA" "${mode}"
+build_opencv "hpx" "OFF" "${mode}"
+build_opencv "hpx_startstop" "ON" "${mode}"
+build_opencv "tbb" "NA" "${mode}"
+build_opencv "omp" "NA" "${mode}"
+build_opencv "pthreads" "NA" "${mode}"
 
 mode="release"
-build_opencv "hpx" "OFF" "OFF" "${mode}"
-build_opencv "hpx_nstripes" "ON" "OFF" "${mode}"
-build_opencv "hpx_nstripes_startstop" "ON" "ON" "${mode}"
-build_opencv "hpx_startstop" "OFF" "ON" "${mode}"
-build_opencv "tbb" "NA" "NA" "${mode}"
-build_opencv "omp" "NA" "NA" "${mode}"
-build_opencv "pthreads" "NA" "NA" "${mode}"
+build_opencv "hpx" "OFF" "${mode}"
+build_opencv "hpx_startstop" "ON" "${mode}"
+build_opencv "tbb" "NA" "${mode}"
+build_opencv "omp" "NA" "${mode}"
+build_opencv "pthreads" "NA" "${mode}"
