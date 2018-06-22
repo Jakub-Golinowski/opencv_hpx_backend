@@ -3,12 +3,12 @@
 # this script is used to build OpenCV library with different options
 
 ### ===========================================================
-### 						INCLUDES
+###                         INCLUDES
 ### ===========================================================
 # source ./common_functions.sh
 
 ### ===========================================================
-###						INPUT PARAMETERS
+###                     INPUT PARAMETERS
 ### ===========================================================
 # Default parameter values
 MESSAGE="-- no message provided --"
@@ -24,113 +24,113 @@ key="$1"
 
 case $key in
     -mes|--message)
-	    MESSAGE="$2"
-	    shift # past argument
-	    shift # past value
+            MESSAGE="$2"
+            shift # past argument
+            shift # past value
     ;;
-	-op|--opencv-path)
-		OPENCV_PATH="$2"
-		shift; shift
-	;;
-	-lp|--logs-path)
-		LOGS_PATH="$2"
-		shift; shift
-	;;
+        -op|--opencv-path)
+                OPENCV_PATH="$2"
+                shift; shift
+        ;;
+        -lp|--logs-path)
+                LOGS_PATH="$2"
+                shift; shift
+        ;;
     *)    # unknown option
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
     ;;
 esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 ### ===========================================================
-###         			FUNCTIONS
+###                        FUNCTIONS
 ### ===========================================================
 function build_opencv {
-	local backend_name=$1
-	local with_startstop=$2
-	local mode=$3
+        local backend_name=$1
+        local with_startstop=$2
+        local mode=$3
 
-	echo -e "\n===== BUILDING OpenCV ${backend_name} in ${mode} mode ====="
+        echo -e "\n===== BUILDING OpenCV ${backend_name} in ${mode} mode ====="
 
-	echo -e "\nGoing to ${OPENCV_PATH}build"
-	cd ${OPENCV_PATH}build
-	echo -e "\nContents of the `pwd`"
-	ls
+        echo -e "\nGoing to ${OPENCV_PATH}build"
+        cd ${OPENCV_PATH}build
+        echo -e "\nContents of the `pwd`"
+        ls
 
-	# echo -e "\nRemoving the ${backend_name} directory"
-	#rm -r ${backend_name}
-	echo -e "\nCreating the ${backend_name} directory"
-	mkdir ${backend_name}
-	echo -e "\nEntering the ${backend_name} directory"
-	cd ${backend_name}
+        # echo -e "\nRemoving the ${backend_name} directory"
+        #rm -r ${backend_name}
+        echo -e "\nCreating the ${backend_name} directory"
+        mkdir ${backend_name}
+        echo -e "\nEntering the ${backend_name} directory"
+        cd ${backend_name}
 
-	echo -e "\nCreating the ${mode} directory"
-	mkdir ${mode}
-	echo -e "\nEntering the ${mode} directory"
-	cd ${mode}
-	echo -e "\nRunning cmake"
+        echo -e "\nCreating the ${mode} directory"
+        mkdir ${mode}
+        echo -e "\nEntering the ${mode} directory"
+        cd ${mode}
+        echo -e "\nRunning cmake"
 
-	if [ ${mode} = "debug" ]; then
-		build_type="Debug"
-	elif [ ${mode} = "release" ]; then
-    	build_type=Release
-	else
-		echo "ERROR: WRONG mode = ${mode}"
-		exit 1
-	fi
+        if [ ${mode} = "debug" ]; then
+                build_type="Debug"
+        elif [ ${mode} = "release" ]; then
+            build_type=Release
+        else
+                echo "ERROR: WRONG mode = ${mode}"
+                exit 1
+        fi
 
-	echo "Build type: ${build_type}"
+        echo "Build type: ${build_type}"
 
-	backend_prefix=$(echo ${backend_name} | awk '{print substr($0,0,3)}')
+        backend_prefix=$(echo ${backend_name} | awk '{print substr($0,0,3)}')
 
-	echo "Backend prefix: ${backend_prefix}"
+        echo "Backend prefix: ${backend_prefix}"
 
-	if [ ${backend_prefix} = hpx ]; then
-		cmake -DCMAKE_BUILD_TYPE=${build_type} \
-		      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-		      -DWITH_HPX=ON \
-	          -DWITH_HPX_STARTSTOP=${with_startstop} \
-		      -DHPX_DIR=/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX \
-		      ../../../
-	elif [ ${backend_prefix} = tbb ]; then
-		cmake -DCMAKE_BUILD_TYPE=${build_type} \
-	      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-	      -DWITH_TBB=ON \
-	      -DBUILD_TBB=ON \
-	      ../../../
-	elif [ ${backend_prefix} = "omp" ]; then
-		cmake -DCMAKE_BUILD_TYPE=${build_type} \
-			  -DWITH_OPENMP=ON \
-	          -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-	      ../../../
-	elif [ ${backend_prefix} = "pth" ]; then
-		cmake -DCMAKE_BUILD_TYPE=${build_type} \
-	      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-	      ../../../
+        if [ ${backend_prefix} = hpx ]; then
+                cmake -DCMAKE_BUILD_TYPE=${build_type} \
+                      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+                      -DWITH_HPX=ON \
+                  -DWITH_HPX_STARTSTOP=${with_startstop} \
+                      -DHPX_DIR=/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX \
+                      ../../../
+        elif [ ${backend_prefix} = tbb ]; then
+                cmake -DCMAKE_BUILD_TYPE=${build_type} \
+              -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+              -DWITH_TBB=ON \
+              -DBUILD_TBB=ON \
+              ../../../
+        elif [ ${backend_prefix} = "omp" ]; then
+                cmake -DCMAKE_BUILD_TYPE=${build_type} \
+                          -DWITH_OPENMP=ON \
+                  -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+              ../../../
+        elif [ ${backend_prefix} = "pth" ]; then
+                cmake -DCMAKE_BUILD_TYPE=${build_type} \
+              -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+              ../../../
     fi
 
-	echo -e "\nBuilding OpenCV"      
+        echo -e "\nBuilding OpenCV"      
 
-	make -j7
+        make -j7
 
-	echo "++++++++++++++++++++++++++++++++++"
+        echo "++++++++++++++++++++++++++++++++++"
 }
 
 
 ### ===========================================================
-### 						MAIN
+###                          MAIN
 ### ===========================================================
 
 TIMESTAMP=$(date +"%Y-%m-%d-%H.%M")
 
 echo "Executing script: ${0}"
 echo "Used parameters:"
-echo "	MESSAGE = ${MESSAGE}"
-echo "	LOGS_PATH = ${LOGS_PATH}"
-echo "	OPENCV_PATH = ${OPENCV_PATH}"
-echo "	REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
+echo "        MESSAGE = ${MESSAGE}"
+echo "        LOGS_PATH = ${LOGS_PATH}"
+echo "        OPENCV_PATH = ${OPENCV_PATH}"
+echo "        REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
 mode="debug"
 build_opencv "hpx" "OFF" "${mode}"
