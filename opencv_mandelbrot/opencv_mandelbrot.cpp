@@ -4,10 +4,9 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 //
-#include <opencv2/core/parallel.hpp>
 
 #ifndef BACKEND_STARTSTOP
-#include <hpx/hpx_main.hpp>
+    #include <hpx/hpx_main.hpp>
 #endif
 
 #include <hpx/include/runtime.hpp>
@@ -63,20 +62,8 @@ namespace {
     //! [mandelbrot-sequential]
 }
 
-#ifndef BACKEND_NON_HPX
-void set_argc_argv(int argc, char* argv[])
-{
-    __argc = argc;
-    __argv = argv;
-}
-#endif
-
 int main(int argc, char* argv[])
 {
-#ifndef BACKEND_NON_HPX
-    set_argc_argv(argc, argv);
-#endif
-
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
     desc_cmdline.add_options()
