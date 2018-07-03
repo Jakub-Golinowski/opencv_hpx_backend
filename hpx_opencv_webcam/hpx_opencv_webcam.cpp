@@ -12,6 +12,10 @@
 #include <iostream>
 //
 #include <opencv2/opencv.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -23,6 +27,14 @@ void do_stuff(std::size_t n, bool printout);
 void print_system_params();
 
 cv::Mat take_webcam_image();
+
+int start_webcam_capture(cv::CascadeClassifier&,cv::CascadeClassifier&,
+                         double scale,
+                         hpx::threads::executors::pool_executor&,
+                         hpx::threads::executors::pool_executor&);
+
+int detect_face(cv::Mat&, cv::CascadeClassifier&,
+                 cv::CascadeClassifier&, double scale);
 
 cv::Mat load_image(const std::string &path);
 
@@ -47,7 +59,7 @@ using namespace hpx::threads::policies;
 cv::Mat load_image(const std::string &path) {
     hpx::cout << "load_image from " << path << std::endl;
     cv::Mat image = cv::imread(path, 1);
-    if ( !image.data )
+    if (!image.data)
         throw std::runtime_error("No image data \n");
 
     return image;
@@ -66,17 +78,123 @@ cv::Mat take_webcam_image() {
     return frame;
 }
 
+int start_webcam_capture(cv::CascadeClassifier& cascade,
+                         cv::CascadeClassifier& nestedCascade,
+                         double scale,
+                         hpx::threads::executors::pool_executor& def_exec,
+                         hpx::threads::executors::pool_executor& opencv_exec){
+    cv::VideoCapture capture;
+    if(!capture.open(0)){
+        hpx::cout << "Could not open camera...";
+        return -1;
+    }
+
+    // Capture frames from video and detect faces
+    hpx::cout << "Starting face detection... \n";
+    cv::Mat captured_frame, processed_frame;
+    while(true) {
+        capture >> captured_frame;
+        if(captured_frame.empty())
+            break;
+        processed_frame = captured_frame.clone();
+        hpx::future<int> detection_flag_f = hpx::async(def_exec, hpx::util::bind(detect_face,
+                                                     processed_frame,
+                                                     cascade, nestedCascade,
+                                                     scale));
+        int detection_flag = detection_flag_f.get();
+
+        if(detection_flag == 0)
+        {
+            cv::imshow("Face Recognition from " + hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name(), processed_frame);
+            char c = (char)cv::waitKey(1000/25);
+            // Press q to exit from window
+            if(c == 27 || c == 'q' || c == 'Q')
+                break;
+        }
+//        else{
+//            break;
+//        }
+    }
+
+    return 0;
+}
+
+int detect_face(cv::Mat& img, cv::CascadeClassifier& cascade,
+                    cv::CascadeClassifier& nestedCascade,
+                    double scale) {
+
+    hpx::cout << "detec_face from "
+              << hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name();
+
+    std::vector<cv::Rect> faces, faces2;
+    cv::Mat gray, smallImg;
+
+    cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY); // Convert to Gray Scale
+    double fx = 1 / scale;
+
+    // Resize the Grayscale Image
+    resize(gray, smallImg, cv::Size(), fx, fx, cv::INTER_LINEAR);
+    equalizeHist(smallImg, smallImg);
+
+    // Detect faces of different sizes using cascade classifier
+    cascade.detectMultiScale(smallImg, faces, 1.1,
+                              2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+
+    // Draw circles around the faces
+    for (size_t i = 0; i < faces.size(); i++)
+    {
+        cv::Rect r = faces[i];
+        cv::Mat smallImgROI;
+        std::vector<cv::Rect> nestedObjects;
+        cv::Point center;
+        cv::Scalar color = cv::Scalar(255, 0, 0); // Color for Drawing tool
+        int radius;
+
+        double aspect_ratio = (double)r.width/r.height;
+        if(0.75 < aspect_ratio && aspect_ratio < 1.3)
+        {
+            center.x = cvRound((r.x + r.width*0.5)*scale);
+            center.y = cvRound((r.y + r.height*0.5)*scale);
+            radius = cvRound((r.width + r.height)*0.25*scale);
+            circle(img, center, radius, color, 3, 8, 0);
+        }
+        else
+            rectangle(img, cv::Point(cvRound(r.x*scale), cvRound(r.y*scale)),
+                       cv::Point(cvRound((r.x + r.width-1)*scale),
+                               cvRound((r.y + r.height-1)*scale)), color, 3, 8, 0);
+        if(nestedCascade.empty())
+            continue;
+        smallImgROI = smallImg(r);
+
+        // Detection of eyes int the input image
+        nestedCascade.detectMultiScale(smallImgROI, nestedObjects, 1.1, 2,
+                                        0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+
+        // Draw circles around eyes
+        for (size_t j = 0; j < nestedObjects.size(); j++)
+        {
+            cv::Rect nr = nestedObjects[j];
+            center.x = cvRound((r.x + nr.x + nr.width*0.5)*scale);
+            center.y = cvRound((r.y + nr.y + nr.height*0.5)*scale);
+            radius = cvRound((nr.width + nr.height)*0.25*scale);
+            circle(img, center, radius, color, 3, 8, 0);
+        }
+    }
+
+    return 0;
+}
+
 // Warning - for now it is blocking forever (until user closes the window).
 // Should be run in a separate thread?
 void show_image(const cv::Mat &image, std::string win_name) {
     hpx::cout << "show_image in " << win_name << std::endl;
-    cv::namedWindow(win_name, cv::WINDOW_AUTOSIZE );
+    cv::namedWindow(win_name, cv::WINDOW_AUTOSIZE);
     imshow(win_name, image);
 
 }
 
 void save_image(const cv::Mat &image, const std::string &path) {
-    cv::imwrite( "Gray_Image.jpg", image );
+    cv::imwrite("Gray_Image.jpg", image);
 }
 
 cv::Mat transform_to_grey(cv::Mat image) {
@@ -120,55 +238,58 @@ void print_system_params() {
 /// hpx_main is called on an hpx thread after the runtime starts up
 int hpx_main(boost::program_options::variables_map& vm)
 {
-    if (vm.count("use-opencv-pool"))
-        use_opencv_pool = true;
-
-    hpx::cout << "[hpx_main] starting ...\n"
-              << "use_opencv_pool " << use_opencv_pool << "\n";
+    // ======================== CONFIGURATION ========================
+    hpx::cout << "[hpx_main] starting in "
+              << hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name()
+              << "\n";
 
     std::size_t num_work_threads = hpx::get_num_worker_threads();
     hpx::cout << "HPX using threads = " << num_work_threads << std::endl;
 
     // create an executor with high priority and normal priority executors for
     // important tasks
-    hpx::threads::executors::default_executor high_priority_executor(
-        hpx::threads::thread_priority_high_recursive);
-    hpx::threads::executors::default_executor normal_priority_executor;
+    hpx::threads::executors::pool_executor def_executor("default");
 
-    hpx::threads::scheduled_executor opencv_executor;
     // create an executor on the opencv pool
-    if (use_opencv_pool)
-    {
-        // get executors
-        hpx::threads::executors::pool_executor opencv_exec(opencv_tp_name);
-        opencv_executor = opencv_exec;
-        hpx::cout << "\n[hpx_main] got opencv executor " << std::endl;
-    }
-    else
-    {
-        opencv_executor = high_priority_executor;
-    }
+    hpx::threads::executors::pool_executor opencv_executor(opencv_tp_name);
+    hpx::cout << "\n[hpx_main] got opencv executor " << std::endl;
 
     print_system_params();
 
+    // ======================== ACTUAL MAIN ========================
+
+    // PreDefined trained XML classifiers with facial features
+    cv::CascadeClassifier cascade, nestedCascade;
+    double scale=1;
+
+    // Load classifiers from "opencv/data/haarcascades" directory
+    nestedCascade.load("../models/haarcascade_eye_tree_eyeglasses.xml");
+
+    // Change path before execution
+    cascade.load("../models/haarcascade_frontalface_default.xml");
+
+    hpx::future<int> result = hpx::async(opencv_executor,
+                                         hpx::util::bind(start_webcam_capture,
+               cascade, nestedCascade, scale, def_executor, opencv_executor));
+
     // schedule taking webcam image on the opencv pool
-    hpx::future<cv::Mat> f_image = hpx::async(opencv_executor, &take_webcam_image);
+//    hpx::future<cv::Mat> f_image = hpx::async(opencv_executor, &take_webcam_image);
 
-    cv::Mat image = f_image.get();
-
-    cv::Mat grey_image;
-    //schedule image processing on the default pool
-    hpx::future<cv::Mat> f_grey_img = hpx::async(normal_priority_executor,
-                                                &transform_to_grey, image);
-
-    grey_image = f_grey_img.get();
-
-    // schedule image save on the opecnv pool
-    hpx::apply(&save_image, grey_image, "");
-
-    // schedule image show on the opencv pool
-    hpx::future<void> f_imshow_grey = hpx::async(opencv_executor,
-            &show_image, grey_image, "grey_image");
+//    cv::Mat image = f_image.get();
+//
+//    cv::Mat grey_image;
+//    //schedule image processing on the default pool
+//    hpx::future<cv::Mat> f_grey_img = hpx::async(normal_priority_executor,
+//                                                &transform_to_grey, image);
+//
+//    grey_image = f_grey_img.get();
+//
+//    // schedule image save on the opecnv pool
+//    hpx::apply(&save_image, grey_image, "");
+//
+//    // schedule image show on the opencv pool
+//    hpx::future<void> f_imshow_grey = hpx::async(opencv_executor,
+//            &show_image, grey_image, "grey_image");
 
     return hpx::finalize();
 }
@@ -182,10 +303,6 @@ int main(int argc, char* argv[])
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
     desc_cmdline.add_options()
-        ("img-path",
-         po::value<std::string>()->default_value(("./")),
-         "Specify path to the image")
-        ("use-opencv-pool,u", "Enable advanced HPX thread pools and executors")
         ("opencv_tp_num_threads,m",
           po::value<int>()->default_value(1),
           "Number of threads to assign to custom pool");
@@ -204,11 +321,6 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if (vm.count("use-opencv-pool"))
-    {
-        use_opencv_pool = true;
-    }
-
     opencv_tp_num_threads = vm["opencv_tp_num_threads"].as<int>();
 
     // Create the resource partitioner
@@ -220,34 +332,32 @@ int main(int argc, char* argv[])
     rp.create_thread_pool("default");
     std::cout << "[main] " << "thread_pool default created\n";
 
-    if (use_opencv_pool)
-    {
-        // Create a thread pool using the default scheduler provided by HPX
-        rp.create_thread_pool(opencv_tp_name,
-            hpx::resource::scheduling_policy::local_priority_fifo);
-        std::cout << "[main] " << "thread_pool "
-                  << opencv_tp_name << " created\n";
 
-        // add cores to opencv pool
-        int count = 0;
-        for (const hpx::resource::numa_domain& d : rp.numa_domains())
+    // Create a thread pool using the default scheduler provided by HPX
+    rp.create_thread_pool(opencv_tp_name,
+        hpx::resource::scheduling_policy::local_priority_fifo);
+    std::cout << "[main] " << "thread_pool "
+              << opencv_tp_name << " created\n";
+
+    // add cores to opencv pool
+    int count = 0;
+    for (const hpx::resource::numa_domain& d : rp.numa_domains())
+    {
+        for (const hpx::resource::core& c : d.cores())
         {
-            for (const hpx::resource::core& c : d.cores())
+            for (const hpx::resource::pu& p : c.pus())
             {
-                for (const hpx::resource::pu& p : c.pus())
+                if (count < opencv_tp_num_threads)
                 {
-                    if (count < opencv_tp_num_threads)
-                    {
-                        std::cout << "[main] Added pu " << count++ << " to " <<
-                                  opencv_tp_name << "thread pool\n";
-                        rp.add_resource(p, opencv_tp_name);
-                    }
+                    std::cout << "[main] Added pu " << count++ << " to " <<
+                              opencv_tp_name << "thread pool\n";
+                    rp.add_resource(p, opencv_tp_name);
                 }
             }
         }
-
-        std::cout << "[main] resources added to thread_pools \n";
     }
+
+    std::cout << "[main] resources added to thread_pools \n";
 
     return hpx::init();
 }
