@@ -5,7 +5,7 @@
 ### ===========================================================
 ###                         INCLUDES
 ### ===========================================================
-# source ./common_functions.sh
+# source ...
 
 ### ===========================================================
 ###                        INPUT PARAMETERS
@@ -49,23 +49,35 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 ### ===========================================================
 function build_hpx {
     local mode=$1
+    local use_hpx_11=$2
 
     echo -e "\n===== BUILDING HPX in ${mode} mode ====="
 
     echo -e "\nGoing to ${HPX_PATH}build"
-    cd ${OPENCV_PATH}build
+    cd ${HPX_PATH}build
     echo -e "\nContents of the `pwd`"
     ls
 
-    echo -e "\nCreating the ${mode} directory"
-    mkdir ${mode}
-    echo -e "\nEntering the ${mode} directory"
-    cd ${mode}
+    if [ ${use_hpx_11} = "ON" ]; then
+        echo -e "\nCreating the hpx_11/${mode} directory"
+        mkdir -p hpx_11/${mode}/
+        echo -e "\nEntering the hpx_11/${mode}/ directory"
+        cd hpx_11/${mode}
+    elif [ ${use_hpx_11} = "OFF" ]; then
+        echo -e "\nCreating the ${mode} directory"
+        mkdir ${mode}
+        echo -e "\nEntering the ${mode} directory"
+        cd ${mode}
+    else
+        echo "ERROR: WRONG use_hpx_11 = ${mode}"
+        exit 1
+    fi
+
     echo -e "\nRunning cmake"
 
     if [ ${mode} = "debug" ]; then
         build_type="Debug"
-    elif [ ${mode} = "release"]; then
+    elif [ ${mode} = "release" ]; then
         build_type=Release
     else
         echo "ERROR: WRONG mode = ${mode}"
@@ -74,15 +86,28 @@ function build_hpx {
 
     echo "Build type: ${build_type}"
 
-    cmake -DCMAKE_BUILD_TYPE=${build_type} \
-      -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
-      -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
-      -DHWLOC_ROOT=/home/jakub/packages/hwloc \
-      -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
-      -DHPX_WITH_CXX11=On \
-      ../../
+    if [ ${use_hpx_11} = "ON" ]; then
+        cmake -DCMAKE_BUILD_TYPE=${build_type} \
+        -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
+        -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
+        -DHWLOC_ROOT=/home/jakub/packages/hwloc \
+        -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
+        -DHPX_WITH_CXX11=On \
+        ../../../
+    elif [ ${use_hpx_11} = "OFF" ]; then
+        cmake -DCMAKE_BUILD_TYPE=${build_type} \
+        -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
+        -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
+        -DHWLOC_ROOT=/home/jakub/packages/hwloc \
+        -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
+        ../../../
+    else
+        echo "ERROR: WRONG use_hpx_11 = ${mode}"
+        exit 1
+    fi
 
-    echo -e "\nBuilding OpenCV"
+
+    echo -e "\nBuilding HPX"
 
     make -j7
 
@@ -101,7 +126,7 @@ echo "    LOGS_PATH = ${LOGS_PATH}"
 echo "    HPX_PATH = ${HPX_PATH}"
 echo "    REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
-build_hpx "debug"
-build_hpx "release"
+build_hpx "debug" "ON"
+build_hpx "release" "ON"
 
 
