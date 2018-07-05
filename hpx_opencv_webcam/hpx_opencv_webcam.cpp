@@ -232,6 +232,7 @@ int hpx_main(boost::program_options::variables_map& vm)
     print_system_params();
 
     int num_frames = vm["num_frames"].as<int>();
+    bool detect_eyes = vm["detect_eyes"].as<bool>();
 
     // ======================== ACTUAL MAIN ========================
 
@@ -240,7 +241,9 @@ int hpx_main(boost::program_options::variables_map& vm)
     double scale=1;
 
     // Load classifiers
-    nestedCascade.load("../models/haarcascade_eye_tree_eyeglasses.xml");
+
+    if(detect_eyes)
+        nestedCascade.load("../models/haarcascade_eye_tree_eyeglasses.xml");
     cascade.load("../models/haarcascade_frontalface_default.xml");
 
     hpx::future<int> result = hpx::async(opencv_executor,
@@ -291,7 +294,10 @@ int main(int argc, char* argv[])
           "Number of threads to assign to custom pool")
         ("num_frames,f",
          po::value<int>()->default_value(25),
-         "Number of frames per second in the video stream.");
+         "Number of frames per second in the video stream.")
+        ("detect_eyes,e",
+         po::value<bool>()->default_value(false),
+         "If set to true the application will detect eyes.");
 
     // HPX uses a boost program options variable map, but we need it before
     // hpx-main, so we will create another one here and throw it away after use
