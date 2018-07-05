@@ -300,7 +300,7 @@ if __name__ == "__main__":
                                  backends_nstripes_stds_dict,
                                  Metric.PARALLEL_TIME,
                                  title="Parallel processing time as function of "
-                                 "nstripes (hpx ignores nstripes)",
+                                 "nstripes",
                                  xlabel="nstripes",
                                  ylabel="Processing time [s]",
                                  save_path=im_save_path)
