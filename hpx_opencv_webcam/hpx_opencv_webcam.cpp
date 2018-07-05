@@ -25,10 +25,10 @@ void print_system_params();
 
 cv::Mat take_webcam_image();
 
-int start_webcam_capture(cv::CascadeClassifier&,cv::CascadeClassifier&,
-                         double scale,
-                         hpx::threads::executors::pool_executor&,
-                         hpx::threads::executors::pool_executor&);
+int start_webcam_capture(int num_frames, cv::CascadeClassifier &,
+                         cv::CascadeClassifier &, double scale,
+                         hpx::threads::executors::pool_executor &,
+                         hpx::threads::executors::pool_executor &);
 
 int detect_face(cv::Mat&, cv::CascadeClassifier&,
                  cv::CascadeClassifier&, double scale);
@@ -74,16 +74,18 @@ cv::Mat take_webcam_image() {
     return frame;
 }
 
-int start_webcam_capture(cv::CascadeClassifier& cascade,
-                         cv::CascadeClassifier& nestedCascade,
-                         double scale,
-                         hpx::threads::executors::pool_executor& def_exec,
-                         hpx::threads::executors::pool_executor& opencv_exec){
+int start_webcam_capture(int num_frames, cv::CascadeClassifier &cascade,
+                         cv::CascadeClassifier &nestedCascade, double scale,
+                         hpx::threads::executors::pool_executor &def_exec,
+                         hpx::threads::executors::pool_executor &opencv_exec) {
     cv::VideoCapture capture;
     if(!capture.open(0)){
         hpx::cout << "Could not open camera...";
         return -1;
     }
+
+    std::string curr_pool_name = \
+        hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name();
 
     // Capture frames from video and detect faces
     hpx::cout << "Starting face detection... \n";
@@ -92,17 +94,20 @@ int start_webcam_capture(cv::CascadeClassifier& cascade,
         capture >> captured_frame;
         if(captured_frame.empty())
             break;
+
         processed_frame = captured_frame.clone();
-        hpx::future<int> detection_flag_f = hpx::async(def_exec, hpx::util::bind(detect_face,
-                                                     processed_frame,
-                                                     cascade, nestedCascade,
-                                                     scale));
+
+        hpx::future<int> detection_flag_f = \
+                hpx::async(def_exec,
+                           hpx::util::bind(detect_face, processed_frame,
+                                           cascade, nestedCascade, scale));
         int detection_flag = detection_flag_f.get();
 
         if(detection_flag == 0)
         {
-            cv::imshow("Face Recognition from " + hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name(), processed_frame);
-            char c = (char)cv::waitKey(1000/25);
+            cv::imshow("Face Recognition from " + curr_pool_name,
+                       processed_frame);
+            char c = (char)cv::waitKey(1000/num_frames);
             // Press q to exit from window
             if(c == 27 || c == 'q' || c == 'Q')
                 break;
@@ -226,6 +231,8 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     print_system_params();
 
+    int num_frames = vm["num_frames"].as<int>();
+
     // ======================== ACTUAL MAIN ========================
 
     // PreDefined trained XML classifiers with facial features
@@ -238,7 +245,11 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     hpx::future<int> result = hpx::async(opencv_executor,
                                          hpx::util::bind(start_webcam_capture,
-               cascade, nestedCascade, scale, def_executor, opencv_executor));
+                                                         num_frames,
+                                                         cascade, nestedCascade,
+                                                         scale,
+                                                         def_executor,
+                                                         opencv_executor));
 
     // Wait for user to close the camer application
     result.get();
@@ -277,7 +288,10 @@ int main(int argc, char* argv[])
     desc_cmdline.add_options()
         ("opencv_tp_num_threads,m",
           po::value<int>()->default_value(1),
-          "Number of threads to assign to custom pool");
+          "Number of threads to assign to custom pool")
+        ("num_frames,f",
+         po::value<int>()->default_value(25),
+         "Number of frames per second in the video stream.");
 
     // HPX uses a boost program options variable map, but we need it before
     // hpx-main, so we will create another one here and throw it away after use
