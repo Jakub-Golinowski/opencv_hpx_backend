@@ -324,4 +324,6 @@ if __name__ == "__main__":
         pp.savefig(fig)
     plt.show()
 
-    pp.close()
+    if os.path.isdir(pdf_save_path):
+        pp.close()
+
