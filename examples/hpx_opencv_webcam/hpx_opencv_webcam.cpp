@@ -16,6 +16,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+//
+#include <config.h>
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -241,10 +243,12 @@ int hpx_main(boost::program_options::variables_map& vm)
     double scale=1;
 
     // Load classifiers
-
+    std::string nestedCascadePath = DATA_PATH + std::string("/models/haarcascade_eye_tree_eyeglasses.xml");
+    std::string cascadePath = DATA_PATH + std::string("/models/haarcascade_frontalface_default.xml");
+    
     if(detect_eyes)
-        nestedCascade.load("../models/haarcascade_eye_tree_eyeglasses.xml");
-    cascade.load("../models/haarcascade_frontalface_default.xml");
+        nestedCascade.load(nestedCascadePath);
+    cascade.load(cascadePath);
 
     hpx::future<int> result = hpx::async(opencv_executor,
                                          hpx::util::bind(start_webcam_capture,
@@ -351,4 +355,3 @@ int main(int argc, char* argv[])
 
     return hpx::init();
 }
-

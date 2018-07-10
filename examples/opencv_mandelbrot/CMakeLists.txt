@@ -29,6 +29,9 @@ if(BACKEND_NON_HPX)
     set(BACKEND_NON_HPX)
 endif(BACKEND_NON_HPX)
 
+message("opencv_mandelbrot: Using BACKEND_STARTSTOP=${BACKEND_STARTSTOP}")
+message("opencv_mandelbrot: Using BACKEND_NON_HPX=${BACKEND_NON_HPX}")
+
 configure_file(config.hpp.in config.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
