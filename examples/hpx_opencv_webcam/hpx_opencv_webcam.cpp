@@ -26,9 +26,6 @@ static int opencv_tp_num_threads = 1;
 static std::string opencv_tp_name("opencv");
 
 ///////////////////////////////////////////////////////////////////////////
-using namespace hpx::threads::policies;
-
-///////////////////////////////////////////////////////////////////////////
 /// Function Definitions
 cv::Mat load_image(const std::string &path) {
     hpx::cout << "load_image from " << path << "\n";
@@ -53,8 +50,7 @@ cv::Mat take_webcam_image() {
 }
 
 int detect_face(cv::Mat& img, cv::CascadeClassifier& cascade,
-                    cv::CascadeClassifier& nestedCascade,
-                    double scale) {
+                cv::CascadeClassifier& nestedCascade, double scale) {
 
     std::vector<cv::Rect> faces, faces2;
     cv::Mat gray, smallImg;
@@ -107,10 +103,9 @@ int detect_face(cv::Mat& img, cv::CascadeClassifier& cascade,
     return 0;
 }
 
-int start_webcam_capture(int num_frames, cv::CascadeClassifier &cascade,
-                         cv::CascadeClassifier &nestedCascade, double scale,
-                         hpx::threads::executors::pool_executor &def_exec,
-                         hpx::threads::executors::pool_executor &opencv_exec) {
+int start_webcam_capture(int num_frames, cv::CascadeClassifier cascade,
+                         cv::CascadeClassifier nestedCascade, double scale,
+                         hpx::threads::executors::pool_executor def_exec) {
     cv::VideoCapture capture;
     if(!capture.open(0)){
         hpx::cout << "Could not open camera...";
@@ -131,9 +126,8 @@ int start_webcam_capture(int num_frames, cv::CascadeClassifier &cascade,
         processed_frame = captured_frame.clone();
 
         hpx::future<int> detection_flag_f =
-                hpx::async(def_exec,
-                           hpx::util::bind(detect_face, processed_frame,
-                                           cascade, nestedCascade, scale));
+                hpx::async(def_exec, detect_face, std::ref(processed_frame),
+                           std::ref(cascade), std::ref(nestedCascade), scale);
 
         int detection_flag = detection_flag_f.get();
 
@@ -227,13 +221,9 @@ int hpx_main(boost::program_options::variables_map& vm)
         nestedCascade.load(nestedCascadePath);
     cascade.load(cascadePath);
 
-    hpx::future<int> webcam_closed = hpx::async(opencv_executor,
-                                         hpx::util::bind(start_webcam_capture,
-                                                         num_frames,
-                                                         cascade, nestedCascade,
-                                                         scale,
-                                                         def_executor,
-                                                         opencv_executor));
+    hpx::future<int> webcam_closed =
+            hpx::async<>(opencv_executor, &start_webcam_capture, num_frames,
+                         cascade, nestedCascade, scale, def_executor);
 
     cv::Mat webcam_img;
     cv::Mat grey_webcam_img;
