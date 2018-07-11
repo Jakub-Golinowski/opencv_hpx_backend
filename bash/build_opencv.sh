@@ -49,8 +49,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 ### ===========================================================
 function build_opencv {
         local backend_name=$1
-        local with_startstop=$2
-        local mode=$3
+        local mode=$2
+        local with_startstop=$3
+        local non_dyn_main=$4
+        
 
         echo -e "\n===== BUILDING OpenCV ${backend_name} in ${mode} mode ====="
 
@@ -88,11 +90,19 @@ function build_opencv {
         echo "Backend prefix: ${backend_prefix}"
 
         if [ ${backend_prefix} = hpx ]; then
+            if [ ${non_dyn_main} = "ON" ]; then
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11_non-dynamic_hpx_main/${mode}/lib/cmake/HPX"
+            elif [ ${non_dyn_main} = "OFF" ]; then
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX"
+            else
+                echo "ERROR: WRONG non_dyn_main = ${non_dyn_main}"
+                exit 1
+            fi
                 cmake -DCMAKE_BUILD_TYPE=${build_type} \
                       -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
                       -DWITH_HPX=ON \
-                  -DWITH_HPX_STARTSTOP=${with_startstop} \
-                      -DHPX_DIR=/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX \
+                      -DWITH_HPX_STARTSTOP=${with_startstop} \
+                      -DHPX_DIR=${hpx_dir} \
                       ../../../
         elif [ ${backend_prefix} = tbb ]; then
                 cmake -DCMAKE_BUILD_TYPE=${build_type} \
@@ -132,16 +142,13 @@ echo "        LOGS_PATH = ${LOGS_PATH}"
 echo "        OPENCV_PATH = ${OPENCV_PATH}"
 echo "        REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
-mode="debug"
-build_opencv "hpx" "OFF" "${mode}"
-build_opencv "hpx_startstop" "ON" "${mode}"
-build_opencv "tbb" "NA" "${mode}"
-build_opencv "omp" "NA" "${mode}"
-build_opencv "pthreads" "NA" "${mode}"
 
-mode="release"
-build_opencv "hpx" "OFF" "${mode}"
-build_opencv "hpx_startstop" "ON" "${mode}"
-build_opencv "tbb" "NA" "${mode}"
-build_opencv "omp" "NA" "${mode}"
-build_opencv "pthreads" "NA" "${mode}"
+for mode in "debug" "release"; do
+    build_opencv "hpx" "${mode}" "OFF" "OFF" 
+    build_opencv "hpx_non-dyn_main" "${mode}" "OFF" "ON"
+    build_opencv "hpx_startstop" "${mode}" "ON" "OFF" 
+
+    build_opencv "tbb" "${mode}" "NA" "NA" 
+    build_opencv "omp" "${mode}" "NA" "NA" 
+    build_opencv "pthreads" "${mode}" "NA" "NA" 
+done
