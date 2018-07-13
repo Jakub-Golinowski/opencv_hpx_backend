@@ -16,30 +16,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
-
-
-///////////////////////////////////////////////////////////////////////////
-/// Function Declarations
-
-void print_system_params();
-
-cv::Mat take_webcam_image();
-
-int start_webcam_capture(int num_frames, cv::CascadeClassifier &,
-                         cv::CascadeClassifier &, double scale,
-                         hpx::threads::executors::pool_executor &,
-                         hpx::threads::executors::pool_executor &);
-
-int detect_face(cv::Mat&, cv::CascadeClassifier&,
-                 cv::CascadeClassifier&, double scale);
-
-cv::Mat load_image(const std::string &path);
-
-void show_image(const cv::Mat &image, std::string win_name);
-
-void save_image(const cv::Mat &image, const std::string &);
-
-cv::Mat transform_to_grey(cv::Mat image);
+//
+#include <config.h>
 
 ///////////////////////////////////////////////////////////////////////////
 /// Global variables
@@ -48,12 +26,9 @@ static int opencv_tp_num_threads = 1;
 static std::string opencv_tp_name("opencv");
 
 ///////////////////////////////////////////////////////////////////////////
-using namespace hpx::threads::policies;
-
-///////////////////////////////////////////////////////////////////////////
 /// Function Definitions
 cv::Mat load_image(const std::string &path) {
-    hpx::cout << "load_image from " << path << std::endl;
+    hpx::cout << "load_image from " << path << "\n";
     cv::Mat image = cv::imread(path, 1);
     if (!image.data)
         throw std::runtime_error("No image data \n");
@@ -74,55 +49,8 @@ cv::Mat take_webcam_image() {
     return frame;
 }
 
-int start_webcam_capture(int num_frames, cv::CascadeClassifier &cascade,
-                         cv::CascadeClassifier &nestedCascade, double scale,
-                         hpx::threads::executors::pool_executor &def_exec,
-                         hpx::threads::executors::pool_executor &opencv_exec) {
-    cv::VideoCapture capture;
-    if(!capture.open(0)){
-        hpx::cout << "Could not open camera...";
-        return -1;
-    }
-
-    std::string curr_pool_name = \
-        hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name();
-
-    // Capture frames from video and detect faces
-    hpx::cout << "Starting face detection... \n";
-    cv::Mat captured_frame, processed_frame;
-    while(true) {
-        capture >> captured_frame;
-        if(captured_frame.empty())
-            break;
-
-        processed_frame = captured_frame.clone();
-
-        hpx::future<int> detection_flag_f = \
-                hpx::async(def_exec,
-                           hpx::util::bind(detect_face, processed_frame,
-                                           cascade, nestedCascade, scale));
-        int detection_flag = detection_flag_f.get();
-
-        if(detection_flag == 0)
-        {
-            cv::imshow("Face Recognition from " + curr_pool_name,
-                       processed_frame);
-            char c = (char)cv::waitKey(1000/num_frames);
-            // Press q to exit from window
-            if(c == 27 || c == 'q' || c == 'Q')
-                break;
-        }
-        else{
-            break;
-        }
-    }
-
-    return 0;
-}
-
 int detect_face(cv::Mat& img, cv::CascadeClassifier& cascade,
-                    cv::CascadeClassifier& nestedCascade,
-                    double scale) {
+                cv::CascadeClassifier& nestedCascade, double scale) {
 
     std::vector<cv::Rect> faces, faces2;
     cv::Mat gray, smallImg;
@@ -175,13 +103,58 @@ int detect_face(cv::Mat& img, cv::CascadeClassifier& cascade,
     return 0;
 }
 
+int start_webcam_capture(int num_frames, cv::CascadeClassifier cascade,
+                         cv::CascadeClassifier nestedCascade, double scale,
+                         hpx::threads::executors::pool_executor def_exec) {
+    cv::VideoCapture capture;
+    if(!capture.open(0)){
+        hpx::cout << "Could not open camera...";
+        return -1;
+    }
+
+    std::string curr_pool_name = hpx::threads::get_pool(
+            hpx::threads::get_self_id())->get_pool_name();
+
+    // Capture frames from video and detect faces
+    hpx::cout << "Starting face detection... \n";
+    cv::Mat captured_frame, processed_frame;
+    while(true) {
+        capture >> captured_frame;
+        if(captured_frame.empty())
+            break;
+
+        processed_frame = captured_frame.clone();
+
+        hpx::future<int> detection_flag_f =
+                hpx::async(def_exec, detect_face, std::ref(processed_frame),
+                           std::ref(cascade), std::ref(nestedCascade), scale);
+
+        int detection_flag = detection_flag_f.get();
+
+        if(detection_flag == 0)
+        {
+            cv::imshow("Face Recognition from " + curr_pool_name,
+                       processed_frame);
+            char c = (char)cv::waitKey(1000/num_frames);
+            // Press q to exit from window
+            if(c == 27 || c == 'q' || c == 'Q')
+                break;
+        }
+        else{
+            break;
+        }
+    }
+
+    return 0;
+}
+
 // Warning - for now it is blocking forever (until user closes the window).
 // Should be run in a separate thread?
 void show_image(const cv::Mat &image, std::string win_name) {
-    hpx::cout << "show_image in " << win_name << std::endl;
+    hpx::cout << "show_image in " << win_name << "\n";
     cv::namedWindow(win_name, cv::WINDOW_AUTOSIZE);
     imshow(win_name, image);
-
+    cv::waitKey(0);
 }
 
 void save_image(const cv::Mat &image, const std::string &path) {
@@ -189,7 +162,7 @@ void save_image(const cv::Mat &image, const std::string &path) {
 }
 
 cv::Mat transform_to_grey(cv::Mat image) {
-    hpx::cout << "transform to grey" << std::endl;
+    hpx::cout << "transform to grey" << "\n";
     cv::Mat grey_image;
     cv::cvtColor(image, grey_image, cv::COLOR_RGB2GRAY);
     return grey_image;
@@ -241,41 +214,39 @@ int hpx_main(boost::program_options::variables_map& vm)
     double scale=1;
 
     // Load classifiers
-
+    std::string nestedCascadePath = DATA_PATH + std::string("/models/haarcascade_eye_tree_eyeglasses.xml");
+    std::string cascadePath = DATA_PATH + std::string("/models/haarcascade_frontalface_default.xml");
+    
     if(detect_eyes)
-        nestedCascade.load("../models/haarcascade_eye_tree_eyeglasses.xml");
-    cascade.load("../models/haarcascade_frontalface_default.xml");
+        nestedCascade.load(nestedCascadePath);
+    cascade.load(cascadePath);
 
-    hpx::future<int> result = hpx::async(opencv_executor,
-                                         hpx::util::bind(start_webcam_capture,
-                                                         num_frames,
-                                                         cascade, nestedCascade,
-                                                         scale,
-                                                         def_executor,
-                                                         opencv_executor));
+    hpx::future<int> webcam_closed =
+            hpx::async<>(opencv_executor, &start_webcam_capture, num_frames,
+                         cascade, nestedCascade, scale, def_executor);
 
-    // Wait for user to close the camer application
-    result.get();
-
+    cv::Mat webcam_img;
+    cv::Mat grey_webcam_img;
     // schedule taking webcam image on the opencv pool
-    hpx::future<cv::Mat> f_image = hpx::async(opencv_executor,
-            &take_webcam_image);
+    hpx::future<cv::Mat> f_image =
+            webcam_closed.then([&](hpx::future<int>&& wc){
+                hpx::cout << "Webcam closed\n";
+                return take_webcam_image();
+            });
 
-    cv::Mat image = f_image.get();
+    // schedule transforming webcam image to grey-scale on opencv pool
+    hpx::future<cv::Mat> f_grey_image =
+            f_image.then([&](hpx::future<cv::Mat>&& fi){
+                hpx::cout << "Image taken\n";
+                webcam_img = fi.get();
+                return transform_to_grey(webcam_img);
+            });
 
-    cv::Mat grey_image;
-    //schedule image processing on the default pool
-    hpx::future<cv::Mat> f_grey_img = hpx::async(def_executor,
-                                                &transform_to_grey, image);
-
-    grey_image = f_grey_img.get();
-
-    // schedule image save on the opecnv pool
-    hpx::apply(&save_image, grey_image, "");
-
-    // schedule image show on the opencv pool
-    hpx::future<void> f_imshow_grey = hpx::async(opencv_executor,
-            &show_image, grey_image, "grey_image");
+    f_grey_image.then([&](hpx::future<cv::Mat>&& fgi){
+            hpx::cout << "Image transformed to grey\n";
+            grey_webcam_img = fgi.get();
+            return save_image(grey_webcam_img, "");
+        });
 
     return hpx::finalize();
 }
@@ -307,8 +278,8 @@ int main(int argc, char* argv[])
                           .options(desc_cmdline).run(), vm);
     }
     catch(po::error& e) {
-        std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
-        std::cerr << desc_cmdline << std::endl;
+        std::cerr << "ERROR: " << e.what() << "\n\n";
+        std::cerr << desc_cmdline << "\n";
         return -1;
     }
 
@@ -351,4 +322,3 @@ int main(int argc, char* argv[])
 
     return hpx::init();
 }
-

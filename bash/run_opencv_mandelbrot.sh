@@ -18,7 +18,7 @@ OPENCV_BUILD_PATH="/home/jakub/opencv_repo/build/"
 HPX_BUILD_PATH="/home/jakub/hpx_repo/build/hpx_11/"
 #Below default paths are relative to repository root directory 
 LOGS_PATH="./logs/"
-APP_PATH="./opencv_mandelbrot/"
+APP_PATH="./examples/opencv_mandelbrot/"
 REPO_ROOT_PATH=$(cd ../; pwd)/
 
 POSITIONAL=()

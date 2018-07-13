@@ -48,8 +48,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 ###                     FUNCTIONS
 ### ===========================================================
 function build_hpx {
-    local mode=$1
-    local use_hpx_11=$2
+    local dir_name=$1
+    local mode=$2
+    local use_hpx_11=$3
+    local HPX_WITH_DYNAMIC_HPX_MAIN=$4
 
     echo -e "\n===== BUILDING HPX in ${mode} mode ====="
 
@@ -58,20 +60,11 @@ function build_hpx {
     echo -e "\nContents of the `pwd`"
     ls
 
-    if [ ${use_hpx_11} = "ON" ]; then
-        echo -e "\nCreating the hpx_11/${mode} directory"
-        mkdir -p hpx_11/${mode}/
-        echo -e "\nEntering the hpx_11/${mode}/ directory"
-        cd hpx_11/${mode}
-    elif [ ${use_hpx_11} = "OFF" ]; then
-        echo -e "\nCreating the ${mode} directory"
-        mkdir ${mode}
-        echo -e "\nEntering the ${mode} directory"
-        cd ${mode}
-    else
-        echo "ERROR: WRONG use_hpx_11 = ${mode}"
-        exit 1
-    fi
+
+    echo -e "\nCreating the ${dir_name}/${mode} directory"
+    mkdir -p ${dir_name}/${mode}/
+    echo -e "\nEntering the ${dir_name}/${mode}/ directory"
+    cd ${dir_name}/${mode}
 
     echo -e "\nRunning cmake"
 
@@ -86,25 +79,14 @@ function build_hpx {
 
     echo "Build type: ${build_type}"
 
-    if [ ${use_hpx_11} = "ON" ]; then
-        cmake -DCMAKE_BUILD_TYPE=${build_type} \
-        -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
-        -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
-        -DHWLOC_ROOT=/home/jakub/packages/hwloc \
-        -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
-        -DHPX_WITH_CXX11=On \
-        ../../../
-    elif [ ${use_hpx_11} = "OFF" ]; then
-        cmake -DCMAKE_BUILD_TYPE=${build_type} \
-        -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
-        -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
-        -DHWLOC_ROOT=/home/jakub/packages/hwloc \
-        -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
-        ../../../
-    else
-        echo "ERROR: WRONG use_hpx_11 = ${mode}"
-        exit 1
-    fi
+    cmake -DCMAKE_BUILD_TYPE=${build_type} \
+    -DCMAKE_INSTALL_PREFIX=/home/jakub/packages/hpx \
+    -DBOOST_ROOT=/home/jakub/packages/boost/boost_1_65_1 \
+    -DHWLOC_ROOT=/home/jakub/packages/hwloc \
+    -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
+    -DHPX_WITH_CXX11=${use_hpx_11} \
+    -DHPX_WITH_DYNAMIC_HPX_MAIN=${HPX_WITH_DYNAMIC_HPX_MAIN} \
+    ../../../
 
 
     echo -e "\nBuilding HPX"
@@ -126,7 +108,8 @@ echo "    LOGS_PATH = ${LOGS_PATH}"
 echo "    HPX_PATH = ${HPX_PATH}"
 echo "    REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
-build_hpx "debug" "ON"
-build_hpx "release" "ON"
-
+build_hpx "hpx_11_non-dynamic_hpx_main" "debug" "ON" "OFF"
+build_hpx "hpx_11_non-dynamic_hpx_main" "release" "ON" "OFF"
+# build_hpx "hpx_11" "debug" "ON" "ON"
+# build_hpx "hpx_11" "release" "ON" "ON"
 

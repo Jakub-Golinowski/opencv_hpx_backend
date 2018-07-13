@@ -1,7 +1,5 @@
 # Require a recent version of cmake
-cmake_minimum_required(VERSION 3.3.2 FATAL_ERROR)
-
-project(hpx_start_myargv)
+cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 
 # This project is C++ based.
 project(hpx_start_myargv CXX)
