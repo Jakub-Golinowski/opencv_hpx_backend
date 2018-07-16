@@ -52,6 +52,7 @@ function build_hpx {
     local mode=$2
     local use_hpx_11=$3
     local HPX_WITH_DYNAMIC_HPX_MAIN=$4
+    local HPX_WITH_NETWORKING=$5
 
     echo -e "\n===== BUILDING HPX in ${mode} mode ====="
 
@@ -72,6 +73,8 @@ function build_hpx {
         build_type="Debug"
     elif [ ${mode} = "release" ]; then
         build_type=Release
+    elif [ ${mode} = "relwithdebinfo" ]; then
+        build_type="RelWithDebInfo"
     else
         echo "ERROR: WRONG mode = ${mode}"
         exit 1
@@ -86,6 +89,7 @@ function build_hpx {
     -DTCMALLOC_ROOT=/home/jakub/packages/gperftools \
     -DHPX_WITH_CXX11=${use_hpx_11} \
     -DHPX_WITH_DYNAMIC_HPX_MAIN=${HPX_WITH_DYNAMIC_HPX_MAIN} \
+    -DHPX_WITH_NETWORKING=${HPX_WITH_NETWORKING} \
     ../../../
 
 
@@ -108,8 +112,12 @@ echo "    LOGS_PATH = ${LOGS_PATH}"
 echo "    HPX_PATH = ${HPX_PATH}"
 echo "    REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
-build_hpx "hpx_11_non-dynamic_hpx_main" "debug" "ON" "OFF"
-build_hpx "hpx_11_non-dynamic_hpx_main" "release" "ON" "OFF"
-# build_hpx "hpx_11" "debug" "ON" "ON"
-# build_hpx "hpx_11" "release" "ON" "ON"
+modes_list="debug release relwithdebinfo"
+
+for mode in ${modes_list}; do
+    build_hpx "hpx_11" ${mode} "ON" "ON" "ON"
+    build_hpx "hpx_11_non-dynamic_hpx_main" ${mode} "ON" "OFF" "ON"
+    build_hpx "hpx_11_nonet" ${mode} "ON" "ON" "OFF"
+    build_hpx "hpx_11_non-dynamic_hpx_main_nonet" ${mode} "ON" "OFF" "OFF"
+done
 

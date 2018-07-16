@@ -79,7 +79,7 @@ function run_test {
     echo -e "\nExecuting run_test $@"
     eval cd ${backend_path}
     echo -e "Entering directory `pwd`"
-    echo -e "Executing accuracy test for module ${module_name} using backend ${backend_name} with args ${test_args}"
+    echo -e "Executing test for module ${module_name} using backend ${backend_name} with args ${test_args}"
     echo -e "Log is saved to ${logs_dir}test_${module_name}_${backend_name}.log ..."
     if [ ${is_perf} = "ON" ]; then
         ./opencv_perf_${module_name} ${test_args} &> ${logs_dir}perf_${module_name}_${backend_name}.log
@@ -102,18 +102,18 @@ echo "        OPENCV_TEST_DATA_PATH = ${OPENCV_TEST_DATA_PATH}"
 echo "        REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 echo -e ""
 
-logs_dir_test=${REPO_ROOT_PATH}${LOGS_PATH}${TIMESTAMP}-unit-test/
-echo -e "\nCreating logs directory for accuracy tests ${logs_dir_test}"
-eval mkdir -p ${logs_dir_test}
-
 echo -e "\nSetting environment variable OPENCV_TEST_DATA_PATH to ${OPENCV_TEST_DATA_PATH}"
 eval export OPENCV_TEST_DATA_PATH=${OPENCV_TEST_DATA_PATH}
 
-backend_1_path=${OPENCV_REPO_PATH}build/hpx/release/bin/
+backend_1_path=${OPENCV_REPO_PATH}build/hpx_non-dyn_main/release/bin/
 backend_1_name="hpx"
 
 backend_2_path=${OPENCV_REPO_PATH}build/pthreads_master_05.07.18/release/bin/
 backend_2_name="pthreads_master"
+
+logs_dir_test=${REPO_ROOT_PATH}${LOGS_PATH}${TIMESTAMP}-unit-test/
+echo -e "\nCreating logs directory for accuracy tests ${logs_dir_test}"
+eval mkdir -p ${logs_dir_test}
 
 declare -A modules_args
 modules_args[calib3d]="--gtest_filter=-fisheyeTest.stereoRectify"
@@ -142,7 +142,7 @@ echo -e "=======================================================================
 for module_name in "${!modules_args[@]}"; do
     echo -e "\n======================================================================================================"
     printf "Comparing backends for module %s with args: \"%s\"\n" "$module_name" "${modules_args[$module_name]}"
-    compare_tests_2_backends ${module_name} ${modules_args[$module_name]} "hpx" ${backend_1_path} "pthreads" ${backend_2_path} ${logs_dir_test} "OFF"
+    compare_tests_2_backends ${module_name} ${modules_args[$module_name]} ${backend_1_name} ${backend_1_path} ${backend_2_name} ${backend_2_path} ${logs_dir_test} "OFF"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 done
 
@@ -154,7 +154,7 @@ declare -A perf_modules_args
 perf_modules_args[videoio]="None"
 perf_modules_args[calib3d]="None"
 perf_modules_args[core]="None"
-perf_modules_args[dnn]="None"
+perf_modules_args[dnn]="--hpx:threads=8 --perf_threads=8"
 perf_modules_args[features2d]="None"
 perf_modules_args[imgcodecs]="None"
 perf_modules_args[imgproc]="None"
@@ -172,6 +172,6 @@ echo -e "=======================================================================
 for module_name in "${!perf_modules_args[@]}"; do
     echo -e "\n======================================================================================================"
     printf "Comparing backends for module %s with args: \"%s\"\n" "$module_name" "${perf_modules_args[$module_name]}"
-    compare_tests_2_backends ${module_name} ${perf_modules_args[$module_name]} "hpx" ${backend_1_path} "pthreads" ${backend_2_path} ${logs_dir_perf} "ON"
+    compare_tests_2_backends ${module_name} "${perf_modules_args[$module_name]}" ${backend_1_name} ${backend_1_path} ${backend_2_name} ${backend_2_path} ${logs_dir_perf} "ON"
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 done

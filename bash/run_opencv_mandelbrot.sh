@@ -110,6 +110,7 @@ function run_mandelbrot_app_over_worksize {
     local backend=$5
     local num_pus=$6
     local sequential=$7
+    local hpx_milc=$8
 
     if [ "${sequential}" = true ]; then
         local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-seq_baseline-mandelbrot_over_workload.log
@@ -117,7 +118,6 @@ function run_mandelbrot_app_over_worksize {
         local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-mandelbrot_over_workload.log
     fi
 
-    
     touch ${logfile}
 
     echo -e "\n===== RUNNING THE APPLICATION WITH $5 BACKEND (over workload size) ====="
@@ -127,8 +127,9 @@ function run_mandelbrot_app_over_worksize {
             height=$(($scaling * $base_height))
             width=$(($scaling * $base_width))
 
-            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | sequential = ${sequential}"
-            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -s ${sequential} >> ${logfile}
+            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | sequential = ${sequential} | hpx_milc = ${hpx_milc}"
+            echo -e "[hpx]\n  max_idle_loop_count=${hpx_milc}" > .hpx.ini
+            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -s ${sequential} --hpx:ini=hpx.max_idle_loop_count=${hpx_milc} >> ${logfile}
             echo "Moving images to the logs directory"
             mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}    
             echo -e "\n"    
@@ -145,6 +146,7 @@ function run_mandelbrot_app_over_num_pus {
     local backend=$4
     local max_num_pus=$5
     local sequential=$6
+    local hpx_milc=$7
 
     if [ "${sequential}" = true ]; then
         local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-seq_baseline-mandelbrot_over_num_pus.log
@@ -159,8 +161,9 @@ function run_mandelbrot_app_over_num_pus {
     for (( num_pus=1; num_pus<=max_num_pus; num_pus++ )); do
         for ((rep=1; rep<=num_repetitions; rep++)); do
             
-            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | sequential = ${sequential}"
-            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -s ${sequential} >> ${logfile}
+            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | sequential = ${sequential} | hpx_milc = ${hpx_milc}"
+            echo -e "[hpx]\n  max_idle_loop_count=${hpx_milc}" > .hpx.ini
+            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -s ${sequential} --hpx:ini=hpx.max_idle_loop_count=${hpx_milc} >> ${logfile}
             echo "Moving images to the logs directory"
             mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}    
             echo ""
@@ -180,6 +183,7 @@ function run_mandelbrot_app_over_nstripes {
     local nstripes_start=$7
     local nstripes_stop=$8
     local nstripes_step=$9
+    local hpx_milc=$10
 
     local logfile=${REPO_ROOT_PATH}${LOGS_PATH}${backend}-mandelbrot_over_nstripes.log
     touch ${logfile}
@@ -187,10 +191,10 @@ function run_mandelbrot_app_over_nstripes {
     echo -e "\n===== RUNNING THE APPLICATION WITH ${backend} BACKEND (over nstripes) ====="
 
     for nstripes in `seq ${nstripes_start} ${nstripes_step} ${nstripes_stop}`; do
-        for ((rep=1; rep<=num_repetitions; rep++)); do
-            
-            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | nstripes = ${nstripes}"
-            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -i ${mandelbrot_iter} -n ${nstripes}>> ${logfile}
+        for ((rep=1; rep<=num_repetitions; rep++)); do 
+            echo "Executing mandelbrot_app with height=$height | width=$width | num_pus = ${num_pus} | nstripes = ${nstripes} | hpx_milc = ${hpx_milc}"
+            echo -e "[hpx]\n  max_idle_loop_count=${hpx_milc}" > .hpx.ini
+            ./opencv_mandelbrot -h $height -w $width -b $backend --hpx:threads ${num_pus} -i ${mandelbrot_iter} -n ${nstripes} --hpx:ini=hpx.max_idle_loop_count=${hpx_milc} >> ${logfile}
             echo "Moving images to the logs directory"
             mv *.png ${REPO_ROOT_PATH}${LOGS_PATH}    
             echo ""
@@ -215,6 +219,8 @@ echo "    LOGS_PATH = ${LOGS_PATH}"
 echo "    APP_PATH = ${APP_PATH}"
 echo -e "    REPO_ROOT_PATH = ${REPO_ROOT_PATH}\n"
 
+max_idle_loop_count=1
+
 
 echo "============================================================================="
 echo "============================================================================="
@@ -225,40 +231,40 @@ echo "==========================================================================
 mode="release"
 
 # number of repetitions
-num_reps=3
+num_reps=1
 # base height of the generated image
 base_height=480
 # base width of the generated image
 base_width=540
 # number of times the base image is scaled
-num_scalings=10
+num_scalings=5
 # number of processing units used in the experiment
 num_pus=4
 # should the run be sequential
 sequential=false
 
-echo "Heating up the cores with unlogged run."
+echo -e "\nHeating up the cores with unlogged run."
 build_app ${OPENCV_BUILD_PATH}hpx/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX OFF OFF ${mode}
 ./opencv_mandelbrot -h 1200 -w 1350 -b "heat-up_run"
 
-echo "Running sequential baseline over workload size"
+echo -e "\nRunning sequential baseline over workload size"
 build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "pthreads" ${num_pus} true
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "pthreads" ${num_pus} true ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}hpx/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx" ${num_pus} ${sequential}
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "hpx" ${num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}hpx_startstop/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "hpx_startstop" ${num_pus} ${sequential}
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "hpx_startstop" ${num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "tbb" ${num_pus} ${sequential}
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "tbb" ${num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "omp" ${num_pus} ${sequential}
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "omp" ${num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_worksize 480 540 ${num_scalings} ${num_reps} "pthreads" ${num_pus} ${sequential}
+run_mandelbrot_app_over_worksize ${base_height} ${base_width} ${num_scalings} ${num_reps} "pthreads" ${num_pus} ${sequential} ${max_idle_loop_count}
 
 echo "============================================================================="
 echo "============================================================================="
@@ -273,30 +279,30 @@ height=$((480*10))
 # width of the image
 width=$((540*10))
 # number of repetitions of the experiment
-num_reps=3
+num_reps=1
 # maximum number of processing units that will be used in the experiment
-max_num_pus=8
+max_num_pus=4
 # as above
 sequential=false
 
 echo "Running sequential baseline over number of PUs."
 build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus} true
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus} true ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}hpx/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx" ${max_num_pus} ${sequential}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx" ${max_num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}hpx_startstop/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_startstop" ${max_num_pus} ${sequential}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "hpx_startstop" ${max_num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "tbb" ${max_num_pus} ${sequential}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "tbb" ${max_num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "omp" ${max_num_pus} ${sequential}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "omp" ${max_num_pus} ${sequential} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus} ${sequential}
+run_mandelbrot_app_over_num_pus ${height} ${width} ${num_reps} "pthreads" ${max_num_pus} ${sequential} ${max_idle_loop_count}
 
 echo "============================================================================="
 echo "============================================================================="
@@ -307,30 +313,30 @@ echo "==========================================================================
 mode="release"
 height=$((480*10))
 width=$((540*10))
-num_reps=3
+num_reps=1
 # number of processing units used in the experiment
 num_pus=4
 #number of internal mandelbrot iterations for each body of parallel_for loop
 mandelbrot_iter=10
 # variables to setup the sweep range and granularity
 nstripes_start="-1"
-nstripes_stop=$((100))
+nstripes_stop=$((2))
 nstripes_step=$((1))
 
 build_app ${OPENCV_BUILD_PATH}hpx/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX OFF OFF ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}hpx_startstop/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON OFF ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "omp" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "omp" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 # echo "============================================================================="
 # echo "============================================================================="
@@ -343,16 +349,16 @@ run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num
 # nstripes_step=$(((${nstripes_stop}-${nstripes_start})/50))
 
 # build_app ${OPENCV_BUILD_PATH}hpx/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX OFF OFF ${mode}
-# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 # build_app ${OPENCV_BUILD_PATH}hpx_startstop/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON OFF ${mode}
-# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "hpx_startstop" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 # build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "tbb" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 # build_app ${OPENCV_BUILD_PATH}tbb/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "omp" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "omp" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}
 
 # build_app ${OPENCV_BUILD_PATH}pthreads/${mode} ${HPX_BUILD_PATH}${mode}/lib/cmake/HPX ON ON ${mode}
-# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step}
+# run_mandelbrot_app_over_nstripes ${height} ${width} ${num_reps} "pthreads" ${num_pus} ${mandelbrot_iter} ${nstripes_start} ${nstripes_stop} ${nstripes_step} ${max_idle_loop_count}

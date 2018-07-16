@@ -8,8 +8,6 @@ project(hpx_image_load CXX)
 find_package(HPX REQUIRED)
 find_package(OpenCV REQUIRED)
 
-set(hpx_image_load_FLAGS DEPENDENCIES iostreams_component)
-
 # Build your application using HPX
 add_hpx_executable(hpx_image_load
         ESSENTIAL
