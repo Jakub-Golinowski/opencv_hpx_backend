@@ -52,6 +52,7 @@ function build_opencv {
         local mode=$2
         local with_startstop=$3
         local non_dyn_main=$4
+        local nonet=$5
         
 
         echo -e "\n===== BUILDING OpenCV ${backend_name} in ${mode} mode ====="
@@ -78,6 +79,8 @@ function build_opencv {
                 build_type="Debug"
         elif [ ${mode} = "release" ]; then
             build_type=Release
+        elif [ ${mode} = "relwithdebinfo" ]; then
+            build_type="RelWithDebInfo"
         else
                 echo "ERROR: WRONG mode = ${mode}"
                 exit 1
@@ -90,36 +93,59 @@ function build_opencv {
         echo "Backend prefix: ${backend_prefix}"
 
         if [ ${backend_prefix} = hpx ]; then
-            if [ ${non_dyn_main} = "ON" ]; then
+            if [ ${non_dyn_main} = "ON" -a ${nonet} = "ON" ]; then
+                echo "ON ON"
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11_non-dynamic_hpx_main_nonet/${mode}/lib/cmake/HPX"
+            elif [ ${non_dyn_main} = "OFF" -a ${nonet} = "ON" ]; then
+                echo "OFF ON"
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11_nonet/${mode}/lib/cmake/HPX"
+            elif [ ${non_dyn_main} = "ON" -a ${nonet} = "OFF" ]; then
+                echo "ON OFF"
                 hpx_dir="/home/jakub/hpx_repo/build/hpx_11_non-dynamic_hpx_main/${mode}/lib/cmake/HPX"
+            elif [ ${non_dyn_main} = "OFF" -a ${nonet} = "OFF" ]; then
+                echo "OFF OFF"
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX"
+            else
+                echo "ERROR: WRONG non_dyn_main = ${non_dyn_main}"
+                exit 1
+            fi
+
+            if [ ${nonet} = "ON" ]; then
+                hpx_dir="/home/jakub/hpx_repo/build/hpx_11_non-dynamic_hpx_main_nonet/${mode}/lib/cmake/HPX"
             elif [ ${non_dyn_main} = "OFF" ]; then
                 hpx_dir="/home/jakub/hpx_repo/build/hpx_11/${mode}/lib/cmake/HPX"
             else
                 echo "ERROR: WRONG non_dyn_main = ${non_dyn_main}"
                 exit 1
             fi
-                cmake -DCMAKE_BUILD_TYPE=${build_type} \
-                      -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-                      -DWITH_HPX=ON \
-                      -DWITH_HPX_STARTSTOP=${with_startstop} \
-                      -DHPX_DIR=${hpx_dir} \
-                      ../../../
-        elif [ ${backend_prefix} = tbb ]; then
-                cmake -DCMAKE_BUILD_TYPE=${build_type} \
-              -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-              -DWITH_TBB=ON \
-              -DBUILD_TBB=ON \
-              ../../../
-        elif [ ${backend_prefix} = "omp" ]; then
-                cmake -DCMAKE_BUILD_TYPE=${build_type} \
-                          -DWITH_OPENMP=ON \
+
+            echo "Using hpx build from: ${hpx_dir}"
+
+            cmake -DCMAKE_BUILD_TYPE=${build_type} \
                   -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-              ../../../
+                  -DWITH_HPX=ON \
+                  -DWITH_HPX_STARTSTOP=${with_startstop} \
+                  -DHPX_DIR=${hpx_dir} \
+                  ../../../
+
+        elif [ ${backend_prefix} = tbb ]; then
+            cmake -DCMAKE_BUILD_TYPE=${build_type} \
+                  -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+                  -DWITH_TBB=ON \
+                  -DBUILD_TBB=ON \
+                  ../../../
+
+        elif [ ${backend_prefix} = "omp" ]; then
+            cmake -DCMAKE_BUILD_TYPE=${build_type} \
+                  -DWITH_OPENMP=ON \
+                  -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+                  ../../../
+
         elif [ ${backend_prefix} = "pth" ]; then
-                cmake -DCMAKE_BUILD_TYPE=${build_type} \
-              -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
-              ../../../
-    fi
+            cmake -DCMAKE_BUILD_TYPE=${build_type} \
+                  -DCMAKE_INSTALL_PREFIX=~/packages/opencv/with_${backend_name}/ \
+                  ../../../
+        fi
 
         echo -e "\nBuilding OpenCV"      
 
@@ -142,12 +168,15 @@ echo "        LOGS_PATH = ${LOGS_PATH}"
 echo "        OPENCV_PATH = ${OPENCV_PATH}"
 echo "        REPO_ROOT_PATH = ${REPO_ROOT_PATH}"
 
+modes_list="debug release relwithdebinfo"
 
-for mode in "debug" "release"; do
-    build_opencv "hpx" "${mode}" "OFF" "OFF" 
-    build_opencv "hpx_non-dyn_main" "${mode}" "OFF" "ON"
-    build_opencv "hpx_startstop" "${mode}" "ON" "OFF" 
-
+for mode in ${modes_list}; do
+    build_opencv "hpx" "${mode}" "OFF" "OFF" "OFF"
+    build_opencv "hpx_non-dyn_main_nonet" "${mode}" "OFF" "ON" "ON"
+    
+    build_opencv "hpx_startstop" "${mode}" "ON" "OFF" "OFF"
+    build_opencv "hpx_startstop_non-dyn_main_nonet" "${mode}" "ON" "ON" "ON"
+    
     build_opencv "tbb" "${mode}" "NA" "NA" 
     build_opencv "omp" "${mode}" "NA" "NA" 
     build_opencv "pthreads" "${mode}" "NA" "NA" 
