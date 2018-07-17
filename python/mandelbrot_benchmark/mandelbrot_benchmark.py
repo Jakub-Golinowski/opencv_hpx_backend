@@ -9,8 +9,9 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 class Metric(Enum):
     PARALLEL_TIME = 0
-    SEQUENTIAL_TIME = 1
-    SPEEDUP = 2
+    PIXEL_PER_SEC = 1
+    SEQUENTIAL_TIME = 2
+    SPEEDUP = 3
 
 
 class Sweep(Enum):
@@ -49,6 +50,7 @@ def plot_backends_over_key(backend_names, backends_perf_dict,
                      markeredgewidth=1, label=backend_name)
 
     ax.xaxis.set_major_formatter(EngFormatter())
+    ax.yaxis.set_major_formatter(EngFormatter())
 
     plt.title(title)
     plt.xlabel(xlabel)
@@ -83,19 +85,22 @@ def parse_entry(lines, offset, sweep=Sweep.SIZE):
     time = float(lines[0 + offset + 1].split(" ")[-2])
 
     if sweep == Sweep.SIZE:
-        return [height*width, time]
+        return [height*width, time, height*width / time]
     elif sweep == Sweep.NUM_PUS:
-        return [num_pus, time]
+        return [num_pus, time, height*width / time]
     elif sweep == Sweep.NSTRIPES:
-        return [nstripes, time]
+        return [nstripes, time, height*width / time]
     else:
         print("ERROR: Wrong Sweep: " + str(sweep))
         exit(-1)
 
 
 def extract_time_single_backend(backend_name, sweep):
-    # Each entry of dict is a list of:
-    # 0 parallel time
+    # Each entry of dict is identified by the key depending on the sweep
+    # param and the value is a list of:
+    # [0] parallel time
+    # [1] processing speed (pix/s)
+
     backend_perf_dict = {}
     backend_std_perf_dict = {}
     logfile = ""
@@ -169,18 +174,18 @@ def extract_perf(backend_names, sweep, use_sequential_baseline=True):
     # Append speedup to backend_perf_dict
     for backend_name in backends_dict:
         for key in backends_dict[backend_name].keys():
-            t_par = backends_dict[backend_name][key][0]
-            t_seq = backends_dict[backend_name][key][1]
+            t_par = backends_dict[backend_name][key][Metric.PARALLEL_TIME.value]
+            t_seq = backends_dict[backend_name][key][Metric.SEQUENTIAL_TIME.value]
             speedup = t_seq / t_par
             backends_dict[backend_name][key].append(speedup)
 
     for backend_name in backends_std_dict:
         for key in backends_std_dict[backend_name].keys():
-            t_par = backends_dict[backend_name][key][0]
-            t_seq = backends_dict[backend_name][key][1]
+            t_par = backends_dict[backend_name][key][Metric.PARALLEL_TIME.value]
+            t_seq = backends_dict[backend_name][key][Metric.SEQUENTIAL_TIME.value]
             speedup = t_seq / t_par
-            std_par = backends_std_dict[backend_name][key][0]
-            std_seq = backends_std_dict[backend_name][key][1]
+            std_par = backends_std_dict[backend_name][key][Metric.PARALLEL_TIME.value]
+            std_seq = backends_std_dict[backend_name][key][Metric.SEQUENTIAL_TIME.value]
             std_speedup = ((std_seq/t_seq) + (std_par/t_par)) * speedup
             backends_std_dict[backend_name][key].append(std_speedup)
 
@@ -220,6 +225,17 @@ if __name__ == "__main__":
                                  "image size",
                                  xlabel="Number of pixels",
                                  ylabel="Processing time [s]",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
+    fig = plot_backends_over_key(backend_names, backends_size_dict,
+                                 backends_size_devs_dict, Metric.PIXEL_PER_SEC,
+                                 title="Number of pixels per second versus "
+                                       "image size",
+                                 xlabel="Number of pixels",
+                                 ylabel="Processing speed [pix/s]",
                                  save_path=im_save_path)
     if os.path.isdir(pdf_save_path):
         pp.savefig(fig)
@@ -267,6 +283,17 @@ if __name__ == "__main__":
     plt.show()
 
     fig = plot_backends_over_key(backend_names, backends_pus_dict,
+                                 backends_pus_std_dict, Metric.PIXEL_PER_SEC,
+                                 title="Number of pixels per second versus "
+                                       "number of threads",
+                                 xlabel="Number of pixels",
+                                 ylabel="Processing speed [pix/s]",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
+    fig = plot_backends_over_key(backend_names, backends_pus_dict,
                                  backends_pus_std_dict, Metric.SEQUENTIAL_TIME,
                                  title="Sequential processing time as function of "
                                  "number of threads",
@@ -307,6 +334,18 @@ if __name__ == "__main__":
     if os.path.isdir(pdf_save_path):
         pp.savefig(fig)
     plt.show()
+
+    fig = plot_backends_over_key(backend_names, backends_nstripes_dict,
+                                 backends_nstripes_stds_dict, Metric.PIXEL_PER_SEC,
+                                 title="Number of pixels per second versus "
+                                       "image size",
+                                 xlabel="Number of pixels",
+                                 ylabel="Processing speed [pix/s]",
+                                 save_path=im_save_path)
+    if os.path.isdir(pdf_save_path):
+        pp.savefig(fig)
+    plt.show()
+
 
     backend_names = ["tbb", "omp", "pthreads"]
     backends_nstripes_dict, backends_nstripes_stds_dict =\
