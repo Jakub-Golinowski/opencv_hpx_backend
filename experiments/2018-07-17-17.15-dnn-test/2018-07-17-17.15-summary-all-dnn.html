@@ -1,0 +1,3183 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<title>Summary report for 156 tests from 4 test logs</title>
+<style type="text/css">
+html, body {font-family: Lucida Console, Courier New, Courier;font-size: 16px;color:#3e4758;}
+.tbl{background:none repeat scroll 0 0 #FFFFFF;border-collapse:collapse;font-family:"Lucida Sans Unicode","Lucida Grande",Sans-Serif;font-size:14px;margin:20px;text-align:left;width:480px;margin-left: auto;margin-right: auto;white-space:nowrap;}
+.tbl span{display:block;white-space:nowrap;}
+.tbl thead tr:last-child th {padding-bottom:5px;}
+.tbl tbody tr:first-child td {border-top:3px solid #6678B1;}
+.tbl th{border:none;color:#003399;font-size:16px;font-weight:normal;white-space:nowrap;padding:3px 10px;}
+.tbl td{border:none;border-bottom:1px solid #CCCCCC;color:#666699;padding:6px 8px;white-space:nowrap;}
+.tbl tbody tr:hover td{color:#000099;}
+.tbl caption{font:italic 16px "Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;padding:0 0 5px;text-align:right;white-space:normal;}
+.firstingroup {border-top:2px solid #6678B1;}
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript">
+function abs(val) { return val < 0 ? -val : val }
+$(function(){
+  //generate filter rows
+  $("div.tableFormatter table.tbl").each(function(tblIdx, tbl) {
+    var head = $("thead", tbl)
+    var filters = $("<tr></tr>")
+    var hasAny = false
+    $("tr:first th", head).each(function(colIdx, col) {
+      col = $(col)
+      var cell
+      var id = "t" + tblIdx + "r" + colIdx
+      if (col.hasClass("col_name")){
+        cell = $("<th><input id='" + id + "' name='" + id + "' type='text' style='width:100%' class='filter_col_name' title='Regular expression for name filtering (&quot;resize.*640x480&quot; - resize tests on VGA resolution)'></input></th>")
+        hasAny = true
+      }
+      else if (col.hasClass("col_rel")){
+        cell = $("<th><input id='" + id + "' name='" + id + "' type='text' style='width:100%' class='filter_col_rel' title='Filter out lines with a x-factor of acceleration less than Nx'></input></th>")
+        hasAny = true
+      }
+      else if (col.hasClass("col_cr")){
+        cell = $("<th><input id='" + id + "' name='" + id + "' type='text' style='width:100%' class='filter_col_cr' title='Filter out lines with a percentage of acceleration less than N%'></input></th>")
+        hasAny = true
+      }
+      else
+        cell = $("<th></th>")
+      cell.appendTo(filters)
+    })
+
+   if (hasAny){
+     $(tbl).wrap("<form id='form_t" + tblIdx + "' method='get' action=''></form>")
+     $("<input it='test' type='submit' value='Apply Filters' style='margin-left:10px;'></input>")
+       .appendTo($("th:last", filters.appendTo(head)))
+   }
+  })
+
+  //get filter values
+  var vars = []
+  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&')
+  for(var i = 0; i < hashes.length; ++i)
+  {
+     hash = hashes[i].split('=')
+     vars.push(decodeURIComponent(hash[0]))
+     vars[decodeURIComponent(hash[0])] = decodeURIComponent(hash[1]);
+  }
+
+  //set filter values
+  for(var i = 0; i < vars.length; ++i)
+     $("#" + vars[i]).val(vars[vars[i]])
+
+  //apply filters
+  $("div.tableFormatter table.tbl").each(function(tblIdx, tbl) {
+      filters = $("input:text", tbl)
+      var predicate = function(row) {return true;}
+      var empty = true
+      $.each($("input:text", tbl), function(i, flt) {
+         flt = $(flt)
+         var val = flt.val()
+         var pred = predicate;
+         if(val) {
+           empty = false
+           var colIdx = parseInt(flt.attr("id").slice(flt.attr("id").indexOf('r') + 1))
+           if(flt.hasClass("filter_col_name")) {
+              var re = new RegExp(val);
+              predicate = function(row) {
+                if (re.exec($(row.get(colIdx)).text()) == null)
+                  return false
+                return pred(row)
+          }
+           } else if(flt.hasClass("filter_col_rel")) {
+              var percent = parseFloat(val)
+              if (percent < 0) {
+                predicate = function(row) {
+                  var val = parseFloat($(row.get(colIdx)).text())
+                  if (!val || val >= 1 || val > 1+percent)
+                    return false
+                  return pred(row)
+            }
+              } else {
+                predicate = function(row) {
+                  var val = parseFloat($(row.get(colIdx)).text())
+                  if (!val || val < percent)
+                    return false
+                  return pred(row)
+            }
+              }
+           } else if(flt.hasClass("filter_col_cr")) {
+              var percent = parseFloat(val)
+              predicate = function(row) {
+                var val = parseFloat($(row.get(colIdx)).text())
+                if (!val || val < percent)
+                  return false
+                return pred(row)
+          }
+           }
+         }
+      });
+      if (!empty){
+         $("tbody tr", tbl).each(function (i, tbl_row) {
+            if(!predicate($("td", tbl_row)))
+               $(tbl_row).remove()
+         })
+         if($("tbody tr", tbl).length == 0) {
+           $("<tr><td colspan='"+$("thead tr:first th", tbl).length+"'>No results mathing your search criteria</td></tr>")
+             .appendTo($("tbody", tbl))
+         }
+      }
+  })
+})
+</script>
+</head>
+<body>
+<div class="tableFormatter">
+<table class="tbl">
+ <caption>Geometric mean (ms)</caption>
+ <thead>
+  <tr>
+   <th align="center" valign="top" class="col_name">
+    Name of Test
+   </th>
+   <th align="center" valign="top">
+    2018-07-17-17.15-perf<br/>dnn<br/>hpx-4thr-1000000milc-1000000mibt
+   </th>
+   <th align="center" valign="top">
+    2018-07-17-17.18-perf<br/>dnn<br/>pthreads<br/>master-4thr
+   </th>
+   <th align="center" valign="top">
+    2018-07-17-17.21-perf<br/>dnn<br/>tbb-4thr
+   </th>
+   <th align="center" valign="top">
+    2018-07-17-17.24-perf<br/>dnn<br/>omp-4thr
+   </th>
+   <th align="center" valign="top" class="col_rel">
+    2018-07-17-17.18-perf<br/>dnn<br/>pthreads<br/>master-4thr<br/>vs<br/>2018-07-17-17.15-perf<br/>dnn<br/>hpx-4thr-1000000milc-1000000mibt<br/>(x-factor)
+   </th>
+   <th align="center" valign="top" class="col_rel">
+    2018-07-17-17.21-perf<br/>dnn<br/>tbb-4thr<br/>vs<br/>2018-07-17-17.15-perf<br/>dnn<br/>hpx-4thr-1000000milc-1000000mibt<br/>(x-factor)
+   </th>
+   <th align="center" valign="top" class="col_rel">
+    2018-07-17-17.24-perf<br/>dnn<br/>omp-4thr<br/>vs<br/>2018-07-17-17.15-perf<br/>dnn<br/>hpx-4thr-1000000milc-1000000mibt<br/>(x-factor)
+   </th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr class=" firstingroup">
+   <td>
+    AlexNet::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    28.026
+   </td>
+   <td align="center" style="color:green;">
+    26.460
+   </td>
+   <td align="center">
+    27.052
+   </td>
+   <td align="center">
+    26.855
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    DenseNet_121::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    110.042
+   </td>
+   <td align="center" style="color:green;">
+    92.123
+   </td>
+   <td align="center" style="color:green;">
+    99.235
+   </td>
+   <td align="center" style="color:green;">
+    92.079
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.19
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    EAST_text_detection::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    176.192
+   </td>
+   <td align="center" style="color:green;">
+    165.847
+   </td>
+   <td align="center">
+    168.994
+   </td>
+   <td align="center" style="color:green;">
+    161.756
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    ENet::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    147.083
+   </td>
+   <td align="center" style="color:green;">
+    136.352
+   </td>
+   <td align="center" style="color:green;">
+    139.220
+   </td>
+   <td align="center" style="color:green;">
+    139.414
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    FastNeuralStyle_eccv16::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    256.333
+   </td>
+   <td align="center">
+    261.210
+   </td>
+   <td align="center">
+    265.237
+   </td>
+   <td align="center">
+    256.187
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.97
+   </td>
+   <td align="center">
+    1.00
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    GoogLeNet::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    40.912
+   </td>
+   <td align="center" style="color:green;">
+    33.005
+   </td>
+   <td align="center" style="color:green;">
+    34.663
+   </td>
+   <td align="center" style="color:green;">
+    34.088
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.24
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.18
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    Inception_5h::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    44.033
+   </td>
+   <td align="center" style="color:green;">
+    35.622
+   </td>
+   <td align="center" style="color:green;">
+    36.619
+   </td>
+   <td align="center" style="color:green;">
+    36.492
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.24
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.21
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    Inception_v2_SSD_TensorFlow::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    111.124
+   </td>
+   <td align="center" style="color:green;">
+    99.520
+   </td>
+   <td align="center" style="color:green;">
+    100.215
+   </td>
+   <td align="center" style="color:green;">
+    99.128
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    MobileNet_SSD_Caffe::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    53.881
+   </td>
+   <td align="center" style="color:green;">
+    49.251
+   </td>
+   <td align="center" style="color:green;">
+    50.937
+   </td>
+   <td align="center" style="color:green;">
+    49.787
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    MobileNet_SSD_v1_TensorFlow::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    59.519
+   </td>
+   <td align="center" style="color:green;">
+    54.355
+   </td>
+   <td align="center" style="color:green;">
+    55.819
+   </td>
+   <td align="center" style="color:green;">
+    54.671
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.07
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    MobileNet_SSD_v2_TensorFlow::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    81.083
+   </td>
+   <td align="center" style="color:green;">
+    71.329
+   </td>
+   <td align="center" style="color:green;">
+    73.804
+   </td>
+   <td align="center" style="color:green;">
+    71.923
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    OpenFace::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    11.806
+   </td>
+   <td align="center" style="color:green;">
+    7.484
+   </td>
+   <td align="center" style="color:green;">
+    8.327
+   </td>
+   <td align="center" style="color:green;">
+    7.568
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.58
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.42
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.56
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    OpenPose_pose_coco::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    2061.349
+   </td>
+   <td align="center">
+    2097.486
+   </td>
+   <td align="center">
+    2099.976
+   </td>
+   <td align="center">
+    2041.387
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    OpenPose_pose_mpi::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    2027.454
+   </td>
+   <td align="center">
+    2031.718
+   </td>
+   <td align="center">
+    2073.312
+   </td>
+   <td align="center">
+    1994.381
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    OpenPose_pose_mpi_faster_4_stages::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    1367.083
+   </td>
+   <td align="center">
+    1370.245
+   </td>
+   <td align="center">
+    1379.833
+   </td>
+   <td align="center">
+    1343.900
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    ResNet_50::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    96.769
+   </td>
+   <td align="center" style="color:green;">
+    81.416
+   </td>
+   <td align="center" style="color:green;">
+    83.839
+   </td>
+   <td align="center" style="color:green;">
+    83.049
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.19
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.15
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.17
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    SSD::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    612.558
+   </td>
+   <td align="center">
+    592.246
+   </td>
+   <td align="center">
+    611.018
+   </td>
+   <td align="center">
+    602.127
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    SqueezeNet_v1_1::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    11.357
+   </td>
+   <td align="center" style="color:green;">
+    8.713
+   </td>
+   <td align="center" style="color:green;">
+    9.148
+   </td>
+   <td align="center" style="color:green;">
+    8.895
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.30
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.24
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.28
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    YOLOv3::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    500.985
+   </td>
+   <td align="center">
+    495.442
+   </td>
+   <td align="center">
+    498.349
+   </td>
+   <td align="center">
+    483.121
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    opencv_face_detector::DNNTestNetwork::(DNN_BACKEND_OPENCV, DNN_TARGET_CPU)
+   </td>
+   <td align="center">
+    30.877
+   </td>
+   <td align="center" style="color:green;">
+    28.699
+   </td>
+   <td align="center">
+    29.494
+   </td>
+   <td align="center" style="color:green;">
+    28.426
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.875
+   </td>
+   <td align="center" style="color:green;">
+    1.707
+   </td>
+   <td align="center">
+    1.820
+   </td>
+   <td align="center" style="color:green;">
+    1.782
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.358
+   </td>
+   <td align="center" style="color:green;">
+    0.295
+   </td>
+   <td align="center" style="color:green;">
+    0.300
+   </td>
+   <td align="center" style="color:green;">
+    0.296
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.21
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.21
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.012
+   </td>
+   <td align="center">
+    1.995
+   </td>
+   <td align="center">
+    2.044
+   </td>
+   <td align="center" style="color:green;">
+    1.889
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.340
+   </td>
+   <td align="center" style="color:red;">
+    0.366
+   </td>
+   <td align="center" style="color:green;">
+    0.289
+   </td>
+   <td align="center" style="color:green;">
+    0.284
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.93
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.18
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.491
+   </td>
+   <td align="center" style="color:green;">
+    1.373
+   </td>
+   <td align="center" style="color:red;">
+    1.586
+   </td>
+   <td align="center" style="color:green;">
+    1.419
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.94
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.437
+   </td>
+   <td align="center" style="color:green;">
+    0.365
+   </td>
+   <td align="center" style="color:green;">
+    0.366
+   </td>
+   <td align="center" style="color:green;">
+    0.378
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.19
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.16
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.881
+   </td>
+   <td align="center">
+    1.879
+   </td>
+   <td align="center">
+    1.911
+   </td>
+   <td align="center">
+    1.834
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.566
+   </td>
+   <td align="center">
+    0.564
+   </td>
+   <td align="center">
+    0.546
+   </td>
+   <td align="center" style="color:green;">
+    0.510
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    0.887
+   </td>
+   <td align="center" style="color:green;">
+    0.841
+   </td>
+   <td align="center" style="color:green;">
+    0.791
+   </td>
+   <td align="center" style="color:green;">
+    0.811
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.301
+   </td>
+   <td align="center" style="color:green;">
+    0.219
+   </td>
+   <td align="center">
+    0.300
+   </td>
+   <td align="center" style="color:green;">
+    0.219
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.38
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.38
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.881
+   </td>
+   <td align="center" style="color:green;">
+    1.768
+   </td>
+   <td align="center">
+    1.958
+   </td>
+   <td align="center" style="color:green;">
+    1.692
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.617
+   </td>
+   <td align="center" style="color:green;">
+    0.532
+   </td>
+   <td align="center" style="color:red;">
+    0.782
+   </td>
+   <td align="center" style="color:green;">
+    0.517
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.16
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.79
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.19
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.202
+   </td>
+   <td align="center">
+    2.135
+   </td>
+   <td align="center" style="color:red;">
+    2.356
+   </td>
+   <td align="center">
+    2.134
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.93
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.562
+   </td>
+   <td align="center" style="color:red;">
+    0.601
+   </td>
+   <td align="center" style="color:red;">
+    0.911
+   </td>
+   <td align="center">
+    0.591
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.94
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.62
+   </td>
+   <td align="center">
+    0.95
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.586
+   </td>
+   <td align="center">
+    2.566
+   </td>
+   <td align="center">
+    2.567
+   </td>
+   <td align="center">
+    2.561
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.654
+   </td>
+   <td align="center" style="color:green;">
+    0.594
+   </td>
+   <td align="center" style="color:green;">
+    0.601
+   </td>
+   <td align="center" style="color:green;">
+    0.588
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    7.098
+   </td>
+   <td align="center">
+    7.062
+   </td>
+   <td align="center">
+    7.320
+   </td>
+   <td align="center">
+    7.143
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.97
+   </td>
+   <td align="center">
+    0.99
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.890
+   </td>
+   <td align="center">
+    1.821
+   </td>
+   <td align="center">
+    1.888
+   </td>
+   <td align="center">
+    1.814
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    11.705
+   </td>
+   <td align="center">
+    11.926
+   </td>
+   <td align="center">
+    11.959
+   </td>
+   <td align="center">
+    11.765
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.99
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    3.026
+   </td>
+   <td align="center">
+    3.039
+   </td>
+   <td align="center">
+    3.138
+   </td>
+   <td align="center">
+    3.020
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center">
+    1.00
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    4.667
+   </td>
+   <td align="center">
+    4.690
+   </td>
+   <td align="center">
+    4.866
+   </td>
+   <td align="center">
+    4.591
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.375
+   </td>
+   <td align="center">
+    1.355
+   </td>
+   <td align="center">
+    1.400
+   </td>
+   <td align="center">
+    1.324
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    9.286
+   </td>
+   <td align="center">
+    9.296
+   </td>
+   <td align="center">
+    9.487
+   </td>
+   <td align="center">
+    9.184
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    2.766
+   </td>
+   <td align="center" style="color:green;">
+    2.618
+   </td>
+   <td align="center" style="color:red;">
+    2.949
+   </td>
+   <td align="center">
+    2.680
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.94
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    3.808
+   </td>
+   <td align="center">
+    3.800
+   </td>
+   <td align="center">
+    3.792
+   </td>
+   <td align="center">
+    3.752
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.010
+   </td>
+   <td align="center">
+    0.995
+   </td>
+   <td align="center" style="color:red;">
+    1.107
+   </td>
+   <td align="center">
+    0.973
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.91
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    5.243
+   </td>
+   <td align="center">
+    5.230
+   </td>
+   <td align="center">
+    5.364
+   </td>
+   <td align="center">
+    5.177
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.376
+   </td>
+   <td align="center">
+    1.371
+   </td>
+   <td align="center">
+    1.374
+   </td>
+   <td align="center" style="color:green;">
+    1.307
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    18.955
+   </td>
+   <td align="center">
+    19.065
+   </td>
+   <td align="center">
+    19.382
+   </td>
+   <td align="center">
+    19.282
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.98
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    4.885
+   </td>
+   <td align="center">
+    4.872
+   </td>
+   <td align="center">
+    4.983
+   </td>
+   <td align="center">
+    4.959
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    0.99
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    39.720
+   </td>
+   <td align="center">
+    39.123
+   </td>
+   <td align="center">
+    39.736
+   </td>
+   <td align="center">
+    37.829
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    10.110
+   </td>
+   <td align="center">
+    9.854
+   </td>
+   <td align="center">
+    10.209
+   </td>
+   <td align="center" style="color:green;">
+    9.606
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    13.684
+   </td>
+   <td align="center">
+    13.842
+   </td>
+   <td align="center">
+    14.398
+   </td>
+   <td align="center">
+    13.555
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.95
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    3.971
+   </td>
+   <td align="center" style="color:green;">
+    3.597
+   </td>
+   <td align="center" style="color:red;">
+    4.184
+   </td>
+   <td align="center" style="color:green;">
+    3.542
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.95
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    27.540
+   </td>
+   <td align="center">
+    26.322
+   </td>
+   <td align="center">
+    26.521
+   </td>
+   <td align="center" style="color:green;">
+    25.915
+   </td>
+   <td align="center">
+    1.05
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    9.536
+   </td>
+   <td align="center" style="color:green;">
+    7.772
+   </td>
+   <td align="center" style="color:green;">
+    7.765
+   </td>
+   <td align="center" style="color:green;">
+    7.610
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.23
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.23
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.25
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.112
+   </td>
+   <td align="center" style="color:green;">
+    0.983
+   </td>
+   <td align="center">
+    1.059
+   </td>
+   <td align="center" style="color:green;">
+    0.991
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+   <td align="center">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.116
+   </td>
+   <td align="center" style="color:green;">
+    1.037
+   </td>
+   <td align="center" style="color:red;">
+    1.315
+   </td>
+   <td align="center" style="color:green;">
+    0.987
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.85
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.556
+   </td>
+   <td align="center">
+    1.598
+   </td>
+   <td align="center" style="color:green;">
+    1.433
+   </td>
+   <td align="center" style="color:green;">
+    1.412
+   </td>
+   <td align="center">
+    0.97
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.622
+   </td>
+   <td align="center" style="color:green;">
+    1.543
+   </td>
+   <td align="center" style="color:red;">
+    1.860
+   </td>
+   <td align="center" style="color:green;">
+    1.478
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.87
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    7.531
+   </td>
+   <td align="center">
+    7.453
+   </td>
+   <td align="center">
+    7.915
+   </td>
+   <td align="center">
+    7.465
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.95
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    7.541
+   </td>
+   <td align="center">
+    7.489
+   </td>
+   <td align="center" style="color:red;">
+    8.458
+   </td>
+   <td align="center">
+    7.470
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.89
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    17.639
+   </td>
+   <td align="center">
+    17.312
+   </td>
+   <td align="center">
+    17.943
+   </td>
+   <td align="center">
+    16.899
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    17.668
+   </td>
+   <td align="center">
+    17.414
+   </td>
+   <td align="center">
+    17.743
+   </td>
+   <td align="center">
+    16.840
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    6.517
+   </td>
+   <td align="center" style="color:green;">
+    5.909
+   </td>
+   <td align="center" style="color:green;">
+    6.036
+   </td>
+   <td align="center" style="color:green;">
+    5.830
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    6.512
+   </td>
+   <td align="center" style="color:green;">
+    5.845
+   </td>
+   <td align="center" style="color:green;">
+    6.046
+   </td>
+   <td align="center" style="color:green;">
+    5.735
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    14.128
+   </td>
+   <td align="center" style="color:green;">
+    12.387
+   </td>
+   <td align="center" style="color:green;">
+    12.842
+   </td>
+   <td align="center" style="color:green;">
+    12.352
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    13.442
+   </td>
+   <td align="center" style="color:green;">
+    12.360
+   </td>
+   <td align="center">
+    12.868
+   </td>
+   <td align="center" style="color:green;">
+    12.370
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+  </tr>
+  <tr class=" firstingroup">
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.825
+   </td>
+   <td align="center" style="color:green;">
+    1.716
+   </td>
+   <td align="center">
+    1.763
+   </td>
+   <td align="center" style="color:green;">
+    1.738
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.427
+   </td>
+   <td align="center" style="color:green;">
+    0.295
+   </td>
+   <td align="center" style="color:green;">
+    0.302
+   </td>
+   <td align="center" style="color:green;">
+    0.296
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.45
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.42
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.44
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.012
+   </td>
+   <td align="center">
+    1.969
+   </td>
+   <td align="center" style="color:green;">
+    1.903
+   </td>
+   <td align="center" style="color:green;">
+    1.903
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.348
+   </td>
+   <td align="center">
+    0.365
+   </td>
+   <td align="center" style="color:green;">
+    0.290
+   </td>
+   <td align="center">
+    0.359
+   </td>
+   <td align="center">
+    0.95
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+   <td align="center">
+    0.97
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.479
+   </td>
+   <td align="center">
+    1.415
+   </td>
+   <td align="center" style="color:green;">
+    1.368
+   </td>
+   <td align="center" style="color:green;">
+    1.363
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.419
+   </td>
+   <td align="center" style="color:green;">
+    0.364
+   </td>
+   <td align="center">
+    0.431
+   </td>
+   <td align="center" style="color:green;">
+    0.363
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.15
+   </td>
+   <td align="center">
+    0.97
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.15
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.884
+   </td>
+   <td align="center">
+    1.899
+   </td>
+   <td align="center">
+    1.914
+   </td>
+   <td align="center">
+    1.858
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.586
+   </td>
+   <td align="center" style="color:green;">
+    0.530
+   </td>
+   <td align="center">
+    0.569
+   </td>
+   <td align="center" style="color:green;">
+    0.530
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    0.873
+   </td>
+   <td align="center" style="color:green;">
+    0.826
+   </td>
+   <td align="center">
+    0.834
+   </td>
+   <td align="center" style="color:green;">
+    0.824
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.320
+   </td>
+   <td align="center" style="color:green;">
+    0.218
+   </td>
+   <td align="center" style="color:green;">
+    0.265
+   </td>
+   <td align="center" style="color:green;">
+    0.218
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.47
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.21
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.47
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.856
+   </td>
+   <td align="center">
+    1.788
+   </td>
+   <td align="center" style="color:green;">
+    1.765
+   </td>
+   <td align="center" style="color:green;">
+    1.678
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(1x1, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.587
+   </td>
+   <td align="center" style="color:green;">
+    0.528
+   </td>
+   <td align="center">
+    0.597
+   </td>
+   <td align="center" style="color:green;">
+    0.522
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.169
+   </td>
+   <td align="center">
+    2.128
+   </td>
+   <td align="center">
+    2.157
+   </td>
+   <td align="center">
+    2.143
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.604
+   </td>
+   <td align="center">
+    0.579
+   </td>
+   <td align="center" style="color:green;">
+    0.498
+   </td>
+   <td align="center" style="color:green;">
+    0.491
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.21
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.23
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    2.570
+   </td>
+   <td align="center">
+    2.557
+   </td>
+   <td align="center">
+    2.583
+   </td>
+   <td align="center">
+    2.533
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    0.715
+   </td>
+   <td align="center" style="color:green;">
+    0.594
+   </td>
+   <td align="center" style="color:green;">
+    0.599
+   </td>
+   <td align="center" style="color:green;">
+    0.587
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.20
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.19
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.22
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    7.053
+   </td>
+   <td align="center">
+    7.090
+   </td>
+   <td align="center">
+    7.182
+   </td>
+   <td align="center">
+    7.082
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.00
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.850
+   </td>
+   <td align="center">
+    1.851
+   </td>
+   <td align="center">
+    1.879
+   </td>
+   <td align="center">
+    1.815
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    11.739
+   </td>
+   <td align="center">
+    11.911
+   </td>
+   <td align="center">
+    11.940
+   </td>
+   <td align="center">
+    11.776
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.00
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    3.132
+   </td>
+   <td align="center">
+    3.067
+   </td>
+   <td align="center">
+    3.174
+   </td>
+   <td align="center">
+    2.989
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    1.05
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    4.655
+   </td>
+   <td align="center">
+    4.640
+   </td>
+   <td align="center">
+    4.678
+   </td>
+   <td align="center">
+    4.630
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.390
+   </td>
+   <td align="center">
+    1.406
+   </td>
+   <td align="center">
+    1.339
+   </td>
+   <td align="center">
+    1.354
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    9.238
+   </td>
+   <td align="center">
+    9.282
+   </td>
+   <td align="center" style="color:red;">
+    9.807
+   </td>
+   <td align="center">
+    9.204
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.94
+   </td>
+   <td align="center">
+    1.00
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(3x3, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    2.734
+   </td>
+   <td align="center">
+    2.642
+   </td>
+   <td align="center">
+    2.672
+   </td>
+   <td align="center">
+    2.644
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    3.828
+   </td>
+   <td align="center">
+    3.819
+   </td>
+   <td align="center">
+    3.996
+   </td>
+   <td align="center">
+    3.725
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center">
+    1.03
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.038
+   </td>
+   <td align="center">
+    0.997
+   </td>
+   <td align="center">
+    0.995
+   </td>
+   <td align="center" style="color:green;">
+    0.943
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    5.235
+   </td>
+   <td align="center">
+    5.182
+   </td>
+   <td align="center">
+    5.259
+   </td>
+   <td align="center">
+    5.151
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.417
+   </td>
+   <td align="center" style="color:green;">
+    1.350
+   </td>
+   <td align="center" style="color:green;">
+    1.329
+   </td>
+   <td align="center" style="color:green;">
+    1.314
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.07
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.08
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    18.929
+   </td>
+   <td align="center">
+    19.140
+   </td>
+   <td align="center">
+    19.673
+   </td>
+   <td align="center">
+    19.212
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center">
+    0.99
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    4.856
+   </td>
+   <td align="center">
+    4.898
+   </td>
+   <td align="center">
+    5.045
+   </td>
+   <td align="center">
+    4.999
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.96
+   </td>
+   <td align="center">
+    0.97
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    39.481
+   </td>
+   <td align="center">
+    39.186
+   </td>
+   <td align="center">
+    39.835
+   </td>
+   <td align="center">
+    37.834
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    1.04
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    10.142
+   </td>
+   <td align="center">
+    9.783
+   </td>
+   <td align="center">
+    10.192
+   </td>
+   <td align="center" style="color:green;">
+    9.608
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.00
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    13.807
+   </td>
+   <td align="center">
+    13.967
+   </td>
+   <td align="center">
+    14.257
+   </td>
+   <td align="center">
+    13.603
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center">
+    0.97
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    3.944
+   </td>
+   <td align="center" style="color:green;">
+    3.623
+   </td>
+   <td align="center">
+    3.791
+   </td>
+   <td align="center" style="color:green;">
+    3.520
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    27.491
+   </td>
+   <td align="center">
+    26.461
+   </td>
+   <td align="center">
+    26.500
+   </td>
+   <td align="center" style="color:green;">
+    25.889
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(5x5, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    9.506
+   </td>
+   <td align="center" style="color:green;">
+    7.732
+   </td>
+   <td align="center" style="color:green;">
+    7.815
+   </td>
+   <td align="center" style="color:green;">
+    7.629
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.23
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.22
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.25
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.121
+   </td>
+   <td align="center" style="color:green;">
+    0.992
+   </td>
+   <td align="center" style="color:green;">
+    0.998
+   </td>
+   <td align="center" style="color:green;">
+    0.993
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.142
+   </td>
+   <td align="center" style="color:green;">
+    1.019
+   </td>
+   <td align="center" style="color:green;">
+    1.025
+   </td>
+   <td align="center" style="color:green;">
+    1.001
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    1.587
+   </td>
+   <td align="center">
+    1.607
+   </td>
+   <td align="center" style="color:green;">
+    1.496
+   </td>
+   <td align="center" style="color:green;">
+    1.416
+   </td>
+   <td align="center">
+    0.99
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 4, 224, 224 }, 64), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    1.563
+   </td>
+   <td align="center">
+    1.551
+   </td>
+   <td align="center" style="color:green;">
+    1.465
+   </td>
+   <td align="center" style="color:green;">
+    1.475
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.07
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    7.554
+   </td>
+   <td align="center">
+    7.476
+   </td>
+   <td align="center" style="color:red;">
+    7.966
+   </td>
+   <td align="center">
+    7.485
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center" style="color:red;font-weight: bold;">
+    0.95
+   </td>
+   <td align="center">
+    1.01
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    7.605
+   </td>
+   <td align="center">
+    7.501
+   </td>
+   <td align="center">
+    7.795
+   </td>
+   <td align="center">
+    7.445
+   </td>
+   <td align="center">
+    1.01
+   </td>
+   <td align="center">
+    0.98
+   </td>
+   <td align="center">
+    1.02
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    18.138
+   </td>
+   <td align="center">
+    17.383
+   </td>
+   <td align="center">
+    17.734
+   </td>
+   <td align="center" style="color:green;">
+    16.875
+   </td>
+   <td align="center">
+    1.04
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.07
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 64, 112, 122 }, 128), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    18.001
+   </td>
+   <td align="center">
+    17.519
+   </td>
+   <td align="center">
+    17.658
+   </td>
+   <td align="center" style="color:green;">
+    16.959
+   </td>
+   <td align="center">
+    1.03
+   </td>
+   <td align="center">
+    1.02
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_OFF)
+   </td>
+   <td align="center">
+    6.535
+   </td>
+   <td align="center" style="color:green;">
+    5.856
+   </td>
+   <td align="center" style="color:green;">
+    5.985
+   </td>
+   <td align="center" style="color:green;">
+    5.750
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.12
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.14
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_2, STRIDE_ON)
+   </td>
+   <td align="center">
+    6.423
+   </td>
+   <td align="center" style="color:green;">
+    5.857
+   </td>
+   <td align="center" style="color:green;">
+    6.048
+   </td>
+   <td align="center" style="color:green;">
+    5.807
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.06
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.11
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_OFF)
+   </td>
+   <td align="center">
+    14.414
+   </td>
+   <td align="center" style="color:green;">
+    12.321
+   </td>
+   <td align="center" style="color:green;">
+    12.800
+   </td>
+   <td align="center" style="color:green;">
+    12.309
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.17
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.13
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.17
+   </td>
+  </tr>
+  <tr>
+   <td>
+    perf::OCL_ConvolutionPerfTest::(11x11, ({ 1, 256, 28, 28 }, 512), GROUP_OFF, STRIDE_ON)
+   </td>
+   <td align="center">
+    13.598
+   </td>
+   <td align="center" style="color:green;">
+    12.443
+   </td>
+   <td align="center">
+    12.993
+   </td>
+   <td align="center" style="color:green;">
+    12.341
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.09
+   </td>
+   <td align="center">
+    1.05
+   </td>
+   <td align="center" style="color:green;font-weight: bold;">
+    1.10
+   </td>
+  </tr>
+ </tbody>
+</table>
+</div>
+</body>
+</html>
