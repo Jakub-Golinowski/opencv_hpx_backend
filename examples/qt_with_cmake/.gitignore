@@ -1,0 +1,6 @@
+qt_with_cmake.config
+qt_with_cmake.creator
+qt_with_cmake.files
+qt_with_cmake.includes
+*.user
+*.autosave
