@@ -1,0 +1,6 @@
+qt_hpx_opencv.config
+qt_hpx_opencv.creator
+qt_hpx_opencv.files
+qt_hpx_opencv.includes
+*.user
+*.autosave
