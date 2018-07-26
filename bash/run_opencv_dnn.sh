@@ -89,6 +89,27 @@ function run_perf_test {
     
     echo -e "=================================================================================================================\n\n"
 }
+
+function sweep_milc_mibt {
+    local module_name=$1
+    local backend_base_name=$2
+    local backend_path=$3
+    local logs_path=$4
+    local test_args=$5
+    local milc_vals="$6"
+    local mibt_vals="$7"
+    local hpx_fixed_options="$8"
+    
+    for milc in ${milc_vals}; do
+        for mibt in ${mibt_vals}; do           
+            echo "Current config: mibt = ${mibt} | milc = ${milc}"
+            backend_name="${backend_base_name}-${milc}milc-${mibt}mibt"
+            test_args="${hpx_fixed_options} --hpx:threads=4 --hpx:ini=hpx.max_idle_loop_count=${milc} --hpx:ini=hpx.max_idle_backoff_time=${mibt} --hpx:dump-config" # --gtest_filter=ConvolutionPerfTest_perf.perf/38"
+            run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
+        done  
+    done
+}
+
 ### ===========================================================
 ###                          MAIN
 ### ===========================================================
@@ -131,29 +152,30 @@ echo -e "\nActivating conda environment (Python 2.7):"
 source activate py27
 python --version
 
-hpx_fixed_options="--hpx:ini=hpx.max_idle_loop_count=1 --hpx:ini=hpx.max_idle_backoff_time=10000 --hpx:ini=hpx.max_background_threads=0 --hpx:ini=hpx.threadpools.io_pool_size=1 --hpx:ini=hpx.threadpools.timer_pool_size=1"
+hpx_fixed_options="--hpx:ini=hpx.max_background_threads=0 --hpx:ini=hpx.threadpools.io_pool_size=1 --hpx:ini=hpx.threadpools.timer_pool_size=1"
 module_name=dnn
-
-
+  
 backend_path="/home/jakub/opencv_repo/build/hpx_non-dyn_main_nonet/release/"
-    backend_name="hpx-4thr"
-    test_args="${hpx_fixed_options} --hpx:threads=4 --hpx:dump-config" # --gtest_filter=ConvolutionPerfTest_perf.perf/38
+    milc=1000000
+    mibt=1000000
+    backend_name="hpx-4thr-${milc}milc-${mibt}mibt"
+    test_args="${hpx_fixed_options} --hpx:threads=4 --hpx:ini=hpx.max_idle_loop_count=${milc} --hpx:ini=hpx.max_idle_backoff_time=${mibt} --hpx:dump-config" # --gtest_filter=ConvolutionPerfTest_perf.perf/38"
     run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
-
-    backend_name="hpx-8thr"
-    test_args="${hpx_fixed_options} --hpx:threads=8 --hpx:dump-config"
-    run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
-
 
 backend_path="/home/jakub/opencv_repo/build/pthreads_master_05.07.18/release"
     backend_name="pthreads_master-4thr"
     test_args="--perf_threads=4"
     run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
 
-    backend_name="pthreads_master-8thr"
-    test_args="--perf_threads=8"
-    run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
+backend_path="/home/jakub/opencv_repo/build/tbb/release"
+    backend_name="tbb-4thr"
+    test_args="--perf_threads=4"
+    run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"    
 
+backend_path="/home/jakub/opencv_repo/build/omp/release"
+    backend_name="omp-4thr"
+    test_args="--perf_threads=4"
+    run_perf_test ${module_name} ${backend_name} ${backend_path} ${logs_path} "${test_args}"
 
 echo -e "\n\nCreating summary"
 python ./summary.py ${logs_path}*.xml -o html > ${logs_path}${TIMESTAMP}-summary.html
