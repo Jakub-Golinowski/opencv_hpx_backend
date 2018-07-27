@@ -19,9 +19,10 @@
 #include <QPushButton>
 #include <QListWidget>
 
-widget::widget(std::function<void(widget *, std::size_t)> callback, QWidget *parent)
+#include "renderwidget.hpp"
+
+widget::widget(std::function<void(widget *)> callback, QWidget *parent)
     : QDialog(parent)
-    , no_threads(50)
     , callback_(callback)
 {
     QHBoxLayout * layout = new QHBoxLayout;
@@ -45,17 +46,18 @@ widget::widget(std::function<void(widget *, std::size_t)> callback, QWidget *par
     list = new QListWidget;
     main_layout->addWidget(list);
 
+    RenderWidget * renderWidget = new RenderWidget(this);
+    renderer = renderWidget;
+    main_layout->addWidget(renderWidget);
+
     setLayout(main_layout);
 }
 
 void widget::threadsafe_add_label(std::size_t i, double t)
 {
     // may be called from any thread, doesn't interact directly with GUI objects
-    QString txt("Thread ");
-    txt.append(QString::number(i))
-       .append(" finished in ")
-       .append(QString::number(t))
-       .append(" seconds");
+    QString txt("ImageBuffer size: ");
+    txt.append(QString::number(i));
 
     QGenericArgument arg("const QString&", &txt);
     // Qt::QueuedConnection makes sure 'add_label' is called in the GUI thread
@@ -81,7 +83,7 @@ void widget::run_clicked(bool)
 {
     run_button->setEnabled(false);
     list->clear();
-    hpx::apply(callback_, this, no_threads);
+    hpx::apply(callback_, this);
 }
 
 void widget::add_label(const QString &text)

@@ -10,6 +10,7 @@
 #include <hpx/lcos/local/spinlock.hpp>
 #include <cstddef>
 #include <functional>
+#include "renderwidget.hpp"
 #endif
 
 class QWidget;
@@ -22,14 +23,16 @@ class widget
     Q_OBJECT
 
     public:
-        widget(std::function<void(widget *, std::size_t)> callback,
+        widget(std::function<void(widget *)> callback,
             QWidget *parent = nullptr);
 
         void threadsafe_add_label(std::size_t i, double t);
 
         void threadsafe_run_finished();
+        RenderWidget* renderer;
 
-    public slots:
+
+public slots:
         void set_threads(int no);
 
         void run_clicked(bool);
@@ -41,5 +44,5 @@ class widget
         hpx::lcos::local::spinlock mutex;
         QListWidget *list;
         QPushButton * run_button;
-        std::function<void(widget *, std::size_t)> callback_;
+        std::function<void(widget *)> callback_;
 };
