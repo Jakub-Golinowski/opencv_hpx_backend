@@ -18,6 +18,7 @@ using hpx::util::high_resolution_timer;
 
 #include <QtWidgets/QApplication>
 #include "widget.hpp"
+#include "martycam.hpp"
 
 #include <opencv2/opencv.hpp>
 
@@ -28,45 +29,22 @@ using hpx::util::high_resolution_timer;
 #include <chrono>
 #include <thread>
 
-void run(widget * w, CaptureThread* captureThread)
+void qt_main(int argc, char ** argv)
 {
-    hpx::cout << "Hello from run.";
+    //  QApplication app(nCmdShow, NULL);
+    QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName("MartyCam");
+    QCoreApplication::setOrganizationDomain("MartyCam");
+    QCoreApplication::setApplicationName("MartyCam");
+    //
+    //
+    //
     hpx::threads::executors::pool_executor defaultExecutor("default");
     hpx::threads::executors::pool_executor blockingExecutor("blocking");
-
-    captureThread->setAbort(false);
-    captureThread->startCapture();
-    hpx::future<void> captureThreadFinished =
-            hpx::async(blockingExecutor, &CaptureThread::run, captureThread);
-
-//    std::this_thread::__sleep_for(std::chrono::seconds(2),
-//                                  std::chrono::nanoseconds(0));
-
-    captureThread->setAbort(true);
-    captureThreadFinished.wait();
-    captureThread->stopCapture();
-
-    cv::Mat frame;
-//    captureThread->capture >> frame;
-//    captureThread->imageBuffer->send()
-        int buff_size = captureThread->imageBuffer->size();
-    w->threadsafe_add_label(buff_size, 0.0);
-    frame = captureThread->imageBuffer->receive();
-
-//    captureThread->imageQueue->pop(frame);
-    w->renderer->process(frame);
-
-    w->threadsafe_run_finished();
-}
-
-void qt_main(int argc, char ** argv, CaptureThread* captureThread)
-{
-    QApplication app(argc, argv);
-
-    using hpx::util::placeholders::_1;
-    widget main(hpx::util::bind(run, _1, captureThread));
-    main.show();
-
+    hpx::cout << "[hpx_main] Created default and " << "blocking"
+              << " pool_executors \n";
+    MartyCam *tracker = new MartyCam(defaultExecutor, blockingExecutor);
+    tracker->show();
     app.exec();
 }
 
@@ -74,27 +52,29 @@ int hpx_main(int argc, char ** argv)
 {
     hpx::cout << "[hpx_main] starting hpx_main in "
               << hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name()
-              << "\n";
+              << " thread pool\n";
 
-    ImageQueue imageQueue = ImageQueue(new boost::lockfree::spsc_queue<cv::Mat, boost::lockfree::capacity<IMAGE_QUEUE_LEN>>);
-    ImageBuffer imageBuffer = ImageBuffer(new ConcurrentCircularBuffer<cv::Mat>);
-    imageBuffer->set_capacity(5);
-    cv::Size size(320,380);
-    int deviceIdx = 0;
+    hpx::threads::thread_id_type id = hpx::threads::get_self_id();
 
-    CaptureThread* captureThread = new CaptureThread(imageQueue, imageBuffer, size, deviceIdx, "");
+    hpx::cout << "[hpx_main] Thread Id = " << id;
 
-    {
-        // Get a reference to one of the main thread
-        hpx::threads::executors::main_pool_executor scheduler;
-        // run an async function on the main thread to start the Qt application
-        hpx::future<void> qt_application
-            = hpx::async(scheduler, qt_main, argc, argv, captureThread);
+    // Get a reference to one of the main thread
+    hpx::threads::executors::main_pool_executor scheduler;
+    // run an async function on the main thread to start the Qt application
+    hpx::future<void> qt_application = hpx::async(scheduler, &qt_main, argc, argv);
 
-        // do something else while qt is executing in the background ...
+    hpx::future<void> test_future
+            = hpx::async(scheduler, [&](){
+                hpx::cout << "Hello from the lambda in the main pool executor.";
 
-        qt_application.wait();
-    }
+                hpx::threads::thread_id_type id = hpx::threads::get_self_id();
+
+                hpx::cout << "Thread Id = " << id;
+            });
+
+    // do something else while qt is executing in the background ...
+    qt_application.wait();
+
     return hpx::finalize();
 }
 

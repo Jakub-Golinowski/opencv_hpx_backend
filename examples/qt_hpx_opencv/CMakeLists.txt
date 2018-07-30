@@ -8,30 +8,60 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #-----------------------------------------------------------------------------
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Svg OpenGL Concurrent)
 
-# set(project_ui
-#     mainwindow.ui)
+#-----------------------------------------------------------------------------
+# Qt resource files
+#-----------------------------------------------------------------------------
+#set(MartyCam_QT_RCCS
+#        resources.qrc
+#)
+
+#-----------------------------------------------------------------------------
+# Qt GUI interface wrapping
+#-----------------------------------------------------------------------------
+ set(project_ui
+        martycam.ui
+        settings.ui)
+#-----------------------------------------------------------------------------
+# Qt QObjects for MOC
+#-----------------------------------------------------------------------------
+set(project_moc_headers
+        martycam.hpp
+        renderwidget.hpp
+        settings.hpp
+        widget.hpp
+)
 
 set(project_headers
-        widget.hpp
         capturethread.hpp
         ConcurrentCircularBuffer.hpp
+        filter.hpp
+        martycam.hpp
+        MotionFilter.hpp
+        processingthread.hpp
         renderwidget.hpp
-        filter.cpp)
+        settings.hpp
+        widget.hpp
+)
 
 set(project_sources
-        main.cpp
-        widget.cpp
         capturethread.cpp
+        filter.cpp
+        main.cpp
+        martycam.cpp
+        MotionFilter.cpp
+        processingthread.cpp
         renderwidget.cpp
-        filter.cpp)
+        settings.cpp
+        widget.cpp
+)
 
-# qt5_wrap_ui(project_headers_wrapped ${project_ui})
-qt5_wrap_cpp(project_sources_moc ${project_headers} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+qt5_wrap_ui(project_headers_wrapped ${project_ui})
+qt5_wrap_cpp(project_sources_moc ${project_moc_headers} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 #-----------------------------------------------------------------------------
 # Find Boost
 #-----------------------------------------------------------------------------
 #option(Boost_USE_STATIC "Use static Boost libraries" ON)
-find_package(Boost 1.49 REQUIRED thread system)
+find_package(Boost 1.58 REQUIRED thread system)
 link_directories(${Boost_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR})
 message("Boost library dir is ${Boost_LIBRARY_DIRS}")
@@ -53,7 +83,7 @@ message("opencv libs are " ${OpenCV_LIBS})
 add_hpx_executable(qt
                    MODULE qt
                    DEPENDENCIES ${OpenCV_LIBS} ${Boost_LIBRARIES}
-                   SOURCES ${project_headers} ${project_sources} ${project_sources_moc}
+                   SOURCES ${project_headers} ${project_sources} ${project_sources_moc} ${project_headers_wrapped}
                    COMPONENT_DEPENDENCIES iostreams
 )
 

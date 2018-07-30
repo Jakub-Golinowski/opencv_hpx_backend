@@ -17,7 +17,7 @@ typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree:
 
 class CaptureThread{
 public: 
-   CaptureThread(ImageQueue imageQueue, ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL);
+   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL);
   ~CaptureThread() ;
 
   void run();
@@ -73,7 +73,6 @@ public:
   //
   bool             abort; 
   ImageBuffer      imageBuffer;
-  ImageQueue       imageQueue;
   bool             captureActive;
   bool             deInterlace;
   int              requestedFPS; 

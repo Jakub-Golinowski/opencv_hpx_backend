@@ -41,7 +41,7 @@ cv::Mat Deinterlace(cv::Mat &src)
 }
 
 //----------------------------------------------------------------------------
-CaptureThread::CaptureThread(ImageQueue imageQueue, ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL) : frameTimes(50)
+CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL) : frameTimes(50)
 {
   this->abort                = false;
   this->captureActive        = false;
@@ -54,7 +54,6 @@ CaptureThread::CaptureThread(ImageQueue imageQueue, ImageBuffer imageBuffer, con
   this->TimeLapseAVI_Writing = false;
 //  this->capture           = NULL; //why is that?
   this->imageBuffer       = imageBuffer;
-  this->imageQueue        = imageQueue;
   this->deviceIndex       = device;
   this->rotation          = 0;
   this->rotatedImage      = NULL;
