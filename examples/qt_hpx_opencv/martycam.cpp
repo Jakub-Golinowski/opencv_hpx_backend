@@ -97,11 +97,12 @@ void MartyCam::closeEvent(QCloseEvent*) {
 void MartyCam::createCaptureThread(int FPS, cv::Size &size, int camera, const std::string &cameraname,
                                    hpx::threads::executors::pool_executor exec)
 {
-  this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname);
+  this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname, this->blockingExecutor);
   this->captureThread->setRotation(this->settingsWidget->getSelectedRotation());
   this->captureThread->startCapture();
-  this->captureThreadFinished =
-          hpx::async(exec, &CaptureThread::run, captureThread);
+  //TODO for now I need to enforce the resolution size here again but it is more of a hotfix than a good solution -> ultimately I want all this encapsulated in the Capture thread constructor.
+  this->captureThread->setResolution(size);
+
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
 }
 //----------------------------------------------------------------------------
@@ -157,9 +158,22 @@ void MartyCam::onResolutionSelected(cv::Size newSize)
   if (newSize==this->imageSize) {
     return;
   }
+
+  bool wasActive = this->captureThread->stopCapture();
+
+  this->imageBuffer->clear();
+
+  //Change the settings
+  //todo why is the image size kept twice? Look into it.
   this->imageSize = newSize;
+  this->captureThread->imageSize = newSize;
+  this->captureThread->rotatedSize = cv::Size(this->imageSize.height, this->imageSize.width);
   this->captureThread->setResolution(this->imageSize);
-  this->onRotationChanged(this->settingsWidget->getSelectedRotation());
+
+  // Update GUI renderwidget size
+  this->renderWidget->setCVSize(newSize);
+
+  this->captureThread->startCapture();
 }
 //----------------------------------------------------------------------------
 void MartyCam::onRotationChanged(int rotation)

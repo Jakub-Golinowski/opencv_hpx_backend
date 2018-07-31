@@ -11,9 +11,9 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Svg OpenGL Concurrent)
 #-----------------------------------------------------------------------------
 # Qt resource files
 #-----------------------------------------------------------------------------
-#set(MartyCam_QT_RCCS
-#        resources.qrc
-#)
+set(project_qt_rccs
+        resources.qrc
+)
 
 #-----------------------------------------------------------------------------
 # Qt GUI interface wrapping
@@ -57,6 +57,7 @@ set(project_sources
 
 qt5_wrap_ui(project_headers_wrapped ${project_ui})
 qt5_wrap_cpp(project_sources_moc ${project_moc_headers} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+QT5_ADD_RESOURCES(project_rcc_srcs ${project_qt_rccs})
 #-----------------------------------------------------------------------------
 # Find Boost
 #-----------------------------------------------------------------------------
@@ -83,7 +84,7 @@ message("opencv libs are " ${OpenCV_LIBS})
 add_hpx_executable(qt
                    MODULE qt
                    DEPENDENCIES ${OpenCV_LIBS} ${Boost_LIBRARIES}
-                   SOURCES ${project_headers} ${project_sources} ${project_sources_moc} ${project_headers_wrapped}
+                   SOURCES ${project_headers} ${project_sources} ${project_sources_moc} ${project_headers_wrapped} ${project_rcc_srcs}
                    COMPONENT_DEPENDENCIES iostreams
 )
 

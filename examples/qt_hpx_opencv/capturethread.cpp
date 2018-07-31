@@ -1,3 +1,5 @@
+#include "capturethread.hpp"
+
 #include <QTime>
 //
 #include <iostream>
@@ -7,7 +9,8 @@
 #include "opencv2/videoio/videoio_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 
-#include "capturethread.hpp"
+#include <hpx/lcos/future.hpp>
+#include <hpx/include/async.hpp>
 
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 
@@ -41,8 +44,12 @@ cv::Mat Deinterlace(cv::Mat &src)
 }
 
 //----------------------------------------------------------------------------
-CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL) : frameTimes(50)
+//TODO make behaviour consistent. For now I think it would be best that the CaptureThread
+// constructor connects to camera and enforces the given resolution or at least stores tha actual resolutions in the settings
+CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
+                             hpx::threads::executors::pool_executor exec) : frameTimes(50)
 {
+  this->blockingExecutor = exec;
   this->abort                = false;
   this->captureActive        = false;
   this->deInterlace          = false;
@@ -52,7 +59,7 @@ CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int 
   this->deviceIndex          =-1;
   this->MotionAVI_Writing    = false;
   this->TimeLapseAVI_Writing = false;
-//  this->capture           = NULL; //why is that?
+  this->capture           = NULL;
   this->imageBuffer       = imageBuffer;
   this->deviceIndex       = device;
   this->rotation          = 0;
@@ -60,25 +67,16 @@ CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int 
   // initialize font and precompute text size
   QString timestring = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
   this->text_size = cv::getTextSize( timestring.toUtf8().constData(), CV_FONT_HERSHEY_PLAIN, 1.0, 1, NULL);
-  //
-  this->imageSize = size;
-  if (size.width>0 && size.height>0) {
-    this->capture.set(CV_CAP_PROP_FRAME_WIDTH,  size.width);
-    this->capture.set(CV_CAP_PROP_FRAME_HEIGHT, size.height);
-  }
-  //
+  // TODO: for now this connects to camera and uses its default resolution
   this->connectCamera(this->deviceIndex, this->CameraURL);
-  //
-  int w = this->capture.get(CV_CAP_PROP_FRAME_WIDTH);
-  int h = this->capture.get(CV_CAP_PROP_FRAME_HEIGHT);
-  if (w==720) {
-    this->imageSize         = cv::Size(720,576);
-    this->rotatedSize       = cv::Size(576,720);
-  }
-  else {
-    this->imageSize         = cv::Size(w,h);
-    this->rotatedSize       = cv::Size(h,w);
-  }
+  // TODO Here we overwrite the default resolution from the camera for the arbitrary one - not safe when the resolution is not supported!
+  this->setResolution(size);
+  this->imageSize         = cv::Size(size.width, size.height);
+  this->rotatedSize       = cv::Size(size.height, size.width);
+  // code for getting the current resolution
+//  int w = this->capture.get(CV_CAP_PROP_FRAME_WIDTH);
+//  int h = this->capture.get(CV_CAP_PROP_FRAME_HEIGHT);
+
 }
 //----------------------------------------------------------------------------
 CaptureThread::~CaptureThread() 
@@ -88,6 +86,9 @@ CaptureThread::~CaptureThread()
   this->capture.release();
 }
 //----------------------------------------------------------------------------
+//TODO it seems that after opening the camera these values in caputure are overriden by what was actually opened by camera?
+// This function is HPX-free - such that it does not uses HPX API
+// BUT! I plan to have stopCapture to be HPX-dependent
 bool CaptureThread::connectCamera(int index, const std::string &URL)
 {
   bool wasActive = this->stopCapture();
@@ -163,10 +164,8 @@ void CaptureThread::run()
 
   while (!this->abort) {
     if (!captureActive) {
-      fps = 0;
-      frameTimes.clear();
-      time.restart();
-      updateFPS(time.elapsed());
+      std::cout << "WARN: CaptureThread::run() still running even though captureActive=false";
+      continue;
     }
 
     // get latest frame from webcam
@@ -196,17 +195,18 @@ void CaptureThread::run()
 
     this->currentFrame = frame;
 
-    // add to queue if space is available, 
-    //
-//    imageQueue->push(this->rotatedImage);
+    // add to buffer if space is available,
     imageBuffer->send(this->rotatedImage);
-    std::cout << "From cap thread: imageBuffer size = " << imageBuffer->size();
 
 
     this->FrameCounter++;
       
     updateFPS(time.elapsed());
   }
+
+  // The run() task is exiting -> wake the threads waiting for that.
+  this->stopWait.wakeAll();
+
 }
 //----------------------------------------------------------------------------
 bool CaptureThread::startCapture() 
@@ -230,8 +230,15 @@ bool CaptureThread::startCapture()
     output << "CV_CAP_PROP_CONTRAST\t"      << this->capture.get(CV_CAP_PROP_CONTRAST) << std::endl;
     output << "CV_CAP_PROP_SATURATION\t"    << this->capture.get(CV_CAP_PROP_SATURATION) << std::endl;
     output << "CV_CAP_PROP_HUE\t"           << this->capture.get(CV_CAP_PROP_HUE) << std::endl;
+
     captureActive = true;
+    abort = false;
+
+    this->captureThreadFinished =
+    hpx::async(this->blockingExecutor, &CaptureThread::run, this);
+
     this->CaptureStatus += output.str();
+
     return true;
   }
   return false;
@@ -240,7 +247,11 @@ bool CaptureThread::startCapture()
 bool CaptureThread::stopCapture() {
   bool wasActive = this->captureActive;
   if (wasActive) {
+    this->stopLock.lock();
     captureActive = false;
+    abort = true;
+    this->stopWait.wait(&this->stopLock);
+    this->stopLock.unlock();
   }
   return wasActive;
 }

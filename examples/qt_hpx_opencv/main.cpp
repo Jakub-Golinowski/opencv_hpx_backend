@@ -63,15 +63,6 @@ int hpx_main(int argc, char ** argv)
     // run an async function on the main thread to start the Qt application
     hpx::future<void> qt_application = hpx::async(scheduler, &qt_main, argc, argv);
 
-    hpx::future<void> test_future
-            = hpx::async(scheduler, [&](){
-                hpx::cout << "Hello from the lambda in the main pool executor.";
-
-                hpx::threads::thread_id_type id = hpx::threads::get_self_id();
-
-                hpx::cout << "Thread Id = " << id;
-            });
-
     // do something else while qt is executing in the background ...
     qt_application.wait();
 

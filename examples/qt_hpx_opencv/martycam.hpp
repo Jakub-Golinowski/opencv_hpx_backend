@@ -48,7 +48,7 @@ protected:
   void resetChart();
   void initChart();
 
-private:
+public:
   static const int IMAGE_BUFF_CAPACITY;
   Ui::MartyCam ui;
   RenderWidget            *renderWidget;

@@ -1,12 +1,20 @@
 #ifndef CAPTURE_THREAD_H
 #define CAPTURE_THREAD_H
 
+#include <hpx/config.hpp>
 //
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 //
+#include <QMutex>
+#include <QWaitCondition>
+//
 #include <boost/shared_ptr.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
+//
+#include <hpx/parallel/execution.hpp>
+#include <hpx/parallel/executors/pool_executor.hpp>
+//
 #include "ConcurrentCircularBuffer.hpp"
 #define IMAGE_QUEUE_LEN 1024
 
@@ -17,7 +25,8 @@ typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree:
 
 class CaptureThread{
 public: 
-   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL);
+   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
+                 hpx::threads::executors::pool_executor exec);
   ~CaptureThread() ;
 
   void run();
@@ -70,6 +79,11 @@ public:
 
 public:
   void updateFPS(int time);
+  //
+  QMutex           captureLock, stopLock;
+  QWaitCondition   stopWait;
+  hpx::future<void> captureThreadFinished;
+  hpx::threads::executors::pool_executor blockingExecutor;
   //
   bool             abort; 
   ImageBuffer      imageBuffer;
