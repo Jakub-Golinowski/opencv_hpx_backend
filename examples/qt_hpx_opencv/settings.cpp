@@ -39,10 +39,10 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   connect(&this->clock, SIGNAL(timeout()), this, SLOT(onTimer()));
   connect(ui.blendRatio, SIGNAL(valueChanged(int)), this, SLOT(onBlendChanged(int)));
   //
+  connect(ui.tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onTabChanged(int)));
+  //
   // Face Recognition Tab
   //
-  connect(ui.startFaceRecog_PushButton, SIGNAL(clicked()), this, SLOT(onStartFaceRecog()));
-  connect(ui.stopFaceRecog_PushButton, SIGNAL(clicked()), this, SLOT(onStopFaceRecog()));
   connect(ui.requestedFps_HorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onRequestedFpsChanged(int)));
   connect(ui.eyesRecog_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(onEyesRecogStateChanged(int)));
   //
@@ -287,6 +287,11 @@ void SettingsWidget::saveSettings()
   settings.setValue("dilate",this->ui.dilate->value());
   settings.endGroup();
 
+  settings.beginGroup("FaceRecognition");
+  settings.setValue("requestedFPS",this->ui.requestedFps_HorizontalSlider->value());
+  settings.setValue("eyesRecognition",this->ui.eyesRecog_CheckBox->checkState());
+  settings.endGroup();
+
   settings.beginGroup("UserSettings");
   settings.setValue("resolution",this->ResolutionButtonGroup.checkedId());
   settings.setValue("rotation",this->RotateButtonGroup.checkedId());
@@ -294,6 +299,7 @@ void SettingsWidget::saveSettings()
   settings.setValue("cameraIndex",this->ui.cameraSelect->currentIndex());
   settings.setValue("aviDirectory",this->ui.avi_directory->text());
   settings.setValue("blendImage",this->ui.blendRatio->value());
+  settings.setValue("processingType", this->ui.tabWidget->currentIndex());
   settings.endGroup();
 
   settings.beginGroup("MotionAVI");
@@ -309,9 +315,20 @@ void SettingsWidget::loadSettings()
   //
   settings.beginGroup("MotionDetection");
   SilentCall(this->ui.threshold)->setValue(settings.value("threshold",3).toInt());
+  SilentCall(this->ui.t_label)->setText(settings.value("threshold", 3).toString());
   SilentCall(this->ui.average)->setValue(settings.value("average",10).toInt());
+  SilentCall(this->ui.a_label)->setText(settings.value("average", 10).toString());
   SilentCall(this->ui.erode)->setValue(settings.value("erode",1).toInt());
+  SilentCall(this->ui.e_label)->setText(settings.value("erode", 10).toString());
+
   SilentCall(this->ui.dilate)->setValue(settings.value("dilate",1).toInt());
+  SilentCall(this->ui.d_label)->setText(settings.value("dilate", 1).toString());
+  settings.endGroup();
+
+  settings.beginGroup("FaceRecognition");
+  SilentCall(this->ui.requestedFps_HorizontalSlider)->setValue(settings.value("requestedFPS",2).toInt());
+  SilentCall(this->ui.requestedFps_ValueLabel)->setText(settings.value("requestedFPS", 2).toString());
+  SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
   settings.endGroup();
 
   settings.beginGroup("UserSettings");
@@ -320,6 +337,7 @@ void SettingsWidget::loadSettings()
   SilentCall(&this->ImageButtonGroup)->button(settings.value("display",0).toInt())->click();
   SilentCall(this->ui.cameraSelect)->setCurrentIndex(settings.value("cameraIndex",0).toInt());
   SilentCall(this->ui.avi_directory)->setText(settings.value("aviDirectory","$HOME/wildlife").toString());
+  SilentCall(this->ui.tabWidget)->setCurrentIndex(settings.value("processingType", 0).toInt());
   //
   SilentCall(this->ui.blendRatio)->setValue(settings.value("blendImage",0.5).toInt());
   settings.endGroup();
@@ -339,14 +357,14 @@ void SettingsWidget::onSnapClicked()
   clipboard->setPixmap(p);
 }
 //---------------------------------------------------------------------------
-void SettingsWidget::onStartFaceRecog(){
-  std::cout << "Start Face Recognition Pressed.\n";
-  this->processingthread->setFaceRecognitionProcessing();
-}
-//---------------------------------------------------------------------------
-void SettingsWidget::onStopFaceRecog(){
-  std::cout << "Stop Face Recognition Pressed.\n";
-  this->processingthread->setMotionDetectionProcessing();
+void SettingsWidget::onTabChanged(int currentTabIndex){
+  switch(currentTabIndex){
+    case 0: this->processingthread->setMotionDetectionProcessing(); break;
+    case 1: this->processingthread->setFaceRecognitionProcessing(); break;
+    default: std::cout << "Current tab index = "
+                       << std::to_string(currentTabIndex) << " is unsupported\n";
+             break;
+  }
 }
 //---------------------------------------------------------------------------
 void SettingsWidget::onRequestedFpsChanged(int value){

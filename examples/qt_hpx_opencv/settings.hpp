@@ -63,13 +63,13 @@ public slots:
   void onResolutionSelection(int btn);
   void onBlendChanged(int value);
   //
-  void onStartFaceRecog();
-  void onStopFaceRecog();
   void onRequestedFpsChanged(int);
   void onEyesRecogStateChanged(int);
   //
   void onSnapClicked();
-
+  //
+  void onTabChanged(int);
+  //
   void loadSettings();
   void saveSettings();
   void setupCameraList();

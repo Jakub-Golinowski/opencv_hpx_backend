@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>363</width>
-    <height>846</height>
+    <height>885</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -253,299 +253,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>Animation Saving</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="3" column="0" colspan="3">
-           <widget class="QLineEdit" name="avi_directory">
-            <property name="text">
-             <string>$HOME/martycam</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="WriteMotionAVI">
-            <property name="text">
-             <string>Write AVI</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="elapsed">
-            <property name="text">
-             <string>00:00:00</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="remaining">
-            <property name="text">
-             <string>00:00:00</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Remaining</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Elapsed</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QPushButton" name="browse">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>16</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>24</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="3">
-           <widget class="QTimeEdit" name="AVI_Duration">
-            <property name="dateTime">
-             <datetime>
-              <hour>0</hour>
-              <minute>0</minute>
-              <second>10</second>
-              <year>2000</year>
-              <month>1</month>
-              <day>1</day>
-             </datetime>
-            </property>
-            <property name="time">
-             <time>
-              <hour>0</hour>
-              <minute>0</minute>
-              <second>10</second>
-             </time>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Duration</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="snapButton">
-            <property name="text">
-             <string>Snapshot</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>Camera</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QComboBox" name="cameraSelect"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="add_camera">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>16</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>24</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Click here to add an IP Camera URL</string>
-            </property>
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item row="0" column="1">
-           <widget class="QGroupBox" name="groupBox_8">
-            <property name="title">
-             <string>Rotation</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QRadioButton" name="rotate0">
-               <property name="text">
-                <string>Rotate   &amp;0°</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="rotate90">
-               <property name="text">
-                <string>Rotate  &amp;90°</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="rotate90m">
-               <property name="text">
-                <string>&amp;Rotate -90°</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="rotate180">
-               <property name="text">
-                <string>Rotate 1&amp;80°</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>Resolution</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="4" column="0">
-              <widget class="QRadioButton" name="res320">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>&amp;320x240</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QRadioButton" name="res640">
-               <property name="text">
-                <string>&amp;640x480</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="res720">
-               <property name="text">
-                <string>&amp;720x576</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="res1280">
-               <property name="text">
-                <string>&amp;1280x720</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="res1600">
-               <property name="text">
-                <string>1600x1&amp;200</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="title">
           <string>Display</string>
@@ -608,19 +315,6 @@
          </layout>
         </widget>
        </item>
-       <item>
-        <spacer name="spacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>269</width>
-           <height>10</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="faceRecog_Tab">
@@ -634,14 +328,14 @@
           <string>Face recognition options</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
-          <item row="3" column="2">
+          <item row="1" column="2">
            <widget class="QLabel" name="requestedFps_ValueLabel">
             <property name="text">
              <string>30</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="1" column="1">
            <widget class="QSlider" name="requestedFps_HorizontalSlider">
             <property name="minimum">
              <number>1</number>
@@ -657,14 +351,14 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_15">
             <property name="text">
              <string>Requested FPS</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="3" column="0">
            <widget class="QCheckBox" name="eyesRecog_CheckBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -674,26 +368,6 @@
             </property>
             <property name="text">
              <string>Eyes Recognition</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="stopFaceRecog_PushButton">
-            <property name="text">
-             <string>Stop Face Recognition</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="3">
-           <widget class="QPushButton" name="startFaceRecog_PushButton">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Start Face Recognition</string>
             </property>
            </widget>
           </item>
@@ -718,6 +392,295 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>General Settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QFrame" name="frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="QGroupBox" name="groupBox_8">
+           <property name="title">
+            <string>Rotation</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QRadioButton" name="rotate0">
+              <property name="text">
+               <string>Rotate   &amp;0°</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rotate90">
+              <property name="text">
+               <string>Rotate  &amp;90°</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rotate90m">
+              <property name="text">
+               <string>&amp;Rotate -90°</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rotate180">
+              <property name="text">
+               <string>Rotate 1&amp;80°</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Resolution</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="3" column="0">
+             <widget class="QRadioButton" name="res640">
+              <property name="text">
+               <string>&amp;640x480</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="res720">
+              <property name="text">
+               <string>&amp;720x576</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="res1280">
+              <property name="text">
+               <string>&amp;1280x720</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="res1600">
+              <property name="text">
+               <string>1600x1&amp;200</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QRadioButton" name="res320">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;320x240</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="title">
+         <string>Camera</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QComboBox" name="cameraSelect"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="add_camera">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>16</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>24</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Click here to add an IP Camera URL</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Animation Saving</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="3" column="0" colspan="3">
+          <widget class="QLineEdit" name="avi_directory">
+           <property name="text">
+            <string>$HOME/martycam</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="WriteMotionAVI">
+           <property name="text">
+            <string>Write AVI</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="elapsed">
+           <property name="text">
+            <string>00:00:00</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="remaining">
+           <property name="text">
+            <string>00:00:00</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Remaining</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Elapsed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QPushButton" name="browse">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>16</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>24</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="3">
+          <widget class="QTimeEdit" name="AVI_Duration">
+           <property name="dateTime">
+            <datetime>
+             <hour>0</hour>
+             <minute>0</minute>
+             <second>10</second>
+             <year>2000</year>
+             <month>1</month>
+             <day>1</day>
+            </datetime>
+           </property>
+           <property name="time">
+            <time>
+             <hour>0</hour>
+             <minute>0</minute>
+             <second>10</second>
+            </time>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Duration</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="snapButton">
+           <property name="text">
+            <string>Snapshot</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
