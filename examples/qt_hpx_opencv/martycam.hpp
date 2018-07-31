@@ -66,7 +66,6 @@ public:
   double                   UserDetectionThreshold;
   int                      EventRecordCounter;
   int                      insideMotionEvent;
-  QDateTime                lastTimeLapse;
   hpx::threads::executors::pool_executor blockingExecutor;
   hpx::threads::executors::pool_executor defaultExecutor;
 };

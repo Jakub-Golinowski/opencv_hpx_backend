@@ -40,7 +40,6 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   connect(ui.blendRatio, SIGNAL(valueChanged(int)), this, SLOT(onBlendChanged(int)));
   //
   connect(ui.snapButton, SIGNAL(clicked()), this, SLOT(onSnapClicked()));
-  connect(ui.startTimeLapse, SIGNAL(clicked()), this, SLOT(onStartTimeLapseClicked()));
 
   ResolutionButtonGroup.addButton(ui.res1600,4);
   ResolutionButtonGroup.addButton(ui.res1280,3);
@@ -184,8 +183,6 @@ void SettingsWidget::SetupAVIStrings()
   QString fileName = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss");
   this->capturethread->setWriteMotionAVIName(fileName.toLatin1().constData());
   this->capturethread->setWriteMotionAVIDir(filePath.toLatin1().constData());
-  QString fileName2 = "TimeLapse" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss");
-  this->capturethread->setWriteTimeLapseAVIName(fileName2.toLatin1().constData());
 }
 //----------------------------------------------------------------------------
 void SettingsWidget::RecordMotionAVI(bool state)
@@ -296,12 +293,6 @@ void SettingsWidget::saveSettings()
   settings.setValue("snapshot",this->SnapshotId);
   settings.setValue("aviDuration", this->ui.AVI_Duration->time());
   settings.endGroup();
-
-  settings.beginGroup("TimeLapse");
-  settings.setValue("interval", this->ui.interval->time());
-  settings.setValue("duration", this->ui.duration->dateTime());
-  settings.setValue("startDateTime", this->ui.startDateTime->dateTime());
-  settings.endGroup();
 }
 //----------------------------------------------------------------------------
 void SettingsWidget::loadSettings()
@@ -330,12 +321,6 @@ void SettingsWidget::loadSettings()
   this->SnapshotId = settings.value("snapshot",0).toInt();
   SilentCall(this->ui.AVI_Duration)->setTime(settings.value("aviDuration", QTime(0,0,10)).toTime());
   settings.endGroup();
-
-  settings.beginGroup("TimeLapse");
-  SilentCall(this->ui.startDateTime)->setDateTime(settings.value("startDateTime", QDateTime(QDate::currentDate(), QTime::currentTime())).toDateTime());
-  SilentCall(this->ui.interval)->setTime(settings.value("interval", QTime(0,1,00)).toTime());
-  SilentCall(this->ui.duration)->setTime(settings.value("duration", QDateTime(QDate(0,0,1), QTime(0,1,0))).toTime());
-  settings.endGroup();
 }
 //----------------------------------------------------------------------------
 void SettingsWidget::onSnapClicked()
@@ -345,27 +330,5 @@ void SettingsWidget::onSnapClicked()
   p.save(filename);
   QClipboard *clipboard = QApplication::clipboard();
   clipboard->setPixmap(p);
-}
-//----------------------------------------------------------------------------
-void SettingsWidget::onStartTimeLapseClicked()
-{
-  QPixmap p = this->renderWidget->grab();
-  QString filename = QString("%1/MartySnap-%2").arg(this->ui.avi_directory->text()).arg(SnapshotId++, 3, 10, QChar('0')) + QString(".png");
-  p.save(filename);
-  QClipboard *clipboard = QApplication::clipboard();
-  clipboard->setPixmap(p);
-}
-//----------------------------------------------------------------------------
-QDateTime SettingsWidget::TimeLapseStart()
-{
-  return this->ui.startDateTime->dateTime();
-}
-//----------------------------------------------------------------------------
-QDateTime SettingsWidget::TimeLapseEnd()
-{
-  QDateTime finish = this->ui.duration->dateTime();
-  int days = QDateTime().daysTo(finish);
-  QDateTime result = this->TimeLapseStart().addDays(days);
-  return result;
 }
 

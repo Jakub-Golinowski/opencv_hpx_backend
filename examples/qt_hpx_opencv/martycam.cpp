@@ -184,31 +184,6 @@ void MartyCam::updateGUI() {
     arg(this->captureThread->getFPS(), 5, 'f', 2).
     arg(captureThread->GetFrameCounter(), 5).
     arg(100 * (float)this->imageBuffer->size()/IMAGE_BUFF_CAPACITY, 4));
-
-  QDateTime now = QDateTime::currentDateTime();
-  QDateTime start = this->settingsWidget->TimeLapseStart();
-  QDateTime stop = this->settingsWidget->TimeLapseEnd();
-  QTime interval = this->settingsWidget->TimeLapseInterval();
-  int secs = (interval.hour()*60 + interval.minute())*60 + interval.second();
-  QDateTime next = this->lastTimeLapse.addSecs(secs);
-
-  if (!this->captureThread->getTimeLapseAVI_Writing()) {
-    if (this->settingsWidget->TimeLapseEnabled()) {
-      if (now>start && now<stop) {
-        this->settingsWidget->SetupAVIStrings();
-        this->captureThread->startTimeLapse(this->settingsWidget->TimeLapseFPS());
-        this->captureThread->updateTimeLapse();
-        this->lastTimeLapse = now;
-      }
-    }
-  }
-  else if ((now>next && now<stop) && this->settingsWidget->TimeLapseEnabled()) {
-    this->captureThread->updateTimeLapse();
-    this->lastTimeLapse = now;
-  }
-  else if (now>stop || !this->settingsWidget->TimeLapseEnabled()) {
-    this->captureThread->stopTimeLapse();
-  }
 }
 //----------------------------------------------------------------------------
 void MartyCam::clearGraphs()
