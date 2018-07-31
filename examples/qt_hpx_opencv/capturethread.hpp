@@ -37,6 +37,7 @@ public:
   //
   void setResolution(const cv::Size &res);
   //
+  void setRequestedFps(int value);
   double getFPS() { return fps; }
   bool isCapturing() { return captureActive; }
   
@@ -84,6 +85,7 @@ private:
   cv::Size         rotatedSize;
   cv::VideoCapture capture;
   double           fps;
+  int              requestedFps;
   FrameSpeedBuffer frameTimes;
   int              deviceIndex;
   int              rotation;

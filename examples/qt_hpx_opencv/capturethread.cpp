@@ -255,6 +255,10 @@ bool CaptureThread::stopCapture() {
   return wasActive;
 }
 //----------------------------------------------------------------------------
+void CaptureThread::setRequestedFps(int value){
+  this->requestedFps = value;
+}
+//----------------------------------------------------------------------------
 void CaptureThread::updateFPS(int time) {
   frameTimes.push_back(time);
   if (frameTimes.size() > 1) {

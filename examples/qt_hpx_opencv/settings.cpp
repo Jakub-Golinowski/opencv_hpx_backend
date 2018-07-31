@@ -39,6 +39,13 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   connect(&this->clock, SIGNAL(timeout()), this, SLOT(onTimer()));
   connect(ui.blendRatio, SIGNAL(valueChanged(int)), this, SLOT(onBlendChanged(int)));
   //
+  // Face Recognition Tab
+  //
+  connect(ui.startFaceRecog_PushButton, SIGNAL(clicked()), this, SLOT(onStartFaceRecog()));
+  connect(ui.stopFaceRecog_PushButton, SIGNAL(clicked()), this, SLOT(onStopFaceRecog()));
+  connect(ui.requestedFps_HorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onRequestedFpsChanged(int)));
+  connect(ui.eyesRecog_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(onEyesRecogStateChanged(int)));
+  //
   connect(ui.snapButton, SIGNAL(clicked()), this, SLOT(onSnapClicked()));
 
   ResolutionButtonGroup.addButton(ui.res1600,4);
@@ -331,4 +338,22 @@ void SettingsWidget::onSnapClicked()
   QClipboard *clipboard = QApplication::clipboard();
   clipboard->setPixmap(p);
 }
+//---------------------------------------------------------------------------
+void SettingsWidget::onStartFaceRecog(){
+  std::cout << "Start Face Recognition Pressed.\n";
+}
+//---------------------------------------------------------------------------
+void SettingsWidget::onStopFaceRecog(){
+  std::cout << "Stop Face Recognition Pressed.\n";
+}
+//---------------------------------------------------------------------------
+void SettingsWidget::onRequestedFpsChanged(int value){
+  this->ui.requestedFps_ValueLabel->setText(QString("%1").arg(value, 2));
+  this->capturethread->setRequestedFps(value);
 
+}
+//---------------------------------------------------------------------------
+void SettingsWidget::onEyesRecogStateChanged(int value){
+  std::cout << "EyesRecognition CheckBox New State is: "
+               << std::to_string(value) << "\n";
+}

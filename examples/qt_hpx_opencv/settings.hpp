@@ -63,6 +63,11 @@ public slots:
   void onResolutionSelection(int btn);
   void onBlendChanged(int value);
   //
+  void onStartFaceRecog();
+  void onStopFaceRecog();
+  void onRequestedFpsChanged(int);
+  void onEyesRecogStateChanged(int);
+  //
   void onSnapClicked();
 
   void loadSettings();
@@ -90,6 +95,11 @@ protected:
   RenderWidget       *renderWidget;
   IPCameraForm       *cameraForm;
   int                 NumDevices;
+  //
+  bool                faceRecognitionAcitve;
+  int                 requestedFps;
+  bool                eyesRecognitionActive;
+
 };
 
 #endif

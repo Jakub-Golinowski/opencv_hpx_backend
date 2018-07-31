@@ -90,6 +90,12 @@
           </item>
           <item row="1" column="2" colspan="2">
            <widget class="QSlider" name="average">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -617,26 +623,35 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="faceRecog_Tab">
       <attribute name="title">
        <string>Face Recognition</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="faceRecogOpts_GroupBox">
          <property name="title">
           <string>Face recognition options</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="3" column="2">
-           <widget class="QLabel" name="label_16">
+           <widget class="QLabel" name="requestedFps_ValueLabel">
             <property name="text">
              <string>30</string>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QSlider" name="horizontalSlider">
+           <widget class="QSlider" name="requestedFps_HorizontalSlider">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>50</number>
+            </property>
+            <property name="value">
+             <number>30</number>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -650,7 +665,7 @@
            </widget>
           </item>
           <item row="5" column="0">
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="eyesRecog_CheckBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -663,14 +678,14 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="stopFaceRecog">
+           <widget class="QPushButton" name="stopFaceRecog_PushButton">
             <property name="text">
              <string>Stop Face Recognition</string>
             </property>
            </widget>
           </item>
           <item row="0" column="0" colspan="3">
-           <widget class="QPushButton" name="startFaceRecog">
+           <widget class="QPushButton" name="startFaceRecog_PushButton">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
