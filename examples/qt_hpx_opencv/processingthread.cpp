@@ -14,7 +14,7 @@
 #include <hpx/include/async.hpp>
 //----------------------------------------------------------------------------
 ProcessingThread::ProcessingThread(ImageBuffer buffer, cv::Size &size,
-                                   hpx::threads::executors::pool_executor exec)
+                                   hpx::threads::executors::pool_executor exec) : QObject(nullptr)
 {
   this->executor          = exec;
   this->imageBuffer       = buffer;
@@ -52,7 +52,7 @@ void ProcessingThread::run() {
     //
     this->motionFilter->process(cameracopy);
     // TODO: make sure what this was doing
-    //    emit (NewData());
+        emit (NewData());
   }
 
   this->abort = false;

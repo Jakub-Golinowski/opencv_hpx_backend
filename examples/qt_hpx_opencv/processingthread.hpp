@@ -10,6 +10,7 @@
 //
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <QtCore/QObject>
 //
 #include <boost/shared_ptr.hpp>
 #include "ConcurrentCircularBuffer.hpp"
@@ -20,7 +21,8 @@ class PSNRFilter;
 class GraphUpdateFilter;
 #include "MotionFilter.hpp"
 
-class ProcessingThread {
+class ProcessingThread : public QObject{
+Q_OBJECT;
 public:
    ProcessingThread(ImageBuffer buffer, cv::Size &size,
                     hpx::threads::executors::pool_executor exec);
@@ -46,9 +48,12 @@ public:
   double getPSNR();
   cv::Scalar getMSSIM(const cv::Mat& i1, const cv::Mat& i2);
 
-  //
   GraphUpdateFilter  *graphFilter;
   MotionFilter       *motionFilter;
+
+signals:
+    void NewData();
+  //
 
 private:
   void setAbort(bool a) { this->abort = a; }

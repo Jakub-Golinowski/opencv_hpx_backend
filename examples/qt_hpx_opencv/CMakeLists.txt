@@ -29,6 +29,7 @@ set(project_moc_headers
         renderwidget.hpp
         settings.hpp
         widget.hpp
+        processingthread.hpp
 )
 
 set(project_headers

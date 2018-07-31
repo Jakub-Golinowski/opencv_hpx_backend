@@ -127,8 +127,8 @@ void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThrea
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
   //
   //TODO undestand what this signals were doing here and write code that does the same in another way
-//  connect(temp, SIGNAL(NewData()),
-//    this, SLOT(updateGUI()),Qt::QueuedConnection);
+  connect(this->processingThread, SIGNAL(NewData()),
+    this, SLOT(updateGUI()),Qt::QueuedConnection);
 }
 //----------------------------------------------------------------------------
 void MartyCam::deleteProcessingThread()
