@@ -15,9 +15,7 @@
 #include <vector>
 
 using hpx::util::high_resolution_timer;
-
 #include <QtWidgets/QApplication>
-#include "widget.hpp"
 #include "martycam.hpp"
 
 #include <opencv2/opencv.hpp>

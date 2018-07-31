@@ -28,7 +28,6 @@ set(project_moc_headers
         martycam.hpp
         renderwidget.hpp
         settings.hpp
-        widget.hpp
         processingthread.hpp
 )
 
@@ -41,7 +40,6 @@ set(project_headers
         processingthread.hpp
         renderwidget.hpp
         settings.hpp
-        widget.hpp
 )
 
 set(project_sources
@@ -53,7 +51,6 @@ set(project_sources
         processingthread.cpp
         renderwidget.cpp
         settings.cpp
-        widget.cpp
 )
 
 qt5_wrap_ui(project_headers_wrapped ${project_ui})
