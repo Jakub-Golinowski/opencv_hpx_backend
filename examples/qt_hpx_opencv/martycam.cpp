@@ -119,7 +119,7 @@ void MartyCam::deleteCaptureThread()
 void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThread,
                                       hpx::threads::executors::pool_executor exec)
 {
-  this->processingThread = new ProcessingThread(imageBuffer, this->imageSize, exec);
+  this->processingThread = new ProcessingThread(imageBuffer, exec);
   if (oldThread) this->processingThread->CopySettings(oldThread);
   this->processingThread->setRootFilter(renderWidget);
   this->processingThread->startProcessing();

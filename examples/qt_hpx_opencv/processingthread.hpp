@@ -20,20 +20,24 @@ class Filter;
 class PSNRFilter;
 class GraphUpdateFilter;
 #include "MotionFilter.hpp"
+#include "FaceRecogFilter.hpp"
 
 class ProcessingThread : public QObject{
 Q_OBJECT;
+private:
+    enum class ProcessingType: int
+    {
+        motionDetection = 0,
+        faceRecognition =1,
+    };
 public:
-   ProcessingThread(ImageBuffer buffer, cv::Size &size,
-                    hpx::threads::executors::pool_executor exec);
+   ProcessingThread(ImageBuffer buffer, hpx::threads::executors::pool_executor exec);
   ~ProcessingThread();
   //
   void CopySettings(ProcessingThread *thread);
-  void DeleteTemporaryStorage();
   //
-  double getmotionEstimate() { return this->motionFilter->motionEstimate; }
-  //
-  void setRootFilter(Filter* filter) {   this->motionFilter->renderer = filter; }
+  void setRootFilter(Filter* filter) {   this->motionFilter->renderer = filter;
+                                         this->faceRecogFilter->setRenderer(filter); }
   void setThreshold(int val) { this->motionFilter->threshold = val; }
   void setAveraging(double val) { this->motionFilter->average = val; }
   void setErodeIterations(int val) { this->motionFilter->erodeIterations = val; }
@@ -45,28 +49,26 @@ public:
   bool startProcessing();
   bool stopProcessing();
 
-  double getPSNR();
-  cv::Scalar getMSSIM(const cv::Mat& i1, const cv::Mat& i2);
+  void setMotionDetectionProcessing();
+  void setFaceRecognitionProcessing();
 
-  GraphUpdateFilter  *graphFilter;
   MotionFilter       *motionFilter;
+  FaceRecogFilter    *faceRecogFilter;
 
 signals:
     void NewData();
-  //
 
 private:
-  void setAbort(bool a) { this->abort = a; }
 
+  //
   QMutex           stopLock;
   QWaitCondition   stopWait;
   bool             processingActive;
   bool             abort;
-  //
-  hpx::future<void> processingThreadFinished;
   hpx::threads::executors::pool_executor executor;
   //
   ImageBuffer  imageBuffer;
+  ProcessingType processingType;
 };
 
 #endif

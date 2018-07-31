@@ -3,6 +3,26 @@ cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 project(Example CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(DATA_PATH "${PROJECT_SOURCE_DIR}/data")
+
+#-----------------------------------------------------------------------------
+# Set DATA_PATH directory of the repository
+#-----------------------------------------------------------------------------
+get_directory_property(hasParent PARENT_DIRECTORY)
+
+if(hasParent)
+ message(STATUS "Project has a parent scope. DATA_PATH=${DATA_PATH}")
+else()
+ get_filename_component(DATA_PATH ../../data ABSOLUTE)
+ message(STATUS "Project Does *not* have a parent scope. DATA_PATH=${DATA_PATH}")
+endif()
+
+
+configure_file (
+        "${PROJECT_SOURCE_DIR}/config.h.in"
+        "${PROJECT_BINARY_DIR}/config.h"
+)
 #-----------------------------------------------------------------------------
 # Find QT
 #-----------------------------------------------------------------------------
@@ -40,6 +60,7 @@ set(project_headers
         processingthread.hpp
         renderwidget.hpp
         settings.hpp
+        FaceRecogFilter.hpp
 )
 
 set(project_sources
@@ -51,6 +72,7 @@ set(project_sources
         processingthread.cpp
         renderwidget.cpp
         settings.cpp
+        FaceRecogFilter.cpp
 )
 
 qt5_wrap_ui(project_headers_wrapped ${project_ui})

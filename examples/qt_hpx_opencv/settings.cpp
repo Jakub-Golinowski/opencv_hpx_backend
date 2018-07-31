@@ -341,10 +341,12 @@ void SettingsWidget::onSnapClicked()
 //---------------------------------------------------------------------------
 void SettingsWidget::onStartFaceRecog(){
   std::cout << "Start Face Recognition Pressed.\n";
+  this->processingthread->setFaceRecognitionProcessing();
 }
 //---------------------------------------------------------------------------
 void SettingsWidget::onStopFaceRecog(){
   std::cout << "Stop Face Recognition Pressed.\n";
+  this->processingthread->setMotionDetectionProcessing();
 }
 //---------------------------------------------------------------------------
 void SettingsWidget::onRequestedFpsChanged(int value){
