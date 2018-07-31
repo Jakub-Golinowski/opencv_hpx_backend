@@ -10,9 +10,13 @@
 //
 #include "filter.hpp"
 //
+#include <hpx/lcos/future.hpp>
+#include <hpx/include/async.hpp>
 //----------------------------------------------------------------------------
-ProcessingThread::ProcessingThread(ImageBuffer buffer, cv::Size &size)
+ProcessingThread::ProcessingThread(ImageBuffer buffer, cv::Size &size,
+                                   hpx::threads::executors::pool_executor exec)
 {
+  this->executor          = exec;
   this->imageBuffer       = buffer;
   this->motionFilter      = new MotionFilter();
   this->abort             = false;
@@ -50,7 +54,34 @@ void ProcessingThread::run() {
     // TODO: make sure what this was doing
     //    emit (NewData());
   }
-  this->abort = 0;
+
+  this->abort = false;
+  this->stopWait.wakeAll();
+}
+//----------------------------------------------------------------------------
+bool ProcessingThread::startProcessing()
+{
+  if (!processingActive) {
+    processingActive = true;
+    abort = false;
+
+    this->processingThreadFinished =
+            hpx::async(this->executor, &ProcessingThread::run, this);
+    return true;
+  }
+  return false;
+}
+//----------------------------------------------------------------------------
+bool ProcessingThread::stopProcessing() {
+  bool wasActive = this->processingActive;
+  if (wasActive) {
+    this->stopLock.lock();
+    processingActive = false;
+    abort = true;
+    this->stopWait.wait(&this->stopLock);
+    this->stopLock.unlock();
+  }
+  return wasActive;
 }
 //----------------------------------------------------------------------------
 cv::Scalar ProcessingThread::getMSSIM(const cv::Mat& i1, const cv::Mat& i2)

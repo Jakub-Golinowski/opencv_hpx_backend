@@ -99,17 +99,16 @@ void MartyCam::createCaptureThread(int FPS, cv::Size &size, int camera, const st
 {
   this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname, this->blockingExecutor);
   this->captureThread->setRotation(this->settingsWidget->getSelectedRotation());
-  this->captureThread->startCapture();
   //TODO for now I need to enforce the resolution size here again but it is more of a hotfix than a good solution -> ultimately I want all this encapsulated in the Capture thread constructor.
   this->captureThread->setResolution(size);
+  this->captureThread->startCapture();
 
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
 }
 //----------------------------------------------------------------------------
 void MartyCam::deleteCaptureThread()
 {
-  this->captureThread->setAbort(true);
-  this->captureThreadFinished.wait();
+  this->captureThread->stopCapture();
   this->imageBuffer->clear();
   delete captureThread;
   this->captureThread = nullptr;
@@ -120,23 +119,21 @@ void MartyCam::deleteCaptureThread()
 void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThread,
                                       hpx::threads::executors::pool_executor exec)
 {
-  this->processingThread = new ProcessingThread(imageBuffer, this->imageSize);
+  this->processingThread = new ProcessingThread(imageBuffer, this->imageSize, exec);
   if (oldThread) this->processingThread->CopySettings(oldThread);
   this->processingThread->setRootFilter(renderWidget);
+  this->processingThread->startProcessing();
+
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
   //
   //TODO undestand what this signals were doing here and write code that does the same in another way
 //  connect(temp, SIGNAL(NewData()),
 //    this, SLOT(updateGUI()),Qt::QueuedConnection);
-  //
-  this->processingThreadFinished =
-          hpx::async(exec, &ProcessingThread::run, this->processingThread);
 }
 //----------------------------------------------------------------------------
 void MartyCam::deleteProcessingThread()
 {
-  this->processingThread->setAbort(true);
-  this->processingThreadFinished.wait();
+  this->processingThread->stopProcessing();
   delete processingThread;
   this->processingThread = nullptr;
 }
@@ -159,21 +156,11 @@ void MartyCam::onResolutionSelected(cv::Size newSize)
     return;
   }
 
-  bool wasActive = this->captureThread->stopCapture();
-
-  this->imageBuffer->clear();
-
-  //Change the settings
-  //todo why is the image size kept twice? Look into it.
   this->imageSize = newSize;
-  this->captureThread->imageSize = newSize;
-  this->captureThread->rotatedSize = cv::Size(this->imageSize.height, this->imageSize.width);
-  this->captureThread->setResolution(this->imageSize);
+  this->captureThread->setResolution(newSize);
 
   // Update GUI renderwidget size
   this->renderWidget->setCVSize(newSize);
-
-  this->captureThread->startCapture();
 }
 //----------------------------------------------------------------------------
 void MartyCam::onRotationChanged(int rotation)
@@ -205,7 +192,7 @@ void MartyCam::updateGUI() {
   int secs = (interval.hour()*60 + interval.minute())*60 + interval.second();
   QDateTime next = this->lastTimeLapse.addSecs(secs);
 
-  if (!this->captureThread->TimeLapseAVI_Writing) {
+  if (!this->captureThread->getTimeLapseAVI_Writing()) {
     if (this->settingsWidget->TimeLapseEnabled()) {
       if (now>start && now<stop) {
         this->settingsWidget->SetupAVIStrings();

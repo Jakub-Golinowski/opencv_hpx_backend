@@ -1,6 +1,6 @@
 #ifndef CAPTURE_THREAD_H
 #define CAPTURE_THREAD_H
-
+//
 #include <hpx/config.hpp>
 //
 #include <opencv2/core/core.hpp>
@@ -30,7 +30,6 @@ public:
   ~CaptureThread() ;
 
   void run();
-  void setAbort(bool a) { this->abort = a; }
   //
   bool connectCamera(int index, const std::string &URL);
   bool startCapture();
@@ -76,14 +75,16 @@ public:
 
   cv::Size getImageSize() { return this->imageSize; }
   cv::Size getRotatedSize() { return this->rotatedSize; }
+  bool getTimeLapseAVI_Writing() {return this->TimeLapseAVI_Writing; }
+private:
+    void setAbort(bool a) { this->abort = a; }
+    void updateFPS(int time);
 
-public:
-  void updateFPS(int time);
   //
-  QMutex           captureLock, stopLock;
+  QMutex           stopLock;
   QWaitCondition   stopWait;
   hpx::future<void> captureThreadFinished;
-  hpx::threads::executors::pool_executor blockingExecutor;
+  hpx::threads::executors::pool_executor executor;
   //
   bool             abort; 
   ImageBuffer      imageBuffer;

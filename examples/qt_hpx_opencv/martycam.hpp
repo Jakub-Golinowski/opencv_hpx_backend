@@ -55,6 +55,7 @@ public:
   QDockWidget             *progressToolbar;
   QDockWidget             *settingsDock;
   SettingsWidget          *settingsWidget;
+  //TODO maybe the imageSize member variable can be deleted since it is also stored in the captureThread
   cv::Size                 imageSize;
   int                      cameraIndex;
   CaptureThread           *captureThread;

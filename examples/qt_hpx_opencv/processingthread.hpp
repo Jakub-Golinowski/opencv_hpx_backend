@@ -1,6 +1,13 @@
 #ifndef PROCESSING_THREAD_H
 #define PROCESSING_THREAD_H
 //
+#include <hpx/config.hpp>
+#include <hpx/parallel/execution.hpp>
+#include <hpx/parallel/executors/pool_executor.hpp>
+//
+#include <QMutex>
+#include <QWaitCondition>
+//
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 //
@@ -15,7 +22,8 @@ class GraphUpdateFilter;
 
 class ProcessingThread {
 public:
-   ProcessingThread(ImageBuffer buffer, cv::Size &size);
+   ProcessingThread(ImageBuffer buffer, cv::Size &size,
+                    hpx::threads::executors::pool_executor exec);
   ~ProcessingThread();
   //
   void CopySettings(ProcessingThread *thread);
@@ -29,12 +37,11 @@ public:
   void setErodeIterations(int val) { this->motionFilter->erodeIterations = val; }
   void setDilateIterations(int val) { this->motionFilter->dilateIterations = val; }
   void setDisplayImage(int image) { this->motionFilter->displayImage = image; }
-  void setBlendRatios(double ratio1) {
-    this->motionFilter->blendRatio = ratio1;
-  }
+  void setBlendRatios(double ratio1) { this->motionFilter->blendRatio = ratio1; }
 
   void run();
-  void setAbort(bool a) { this->abort = a; }
+  bool startProcessing();
+  bool stopProcessing();
 
   double getPSNR();
   cv::Scalar getMSSIM(const cv::Mat& i1, const cv::Mat& i2);
@@ -43,14 +50,18 @@ public:
   GraphUpdateFilter  *graphFilter;
   MotionFilter       *motionFilter;
 
-
 private:
-  ImageBuffer  imageBuffer;
-  bool         abort;
+  void setAbort(bool a) { this->abort = a; }
+
+  QMutex           stopLock;
+  QWaitCondition   stopWait;
+  bool             processingActive;
+  bool             abort;
   //
-#ifndef Q_MOC_RUN
-  boost::circular_buffer<cv::Mat> RecordBuffer;
-#endif
+  hpx::future<void> processingThreadFinished;
+  hpx::threads::executors::pool_executor executor;
+  //
+  ImageBuffer  imageBuffer;
 };
 
 #endif

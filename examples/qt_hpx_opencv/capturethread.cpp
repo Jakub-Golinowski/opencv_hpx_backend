@@ -49,7 +49,7 @@ cv::Mat Deinterlace(cv::Mat &src)
 CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
                              hpx::threads::executors::pool_executor exec) : frameTimes(50)
 {
-  this->blockingExecutor = exec;
+  this->executor = exec;
   this->abort                = false;
   this->captureActive        = false;
   this->deInterlace          = false;
@@ -235,7 +235,7 @@ bool CaptureThread::startCapture()
     abort = false;
 
     this->captureThreadFinished =
-    hpx::async(this->blockingExecutor, &CaptureThread::run, this);
+    hpx::async(this->executor, &CaptureThread::run, this);
 
     this->CaptureStatus += output.str();
 
