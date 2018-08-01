@@ -12,6 +12,7 @@
 #endif
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
+#include <QString>
 //
 // we need these to get access to videoInput
 // Caution: including cpp file here as routines are not exported from openCV
@@ -184,6 +185,20 @@ int SettingsWidget::getCameraIndex(std::string &text)
   return index;
 }
 //----------------------------------------------------------------------------
+MotionFilterParams SettingsWidget::getMotionFilterParams(){
+  MotionFilterParams motionFilterParams;
+
+  motionFilterParams.threshold = ui.threshold->value();
+  motionFilterParams.average = static_cast<float>(ui.average->value())/100;
+  motionFilterParams.erodeIterations = ui.erode->value();
+  motionFilterParams.dilateIterations = ui.dilate->value();
+
+  motionFilterParams.blendRatio = static_cast<float>(ui.blendRatio->value())/100;
+  motionFilterParams.displayImage = this->ImageButtonGroup.checkedId();
+
+  return motionFilterParams;
+}
+//----------------------------------------------------------------------------
 void SettingsWidget::SetupAVIStrings()
 {
   QString filePath = this->ui.avi_directory->text();
@@ -288,24 +303,25 @@ void SettingsWidget::saveSettings()
   settings.setValue("average",this->ui.average->value());
   settings.setValue("erode",this->ui.erode->value());
   settings.setValue("dilate",this->ui.dilate->value());
+  settings.setValue("display",this->ImageButtonGroup.checkedId());
+  settings.setValue("blendImage",this->ui.blendRatio->value());
   settings.endGroup();
 
   settings.beginGroup("FaceRecognition");
-  settings.setValue("requestedFps",this->ui.requestedFps_HorizontalSlider->value());
+
   settings.setValue("eyesRecognition",this->ui.eyesRecog_CheckBox->checkState());
   settings.endGroup();
 
-  settings.beginGroup("UserSettings");
+  settings.beginGroup("GeneralSettings");
   settings.setValue("resolution",this->ResolutionButtonGroup.checkedId());
   settings.setValue("rotation",this->RotateButtonGroup.checkedId());
-  settings.setValue("display",this->ImageButtonGroup.checkedId());
-  settings.setValue("cameraIndex",this->ui.cameraSelect->currentIndex());
-  settings.setValue("aviDirectory",this->ui.avi_directory->text());
-  settings.setValue("blendImage",this->ui.blendRatio->value());
+  settings.setValue("requestedFps",this->ui.requestedFps_HorizontalSlider->value());
   settings.setValue("processingType", this->ui.tabWidget->currentIndex());
+  settings.setValue("cameraIndex",this->ui.cameraSelect->currentIndex());
   settings.endGroup();
 
-  settings.beginGroup("MotionAVI");
+  settings.beginGroup("SavingStream");
+  settings.setValue("aviDirectory",this->ui.avi_directory->text());
   settings.setValue("snapshot",this->SnapshotId);
   settings.setValue("aviDuration", this->ui.AVI_Duration->time());
   settings.endGroup();
@@ -320,32 +336,32 @@ void SettingsWidget::loadSettings()
   SilentCall(this->ui.threshold)->setValue(settings.value("threshold",3).toInt());
   SilentCall(this->ui.t_label)->setText(settings.value("threshold", 3).toString());
   SilentCall(this->ui.average)->setValue(settings.value("average",10).toInt());
-  SilentCall(this->ui.a_label)->setText(settings.value("average", 10).toString());
+  SilentCall(this->ui.a_label)->setText(QString::number((settings.value("average", 10).toFloat()/100)));
   SilentCall(this->ui.erode)->setValue(settings.value("erode",1).toInt());
-  SilentCall(this->ui.e_label)->setText(settings.value("erode", 10).toString());
-
+  SilentCall(this->ui.e_label)->setText(settings.value("erode", 1).toString());
   SilentCall(this->ui.dilate)->setValue(settings.value("dilate",1).toInt());
   SilentCall(this->ui.d_label)->setText(settings.value("dilate", 1).toString());
-  settings.endGroup();
 
-  settings.beginGroup("FaceRecognition");
-  SilentCall(this->ui.requestedFps_HorizontalSlider)->setValue(settings.value("requestedFps",15).toInt());
-  SilentCall(this->ui.requestedFps_ValueLabel)->setText(settings.value("requestedFps", 15).toString());
-  SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
-  settings.endGroup();
-
-  settings.beginGroup("UserSettings");
-  SilentCall(&this->ResolutionButtonGroup)->button(settings.value("resolution",0).toInt())->click();
-  SilentCall(&this->RotateButtonGroup)->button(settings.value("rotation",0).toInt())->click();
   SilentCall(&this->ImageButtonGroup)->button(settings.value("display",0).toInt())->click();
-  SilentCall(this->ui.cameraSelect)->setCurrentIndex(settings.value("cameraIndex",0).toInt());
-  SilentCall(this->ui.avi_directory)->setText(settings.value("aviDirectory","$HOME/wildlife").toString());
-  SilentCall(this->ui.tabWidget)->setCurrentIndex(settings.value("processingType", 0).toInt());
-  //
   SilentCall(this->ui.blendRatio)->setValue(settings.value("blendImage",0.5).toInt());
   settings.endGroup();
 
-  settings.beginGroup("MotionAVI");
+  settings.beginGroup("FaceRecognition");
+  SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
+  settings.endGroup();
+
+  settings.beginGroup("GeneralSettings");
+  SilentCall(this->ui.requestedFps_HorizontalSlider)->setValue(settings.value("requestedFps",15).toInt());
+  SilentCall(this->ui.requestedFps_ValueLabel)->setText(settings.value("requestedFps", 15).toString());
+  SilentCall(&this->ResolutionButtonGroup)->button(settings.value("resolution",0).toInt())->click();
+  SilentCall(&this->RotateButtonGroup)->button(settings.value("rotation",0).toInt())->click();
+  SilentCall(this->ui.cameraSelect)->setCurrentIndex(settings.value("cameraIndex",0).toInt());
+  SilentCall(this->ui.tabWidget)->setCurrentIndex(settings.value("processingType", 0).toInt());
+  //
+  settings.endGroup();
+
+  settings.beginGroup("SavingStream");
+  SilentCall(this->ui.avi_directory)->setText(settings.value("aviDirectory","$HOME/wildlife").toString());
   this->SnapshotId = settings.value("snapshot",0).toInt();
   SilentCall(this->ui.AVI_Duration)->setTime(settings.value("aviDuration", QTime(0,0,10)).toTime());
   settings.endGroup();
@@ -379,4 +395,8 @@ void SettingsWidget::onRequestedFpsChanged(int value){
 void SettingsWidget::onEyesRecogStateChanged(int value){
   std::cout << "EyesRecognition CheckBox New State is: "
                << std::to_string(value) << "\n";
+}
+
+ProcessingType SettingsWidget::getCurentProcessingType() {
+  return ProcessingType(this->ui.tabWidget->currentIndex());
 }

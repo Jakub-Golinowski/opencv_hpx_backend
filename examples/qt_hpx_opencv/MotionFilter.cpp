@@ -35,6 +35,28 @@ MotionFilter::MotionFilter()
   //
   this->frameCount = 0;
 }
+
+MotionFilter::MotionFilter(MotionFilterParams mfp){
+  this->imageSize         = cv::Size(-1,-1);
+  //
+  this->renderer          = NULL;
+  //
+  this->triggerLevel      = 100.0;
+  this->threshold         = mfp.threshold;
+  this->average           = mfp.average;
+  this->erodeIterations   = mfp.erodeIterations;
+  this->dilateIterations  = mfp.dilateIterations;
+  this->displayImage      = mfp.displayImage;
+  this->blendRatio        = mfp.blendRatio;
+  //
+  this->motionEstimate   = 0.0;
+  this->logMotion        = 0.0;
+  this->normalizedMotion = 0.0;
+  this->rollingMean      = 0.0;
+  this->eventLevel       = 0.0;
+  //
+  this->frameCount = 0;
+}
 //----------------------------------------------------------------------------
 MotionFilter::~MotionFilter()
 {

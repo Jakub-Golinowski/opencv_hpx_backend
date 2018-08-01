@@ -76,7 +76,8 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
   }
   if (this->imageSize.width>0) {
     this->renderWidget->setCVSize(this->imageSize);
-    this->createProcessingThread(this->imageSize, nullptr, defaultExec);
+    this->createProcessingThread(this->imageSize, nullptr, defaultExec,
+    this->settingsWidget->getCurentProcessingType());
     //
     this->initChart();
   }
@@ -117,9 +118,12 @@ void MartyCam::deleteCaptureThread()
 }
 //----------------------------------------------------------------------------
 void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThread,
-                                      hpx::threads::executors::pool_executor exec)
+                                      hpx::threads::executors::pool_executor exec,
+                                      ProcessingType processingType)
 {
-  this->processingThread = new ProcessingThread(imageBuffer, exec);
+  MotionFilterParams mfp = this->settingsWidget->getMotionFilterParams();
+    this->processingThread =
+            new ProcessingThread(imageBuffer, exec, processingType, mfp);
   if (oldThread) this->processingThread->CopySettings(oldThread);
   this->processingThread->setRootFilter(renderWidget);
   this->processingThread->startProcessing();

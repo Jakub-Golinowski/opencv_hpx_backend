@@ -4,6 +4,7 @@
 #include "ui_settings.h"
 #include "capturethread.hpp"
 #include "processingthread.hpp"
+#include "MotionFilter.hpp"
 #include <QDateTime>
 #include <QTimer>
 #include <QButtonGroup>
@@ -49,6 +50,8 @@ public:
   void setRenderWidget(RenderWidget *rw) { this->renderWidget = rw; }
 
   int getCameraIndex(std::string &text);
+  ProcessingType getCurentProcessingType();
+  MotionFilterParams getMotionFilterParams();
 
 public slots:
   void onThresholdChanged(int value);

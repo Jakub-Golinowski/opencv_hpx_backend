@@ -22,16 +22,23 @@ class GraphUpdateFilter;
 #include "MotionFilter.hpp"
 #include "FaceRecogFilter.hpp"
 
+struct processingThreadParams{
+
+};
+
+enum class ProcessingType: int
+{
+    motionDetection = 0,
+    faceRecognition =1,
+};
+
 class ProcessingThread : public QObject{
 Q_OBJECT;
-private:
-    enum class ProcessingType: int
-    {
-        motionDetection = 0,
-        faceRecognition =1,
-    };
 public:
-   ProcessingThread(ImageBuffer buffer, hpx::threads::executors::pool_executor exec);
+   ProcessingThread(ImageBuffer buffer,
+                    hpx::threads::executors::pool_executor exec,
+                    ProcessingType processingType,
+                    MotionFilterParams mfp);
   ~ProcessingThread();
   //
   void CopySettings(ProcessingThread *thread);

@@ -14,12 +14,22 @@
 class PSNRFilter;
 class Filter;
 
+struct MotionFilterParams {
+    int          threshold;
+    double       average;
+    int          erodeIterations;
+    int          dilateIterations;
+    double       blendRatio;
+    int          displayImage;
+};
+
 //
 // Filter which computes some motion estimates
 //
 class MotionFilter {
 public:
    MotionFilter();
+   MotionFilter(MotionFilterParams motionFilterParams);
   ~MotionFilter();
   //
   virtual void process(const cv::Mat &image);
@@ -39,15 +49,18 @@ public:
   double       eventLevel;
 
   //
-  // input variables
-  //
-  double       triggerLevel;
+  // GUI tunable parameters:
+  MotionFilterParams mfp;
+
   int          threshold;
   double       average;
   int          erodeIterations;
   int          dilateIterations;
-  int          displayImage;
   double       blendRatio;
+  int          displayImage;
+  //
+  // GUI non-tunable params
+  double       triggerLevel;
   int          frameCount;
 
   //

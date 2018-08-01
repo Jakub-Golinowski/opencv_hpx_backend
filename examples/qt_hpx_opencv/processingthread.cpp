@@ -14,10 +14,12 @@
 #include <hpx/include/async.hpp>
 //----------------------------------------------------------------------------
 ProcessingThread::ProcessingThread(ImageBuffer buffer,
-                                   hpx::threads::executors::pool_executor exec)
+                                   hpx::threads::executors::pool_executor exec,
+                                   ProcessingType processingType,
+                                   MotionFilterParams mfp)
         : imageBuffer(buffer), executor(exec),
-          motionFilter(new MotionFilter()), faceRecogFilter(new FaceRecogFilter),
-          abort(false), processingType(ProcessingType::motionDetection),
+          motionFilter(new MotionFilter(mfp)), faceRecogFilter(new FaceRecogFilter),
+          abort(false), processingType(processingType),
           QObject(nullptr) {}
 //----------------------------------------------------------------------------
 ProcessingThread::~ProcessingThread()
