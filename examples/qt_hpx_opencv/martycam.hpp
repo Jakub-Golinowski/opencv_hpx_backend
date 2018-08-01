@@ -15,9 +15,7 @@
 #include "capturethread.hpp"
 #include "processingthread.hpp"
 
-class TrackController;
 class RenderWidget;
-class QToolBar;
 class QDockWidget;
 class SettingsWidget;
 
@@ -59,9 +57,7 @@ public:
   cv::Size                 imageSize;
   int                      cameraIndex;
   CaptureThread           *captureThread;
-  hpx::future<void>        captureThreadFinished;
   ProcessingThread        *processingThread;
-  hpx::future<void>        processingThreadFinished;
   ImageBuffer              imageBuffer;
   double                   UserDetectionThreshold;
   int                      EventRecordCounter;

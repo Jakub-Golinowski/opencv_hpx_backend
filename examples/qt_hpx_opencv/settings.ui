@@ -301,7 +301,7 @@
           <item row="2" column="0">
            <widget class="QRadioButton" name="differenceImage">
             <property name="text">
-             <string>Thresholded Difference Image</string>
+             <string>Thresholded Diff. Image</string>
             </property>
            </widget>
           </item>
@@ -328,37 +328,7 @@
           <string>Face recognition options</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
-          <item row="1" column="2">
-           <widget class="QLabel" name="requestedFps_ValueLabel">
-            <property name="text">
-             <string>30</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSlider" name="requestedFps_HorizontalSlider">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>50</number>
-            </property>
-            <property name="value">
-             <number>30</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>Requested FPS</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
+          <item row="2" column="0">
            <widget class="QCheckBox" name="eyesRecog_CheckBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -400,6 +370,54 @@
       <string>General Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QFrame" name="frame_2">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_15">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Requested FPS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="requestedFps_HorizontalSlider">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>30</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="requestedFps_ValueLabel">
+           <property name="text">
+            <string>30</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item>
        <widget class="QFrame" name="frame">
         <property name="frameShape">

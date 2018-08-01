@@ -41,6 +41,7 @@ public:
 
   cv::Size  getSelectedResolution();
   int       getSelectedRotation();
+  int       getRequestedFps();
 
   void      RecordMotionAVI(bool state);
 

@@ -47,14 +47,15 @@ cv::Mat Deinterlace(cv::Mat &src)
 //TODO make behaviour consistent. For now I think it would be best that the CaptureThread
 // constructor connects to camera and enforces the given resolution or at least stores tha actual resolutions in the settings
 CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
-                             hpx::threads::executors::pool_executor exec) : frameTimes(50)
+                             hpx::threads::executors::pool_executor exec,
+                             int requestedFps) : frameTimes(50)
 {
   this->executor = exec;
   this->abort                = false;
   this->captureActive        = false;
   this->deInterlace          = false;
-  this->requestedFPS         = 15;
-  this->fps                  = 0.0 ;
+  this->requestedFps         = requestedFps;
+  this->actualFps                  = 0.0 ;
   this->FrameCounter         = 0;
   this->deviceIndex          =-1;
   this->MotionAVI_Writing    = false;
@@ -157,9 +158,15 @@ void CaptureThread::setRotation(int value)
 }
 //----------------------------------------------------------------------------
 void CaptureThread::run() 
-{  
-  QTime time;
-  time.start();
+{
+  // Clear the frameTimes circular buffer to ensure actualFps is computed correctly from the first frame
+  this->frameTimes.clear();
+
+  QTime actualFpsTime;
+  actualFpsTime.start();
+
+  QTime requestedFpsTime;
+  requestedFpsTime.start();
 
   while (!this->abort) {
     if (!captureActive) {
@@ -167,9 +174,19 @@ void CaptureThread::run()
       continue;
     }
 
+    int frameProcessingTime_ms = requestedFpsTime.elapsed();
+    int requestedFrameTime_ms = 1000 / this->requestedFps;
+
+    int time_to_wait = requestedFrameTime_ms - frameProcessingTime_ms;
+
+    if(time_to_wait > 0){
+        boost::this_thread::sleep(boost::posix_time::milliseconds(time_to_wait));
+    }
+
     // get latest frame from webcam
     cv::Mat frame;
     this->capture >> frame;
+
 
     if (frame.empty()) {
       this->setAbort(true);
@@ -199,8 +216,10 @@ void CaptureThread::run()
 
 
     this->FrameCounter++;
-      
-    updateFPS(time.elapsed());
+
+    updateActualFps(actualFpsTime.elapsed());
+
+    requestedFpsTime.restart();
   }
 
   // The run() task is exiting -> wake the threads waiting for that.
@@ -219,7 +238,7 @@ bool CaptureThread::startCapture()
       this->capture.set(CV_CAP_PROP_FRAME_WIDTH, 2048);
       this->capture.set(CV_CAP_PROP_FRAME_HEIGHT, 2048);
     }
-    this->capture.set(CV_CAP_PROP_FPS, this->requestedFPS);
+    this->capture.set(CV_CAP_PROP_FPS, this->requestedFps);
     std::ostringstream output;
     output << "CV_CAP_PROP_FRAME_WIDTH\t"   << this->capture.get(CV_CAP_PROP_FRAME_WIDTH) << std::endl;
     output << "CV_CAP_PROP_FRAME_HEIGHT\t"  << this->capture.get(CV_CAP_PROP_FRAME_HEIGHT) << std::endl;
@@ -233,7 +252,6 @@ bool CaptureThread::startCapture()
     captureActive = true;
     abort = false;
 
-    this->captureThreadFinished =
     hpx::async(this->executor, &CaptureThread::run, this);
 
     this->CaptureStatus += output.str();
@@ -257,16 +275,17 @@ bool CaptureThread::stopCapture() {
 //----------------------------------------------------------------------------
 void CaptureThread::setRequestedFps(int value){
   this->requestedFps = value;
+  this->frameTimes.clear();
 }
 //----------------------------------------------------------------------------
-void CaptureThread::updateFPS(int time) {
+void CaptureThread::updateActualFps(int time) {
   frameTimes.push_back(time);
   if (frameTimes.size() > 1) {
-    fps = frameTimes.size()/((double)time-frameTimes.front())*1000.0;
-    fps = (static_cast<int>(fps*10))/10.0;
+    actualFps = frameTimes.size()/((double)time-frameTimes.front())*1000.0;
+    actualFps = (static_cast<int>(actualFps*10))/10.0;
   }
   else {
-    fps = 0;
+    actualFps = 0;
   }
 }
 //----------------------------------------------------------------------------

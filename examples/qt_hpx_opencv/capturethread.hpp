@@ -25,8 +25,10 @@ typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree:
 
 class CaptureThread{
 public: 
-   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
-                 hpx::threads::executors::pool_executor exec);
+   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device,
+                 const std::string &URL,
+                 hpx::threads::executors::pool_executor exec,
+                 int requestedFps);
   ~CaptureThread() ;
 
   void run();
@@ -38,7 +40,7 @@ public:
   void setResolution(const cv::Size &res);
   //
   void setRequestedFps(int value);
-  double getFPS() { return fps; }
+  double getFPS() { return actualFps; }
   bool isCapturing() { return captureActive; }
   
   int  GetFrameCounter() { return this->FrameCounter; }
@@ -67,24 +69,22 @@ public:
   cv::Size getRotatedSize() { return this->rotatedSize; }
 
 private:
-    void setAbort(bool a) { this->abort = a; }
-    void updateFPS(int time);
+  void setAbort(bool a) { this->abort = a; }
+  void updateActualFps(int time);
 
   //
   QMutex           stopLock;
   QWaitCondition   stopWait;
-  hpx::future<void> captureThreadFinished;
   hpx::threads::executors::pool_executor executor;
   //
   bool             abort; 
   ImageBuffer      imageBuffer;
   bool             captureActive;
   bool             deInterlace;
-  int              requestedFPS; 
   cv::Size         imageSize;
   cv::Size         rotatedSize;
   cv::VideoCapture capture;
-  double           fps;
+  double           actualFps;
   int              requestedFps;
   FrameSpeedBuffer frameTimes;
   int              deviceIndex;

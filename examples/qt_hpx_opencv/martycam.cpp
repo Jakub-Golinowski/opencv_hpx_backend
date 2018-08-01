@@ -97,7 +97,7 @@ void MartyCam::closeEvent(QCloseEvent*) {
 void MartyCam::createCaptureThread(int FPS, cv::Size &size, int camera, const std::string &cameraname,
                                    hpx::threads::executors::pool_executor exec)
 {
-  this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname, this->blockingExecutor);
+  this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname, this->blockingExecutor, this->settingsWidget->getRequestedFps());
   this->captureThread->setRotation(this->settingsWidget->getSelectedRotation());
   //TODO for now I need to enforce the resolution size here again but it is more of a hotfix than a good solution -> ultimately I want all this encapsulated in the Capture thread constructor.
   this->captureThread->setResolution(size);

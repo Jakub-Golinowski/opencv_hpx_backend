@@ -264,6 +264,9 @@ int SettingsWidget::getSelectedRotation()
 {
   return this->RotateButtonGroup.checkedId();
 }
+int SettingsWidget::getRequestedFps(){
+    return this->ui.requestedFps_HorizontalSlider->value();
+}
 //----------------------------------------------------------------------------
 void SettingsWidget::onRotateSelection(int btn)
 {
@@ -288,7 +291,7 @@ void SettingsWidget::saveSettings()
   settings.endGroup();
 
   settings.beginGroup("FaceRecognition");
-  settings.setValue("requestedFPS",this->ui.requestedFps_HorizontalSlider->value());
+  settings.setValue("requestedFps",this->ui.requestedFps_HorizontalSlider->value());
   settings.setValue("eyesRecognition",this->ui.eyesRecog_CheckBox->checkState());
   settings.endGroup();
 
@@ -326,8 +329,8 @@ void SettingsWidget::loadSettings()
   settings.endGroup();
 
   settings.beginGroup("FaceRecognition");
-  SilentCall(this->ui.requestedFps_HorizontalSlider)->setValue(settings.value("requestedFPS",2).toInt());
-  SilentCall(this->ui.requestedFps_ValueLabel)->setText(settings.value("requestedFPS", 2).toString());
+  SilentCall(this->ui.requestedFps_HorizontalSlider)->setValue(settings.value("requestedFps",15).toInt());
+  SilentCall(this->ui.requestedFps_ValueLabel)->setText(settings.value("requestedFps", 15).toString());
   SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
   settings.endGroup();
 
