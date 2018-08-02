@@ -38,7 +38,7 @@ public:
    ProcessingThread(ImageBuffer buffer,
                     hpx::threads::executors::pool_executor exec,
                     ProcessingType processingType,
-                    MotionFilterParams mfp);
+                    MotionFilterParams mfp, FaceRecogFilterParams frfp);
   ~ProcessingThread();
   //
   void CopySettings(ProcessingThread *thread);
@@ -51,14 +51,16 @@ public:
   void setDilateIterations(int val) { this->motionFilter->dilateIterations = val; }
   void setDisplayImage(int image) { this->motionFilter->displayImage = image; }
   void setBlendRatios(double ratio1) { this->motionFilter->blendRatio = ratio1; }
-
+  //
+  void setEyesRecogState(int val) { this->faceRecogFilter->setEyesRecogState((bool)val); }
+  void setDecimationCoeff(int val) {
+    this->faceRecogFilter->setDecimationCoeff(val); }
   void run();
   bool startProcessing();
   bool stopProcessing();
 
   void setMotionDetectionProcessing();
   void setFaceRecognitionProcessing();
-
   MotionFilter       *motionFilter;
   FaceRecogFilter    *faceRecogFilter;
 

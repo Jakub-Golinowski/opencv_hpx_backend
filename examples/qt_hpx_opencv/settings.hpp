@@ -52,6 +52,7 @@ public:
   int getCameraIndex(std::string &text);
   ProcessingType getCurentProcessingType();
   MotionFilterParams getMotionFilterParams();
+  FaceRecogFilterParams getFaceRecogFilterParams();
 
 public slots:
   void onThresholdChanged(int value);
@@ -68,6 +69,8 @@ public slots:
   void onBlendChanged(int value);
   //
   void onRequestedFpsChanged(int);
+  //
+  void onDecimationCoeffChanged(int);
   void onEyesRecogStateChanged(int);
   //
   void onSnapClicked();

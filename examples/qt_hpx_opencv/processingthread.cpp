@@ -16,9 +16,11 @@
 ProcessingThread::ProcessingThread(ImageBuffer buffer,
                                    hpx::threads::executors::pool_executor exec,
                                    ProcessingType processingType,
-                                   MotionFilterParams mfp)
+                                   MotionFilterParams mfp,
+                                   FaceRecogFilterParams frfp)
         : imageBuffer(buffer), executor(exec),
-          motionFilter(new MotionFilter(mfp)), faceRecogFilter(new FaceRecogFilter),
+          motionFilter(new MotionFilter(mfp)),
+          faceRecogFilter(new FaceRecogFilter(frfp)),
           abort(false), processingType(processingType),
           QObject(nullptr) {}
 //----------------------------------------------------------------------------

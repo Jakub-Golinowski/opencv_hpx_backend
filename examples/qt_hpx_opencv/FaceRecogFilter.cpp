@@ -18,19 +18,37 @@ FaceRecogFilter::FaceRecogFilter()
           scale(1.0),
           renderer(nullptr),
           imageSize(cv::Size(-1,-1)),
-          detectEyes(false),
+          eyesRecogState(false),
           inputImage(),
           outputImage() {
-
-
   // Load classifiers
   std::string nestedCascadePath = DATA_PATH +
           std::string("/models/haarcascade_eye_tree_eyeglasses.xml");
   std::string cascadePath = DATA_PATH +
           std::string("/models/haarcascade_frontalface_default.xml");
 
-  if(detectEyes)
+  if(eyesRecogState)
     nestedCascade.load(nestedCascadePath);
+  cascade.load(cascadePath);
+}
+//----------------------------------------------------------------------------
+FaceRecogFilter::FaceRecogFilter(FaceRecogFilterParams frfp)
+        : cascade(),
+          nestedCascade(),
+          scale(frfp.scale),
+          renderer(nullptr),
+          imageSize(cv::Size(-1,-1)),
+          eyesRecogState(frfp.detectEyes),
+          inputImage(),
+          outputImage() {
+  // Load classifiers
+  std::string nestedCascadePath = DATA_PATH +
+                                  std::string("/models/haarcascade_eye_tree_eyeglasses.xml");
+  std::string cascadePath = DATA_PATH +
+                            std::string("/models/haarcascade_frontalface_default.xml");
+
+
+  nestedCascade.load(nestedCascadePath);
   cascade.load(cascadePath);
 }
 //----------------------------------------------------------------------------
@@ -47,6 +65,7 @@ void FaceRecogFilter::DeleteTemporaryStorage()
 //----------------------------------------------------------------------------
 void FaceRecogFilter::process(const cv::Mat &img)
 {
+
   std::vector<cv::Rect> faces, faces2;
   cv::Mat gray, smallImg;
 
@@ -61,7 +80,7 @@ void FaceRecogFilter::process(const cv::Mat &img)
   cascade.detectMultiScale(smallImg, faces, 1.1,
                            2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
 
-  // Draw circles around the faces
+  // Draw squares around the faces
   for (size_t i = 0; i < faces.size(); i++)
   {
     cv::Rect r = faces[i];
@@ -76,7 +95,7 @@ void FaceRecogFilter::process(const cv::Mat &img)
               cv::Point(cvRound((r.x + r.width-1)*scale),
                         cvRound((r.y + r.height-1)*scale)),
               color, 2, 8, 0);
-    if(nestedCascade.empty())
+    if(!eyesRecogState)
       continue;
     smallImgROI = smallImg(r);
 
@@ -112,31 +131,9 @@ void FaceRecogFilter::process(const cv::Mat &img)
   }
   //    std::cout << "Processed frame " << framenum++ << std::endl;
 }
-//----------------------------------------------------------------------------
-void FaceRecogFilter::countPixels(const cv::Mat &image)
-{
-//  // Acquire image unfo
-//  int height    = image.size().height;
-//  int width     = image.size().width;
-//  int step      = image.step[0];
-//  int channels  = image.channels();
-//  uchar *data   = image.data;
+void FaceRecogFilter::setDecimationCoeff(int val){
+  this->scale = static_cast<double>(100) / val;
 //
-//  // Begin
-//  int white = 0;
-//  for (int i=0;i<height;i++) {
-//    for (int j=0;j<width;j++) {
-//      int nonwhite = 0;
-//      for (int k=0;k<channels;k++) {
-//        if (data[i*step+j*channels+k]==255) nonwhite = 1;
-//        else {
-//          nonwhite = 0;
-//          break;
-//        }
-//      }
-//      if (nonwhite == 1) white++;
-//    }
-//  }
-//
-//  this->motionEstimate = 100.0*white/(height*width);
+//  float decimationFraction = static_cast<float>(val)/100;
+//  this->scale =
 }

@@ -122,8 +122,9 @@ void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThrea
                                       ProcessingType processingType)
 {
   MotionFilterParams mfp = this->settingsWidget->getMotionFilterParams();
+  FaceRecogFilterParams frfp = this->settingsWidget->getFaceRecogFilterParams();
     this->processingThread =
-            new ProcessingThread(imageBuffer, exec, processingType, mfp);
+            new ProcessingThread(imageBuffer, exec, processingType, mfp, frfp);
   if (oldThread) this->processingThread->CopySettings(oldThread);
   this->processingThread->setRootFilter(renderWidget);
   this->processingThread->startProcessing();

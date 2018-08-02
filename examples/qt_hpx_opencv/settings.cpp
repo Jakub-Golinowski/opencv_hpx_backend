@@ -46,6 +46,8 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   //
   connect(ui.requestedFps_HorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onRequestedFpsChanged(int)));
   connect(ui.eyesRecog_CheckBox, SIGNAL(stateChanged(int)), this, SLOT(onEyesRecogStateChanged(int)));
+  connect(ui.decimationCoeff_HorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(
+          onDecimationCoeffChanged(int)));
   //
   connect(ui.snapButton, SIGNAL(clicked()), this, SLOT(onSnapClicked()));
 
@@ -199,6 +201,16 @@ MotionFilterParams SettingsWidget::getMotionFilterParams(){
   return motionFilterParams;
 }
 //----------------------------------------------------------------------------
+FaceRecogFilterParams SettingsWidget::getFaceRecogFilterParams(){
+  FaceRecogFilterParams faceRecogFilterParams;
+
+  faceRecogFilterParams.detectEyes = ui.eyesRecog_CheckBox->checkState();
+//  faceRecogFilterParams.scale = static_cast<float>(ui.decimationCoeff_HorizontalSlider->value())/100;
+    faceRecogFilterParams.scale = ui.decimationCoeff_HorizontalSlider->value();
+
+  return faceRecogFilterParams;
+}
+//----------------------------------------------------------------------------
 void SettingsWidget::SetupAVIStrings()
 {
   QString filePath = this->ui.avi_directory->text();
@@ -308,8 +320,8 @@ void SettingsWidget::saveSettings()
   settings.endGroup();
 
   settings.beginGroup("FaceRecognition");
-
   settings.setValue("eyesRecognition",this->ui.eyesRecog_CheckBox->checkState());
+  settings.setValue("decimationCoeff",this->ui.decimationCoeff_HorizontalSlider->value());
   settings.endGroup();
 
   settings.beginGroup("GeneralSettings");
@@ -348,6 +360,8 @@ void SettingsWidget::loadSettings()
 
   settings.beginGroup("FaceRecognition");
   SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
+  SilentCall(this->ui.decimationCoeff_HorizontalSlider)->setValue(settings.value("decimationCoeff",50).toInt());
+  SilentCall(this->ui.decimationCoeff_Label)->setText(settings.value("decimationCoeff", 50).toString());
   settings.endGroup();
 
   settings.beginGroup("GeneralSettings");
@@ -395,6 +409,17 @@ void SettingsWidget::onRequestedFpsChanged(int value){
 void SettingsWidget::onEyesRecogStateChanged(int value){
   std::cout << "EyesRecognition CheckBox New State is: "
                << std::to_string(value) << "\n";
+  this->processingthread->setEyesRecogState(value);
+}
+
+void SettingsWidget::onDecimationCoeffChanged(int value){
+  if(value < 100)
+    this->ui.decimationCoeff_Label->setText(QString("0.%1").arg(value, 2));
+  else if(value == 100)
+    this->ui.decimationCoeff_Label->setText(QString("1.00"));
+  else
+    std::cout << "Current Decimation Coeff = " << value << "is unsupported\n";
+  this->processingthread->setDecimationCoeff(value);
 }
 
 ProcessingType SettingsWidget::getCurentProcessingType() {
