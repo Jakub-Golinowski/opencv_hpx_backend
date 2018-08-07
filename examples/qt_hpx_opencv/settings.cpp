@@ -22,8 +22,8 @@
 //----------------------------------------------------------------------------
 SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
 {
-  this->processingthread = NULL;
-  this->capturethread    = NULL;
+//  this->processingthread = NULL;
+//  this->capturethread    = NULL;
   this->SnapshotId       = 0;
   //
   ui.setupUi(this);
@@ -75,10 +75,18 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   this->setupCameraList();
 }
 //----------------------------------------------------------------------------
-void SettingsWidget::setThreads(CaptureThread *capthread, ProcessingThread *procthread)
+void SettingsWidget::setThreads(CaptureThread_SP capthread, ProcessingThread_SP procthread)
 {
   this->capturethread = capthread;
   this->processingthread = procthread;
+}
+//----------------------------------------------------------------------------
+void SettingsWidget::unsetCaptureThread(){
+  this->capturethread = nullptr;
+}
+//----------------------------------------------------------------------------
+void SettingsWidget::unsetProcessingThread(){
+  this->processingthread = nullptr;
 }
 //----------------------------------------------------------------------------
 void SettingsWidget::onThresholdChanged(int value)

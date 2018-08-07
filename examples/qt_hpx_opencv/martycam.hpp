@@ -5,7 +5,6 @@
 #include <hpx/parallel/execution.hpp>
 
 #include <QMainWindow>
-#include <QTimer>
 #include <QDateTime>
 #include <QDebug>
 //
@@ -14,6 +13,8 @@
 #include "ui_martycam.h"
 #include "capturethread.hpp"
 #include "processingthread.hpp"
+//
+#include <boost/make_shared.hpp>
 
 class RenderWidget;
 class QDockWidget;
@@ -22,7 +23,7 @@ class SettingsWidget;
 class MartyCam : public QMainWindow {
 Q_OBJECT
 public:
-    MartyCam(const hpx::threads::executors::pool_executor&, const hpx::threads::executors::pool_executor&);
+  MartyCam(const hpx::threads::executors::pool_executor&, const hpx::threads::executors::pool_executor&);
 
   void loadSettings();
   void saveSettings();
@@ -38,29 +39,26 @@ public slots:
 protected:
   void closeEvent(QCloseEvent*);
   void deleteCaptureThread();
-  void createCaptureThread(int FPS, cv::Size &size, int camera,
-                           const std::string &cameraname, hpx::threads::executors::pool_executor exec);
+  void createCaptureThread(cv::Size &size, int camera, const std::string &cameraname,
+                           hpx::threads::executors::pool_executor exec);
   void deleteProcessingThread();
-  void createProcessingThread(cv::Size size, ProcessingThread *oldThread, hpx::threads::executors::pool_executor exec,
-  ProcessingType processingType);
-
-  void resetChart();
-  void initChart();
+  void createProcessingThread(ProcessingThread *oldThread, hpx::threads::executors::pool_executor exec,
+                              ProcessingType processingType);
 
 public:
   static const int IMAGE_BUFF_CAPACITY;
   Ui::MartyCam ui;
+
+  CaptureThread_SP captureThread;
+  ProcessingThread_SP processingThread;
+
   RenderWidget            *renderWidget;
-  QDockWidget             *progressToolbar;
   QDockWidget             *settingsDock;
   SettingsWidget          *settingsWidget;
   int                      cameraIndex;
-  CaptureThread           *captureThread;
-  ProcessingThread        *processingThread;
+
   ImageBuffer              imageBuffer;
-  double                   UserDetectionThreshold;
-  int                      EventRecordCounter;
-  int                      insideMotionEvent;
+
   hpx::threads::executors::pool_executor blockingExecutor;
   hpx::threads::executors::pool_executor defaultExecutor;
 };

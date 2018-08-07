@@ -16,6 +16,9 @@
 #include "ConcurrentCircularBuffer.hpp"
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 typedef boost::circular_buffer< int > IntCircBuff;
+class ProcessingThread;
+typedef boost::shared_ptr<ProcessingThread> ProcessingThread_SP;
+typedef boost::weak_ptr<ProcessingThread> ProcessingThread_WP;
 //
 class Filter;
 class PSNRFilter;

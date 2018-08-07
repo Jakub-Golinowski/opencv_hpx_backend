@@ -22,6 +22,9 @@ typedef boost::circular_buffer< int > IntCircBuff;
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree::capacity<IMAGE_QUEUE_LEN>> > ImageQueue;
 
+class CaptureThread;
+typedef boost::shared_ptr<CaptureThread> CaptureThread_SP;
+typedef boost::weak_ptr<CaptureThread> CaptureThread_WP;
 
 class CaptureThread{
 public: 

@@ -47,7 +47,9 @@ public:
 
   void      RecordMotionAVI(bool state);
 
-  void setThreads(CaptureThread *capthread, ProcessingThread *procthread);
+  void setThreads(CaptureThread_SP capthread, ProcessingThread_SP procthread);
+  void unsetCaptureThread();
+  void unsetProcessingThread();
   void setRenderWidget(RenderWidget *rw) { this->renderWidget = rw; }
   void switchToNextResolution();
 
@@ -92,8 +94,8 @@ signals:
 
 protected:
   Ui::SettingsWidget  ui;
-  CaptureThread      *capturethread;
-  ProcessingThread   *processingthread;
+  CaptureThread_SP      capturethread;
+  ProcessingThread_SP   processingthread;
   QTime               AVI_StartTime;
   QTime               AVI_EndTime;
   QTimer              clock;

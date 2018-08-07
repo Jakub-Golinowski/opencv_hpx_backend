@@ -48,20 +48,11 @@ void qt_main(int argc, char ** argv)
 
 int hpx_main(int argc, char ** argv)
 {
-    hpx::cout << "[hpx_main] starting hpx_main in "
-              << hpx::threads::get_pool(hpx::threads::get_self_id())->get_pool_name()
-              << " thread pool\n";
-
-    hpx::threads::thread_id_type id = hpx::threads::get_self_id();
-
-    hpx::cout << "[hpx_main] Thread Id = " << id;
-
     // Get a reference to one of the main thread
     hpx::threads::executors::main_pool_executor scheduler;
     // run an async function on the main thread to start the Qt application
     hpx::future<void> qt_application = hpx::async(scheduler, &qt_main, argc, argv);
 
-    // do something else while qt is executing in the background ...
     qt_application.wait();
 
     return hpx::finalize();

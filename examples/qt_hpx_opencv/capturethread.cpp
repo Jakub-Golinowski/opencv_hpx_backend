@@ -85,6 +85,7 @@ CaptureThread::CaptureThread(ImageBuffer imageBuffer,
 CaptureThread::~CaptureThread() 
 {  
   this->closeAVI();
+  std::cout << "Destructing Capture Thread";
   // Release our stream capture object, not necessary with openCV 2
   this->capture.release();
 }
