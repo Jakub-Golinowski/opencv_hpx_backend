@@ -35,13 +35,13 @@ FaceRecogFilter::FaceRecogFilter()
 FaceRecogFilter::FaceRecogFilter(FaceRecogFilterParams frfp)
         : cascade(),
           nestedCascade(),
-          scale(frfp.scale),
           renderer(nullptr),
           imageSize(cv::Size(-1,-1)),
           eyesRecogState(frfp.detectEyes),
           inputImage(),
           outputImage() {
   // Load classifiers
+  setDecimationCoeff(frfp.decimationCoeff);
   std::string nestedCascadePath = DATA_PATH +
                                   std::string("/models/haarcascade_eye_tree_eyeglasses.xml");
   std::string cascadePath = DATA_PATH +
@@ -135,5 +135,5 @@ void FaceRecogFilter::setDecimationCoeff(int val){
   this->scale = static_cast<double>(100) / val;
 //
 //  float decimationFraction = static_cast<float>(val)/100;
-//  this->scale =
+//  this->decimationCoeff =
 }

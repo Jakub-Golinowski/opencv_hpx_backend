@@ -214,8 +214,7 @@ FaceRecogFilterParams SettingsWidget::getFaceRecogFilterParams(){
   FaceRecogFilterParams faceRecogFilterParams;
 
   faceRecogFilterParams.detectEyes = ui.eyesRecog_CheckBox->checkState();
-//  faceRecogFilterParams.scale = static_cast<float>(ui.decimationCoeff_HorizontalSlider->value())/100;
-    faceRecogFilterParams.scale = ui.decimationCoeff_HorizontalSlider->value();
+faceRecogFilterParams.decimationCoeff = ui.decimationCoeff_HorizontalSlider->value();
 
   return faceRecogFilterParams;
 }
@@ -370,7 +369,8 @@ void SettingsWidget::loadSettings()
   settings.beginGroup("FaceRecognition");
   SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
   SilentCall(this->ui.decimationCoeff_HorizontalSlider)->setValue(settings.value("decimationCoeff",50).toInt());
-  SilentCall(this->ui.decimationCoeff_Label)->setText(settings.value("decimationCoeff", 50).toString());
+  SilentCall(this->ui.decimationCoeff_Label)->setText(
+          QString::number((settings.value("decimationCoeff", 50).toFloat()/100)));
   settings.endGroup();
 
   settings.beginGroup("GeneralSettings");

@@ -12,13 +12,13 @@
 //
 #include <hpx/lcos/future.hpp>
 #include <hpx/include/async.hpp>
-//----------------------------------------------------------------------------
+#include <utility> //----------------------------------------------------------------------------
 ProcessingThread::ProcessingThread(ImageBuffer buffer,
                                    hpx::threads::executors::pool_executor exec,
                                    ProcessingType processingType,
                                    MotionFilterParams mfp,
                                    FaceRecogFilterParams frfp)
-        : imageBuffer(buffer), executor(exec),
+        : imageBuffer(std::move(buffer)), executor(std::move(exec)),
           motionFilter(new MotionFilter(mfp)),
           faceRecogFilter(new FaceRecogFilter(frfp)),
           abort(false), processingType(processingType), processingTimes(15), processingTime_ms(0),

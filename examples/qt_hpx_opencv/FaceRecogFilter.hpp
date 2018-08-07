@@ -13,7 +13,7 @@ typedef boost::shared_ptr<FaceRecogFilter> FaceRecogFilter_SP;
 
 struct FaceRecogFilterParams {
     bool     detectEyes;
-    double   scale;
+    double   decimationCoeff;
 
 };
 //
