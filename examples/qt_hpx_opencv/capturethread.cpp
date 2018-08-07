@@ -11,6 +11,7 @@
 
 #include <hpx/lcos/future.hpp>
 #include <hpx/include/async.hpp>
+#include <utility>
 
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 
@@ -44,8 +45,6 @@ cv::Mat Deinterlace(cv::Mat &src)
 }
 
 //----------------------------------------------------------------------------
-//TODO make behaviour consistent. For now I think it would be best that the CaptureThread
-// constructor connects to camera and enforces the given resolution or at least stores tha actual resolutions in the settings
 CaptureThread::CaptureThread(ImageBuffer imageBuffer,
                              const cv::Size& size,
                              int rotation,
@@ -53,39 +52,27 @@ CaptureThread::CaptureThread(ImageBuffer imageBuffer,
                              const std::string &URL,
                              hpx::threads::executors::pool_executor exec,
                              int requestedFps)
-        : frameTimes(50),
-          captureTimes(15)
+        : imageBuffer(std::move(imageBuffer)), imageSize(cv::Size(0,0)), rotation(rotation), deviceIndex(device),
+          executor(std::move(exec)), requestedFps(requestedFps), requestedSizeCorrect(false),
+          actualFps(0.0), FrameCounter(0), frameTimes(50), captureTimes(15),
+          abort(false), captureActive(false), deInterlace(false),
+          MotionAVI_Writing(false), capture(),
+          rotatedImage(), rotatedSize(cv::Size(0,0))
 {
-  this->executor = exec;
-  this->abort                = false;
-  this->captureActive        = false;
-  this->deInterlace          = false;
-  this->requestedFps         = requestedFps;
-  this->actualFps                  = 0.0 ;
-  this->FrameCounter         = 0;
-  this->deviceIndex          =-1;
-  this->MotionAVI_Writing    = false;
-  this->capture           = NULL;
-  this->imageBuffer       = imageBuffer;
-  this->deviceIndex       = device;
-  this->rotation          = 0;
-  this->rotatedImage      = NULL;
-  // initialize font and precompute text size
+   // initialize font and precompute text size
   QString timestring = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
   this->text_size = cv::getTextSize( timestring.toUtf8().constData(), CV_FONT_HERSHEY_PLAIN, 1.0, 1, NULL);
 
   // Connect to camera and use its default resolution
   this->connectCamera(this->deviceIndex, this->CameraURL);
   // Overwrite the default camera settings
-  requestedSizeCorrect = this->setResolution(size);
-
+  this->requestedSizeCorrect = this->setResolution(size);
   this->setRotation(rotation);
 }
 //----------------------------------------------------------------------------
 CaptureThread::~CaptureThread() 
 {  
   this->closeAVI();
-  std::cout << "Destructing Capture Thread";
   // Release our stream capture object, not necessary with openCV 2
   this->capture.release();
 }

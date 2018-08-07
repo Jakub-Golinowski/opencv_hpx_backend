@@ -24,7 +24,6 @@ typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree:
 
 class CaptureThread;
 typedef boost::shared_ptr<CaptureThread> CaptureThread_SP;
-typedef boost::weak_ptr<CaptureThread> CaptureThread_WP;
 
 class CaptureThread{
 public: 

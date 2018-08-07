@@ -26,8 +26,6 @@ ProcessingThread::ProcessingThread(ImageBuffer buffer,
 //----------------------------------------------------------------------------
 ProcessingThread::~ProcessingThread()
 {
-  delete this->motionFilter;
-  delete this->faceRecogFilter;
 }
 //----------------------------------------------------------------------------
 void ProcessingThread::CopySettings(ProcessingThread *thread)

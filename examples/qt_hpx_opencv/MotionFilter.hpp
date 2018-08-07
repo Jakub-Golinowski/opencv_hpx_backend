@@ -11,6 +11,9 @@
 #include <boost/accumulators/statistics/median.hpp>
 #include <boost/accumulators/statistics/weighted_median.hpp>
 
+class MotionFilter;
+typedef boost::shared_ptr<MotionFilter> MotionFilter_SP;
+
 class PSNRFilter;
 class Filter;
 

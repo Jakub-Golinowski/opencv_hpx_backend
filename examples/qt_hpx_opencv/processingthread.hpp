@@ -18,11 +18,8 @@ typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 typedef boost::circular_buffer< int > IntCircBuff;
 class ProcessingThread;
 typedef boost::shared_ptr<ProcessingThread> ProcessingThread_SP;
-typedef boost::weak_ptr<ProcessingThread> ProcessingThread_WP;
 //
 class Filter;
-class PSNRFilter;
-class GraphUpdateFilter;
 #include "MotionFilter.hpp"
 #include "FaceRecogFilter.hpp"
 
@@ -62,8 +59,8 @@ public:
 
   void setMotionDetectionProcessing();
   void setFaceRecognitionProcessing();
-  MotionFilter       *motionFilter;
-  FaceRecogFilter    *faceRecogFilter;
+  MotionFilter_SP       motionFilter;
+  FaceRecogFilter_SP    faceRecogFilter;
 
 signals:
     void NewData();
