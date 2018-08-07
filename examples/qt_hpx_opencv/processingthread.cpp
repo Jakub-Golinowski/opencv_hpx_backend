@@ -18,7 +18,7 @@ ProcessingThread::ProcessingThread(ImageBuffer buffer,
                                    ProcessingType processingType,
                                    MotionFilterParams mfp,
                                    FaceRecogFilterParams frfp)
-        : imageBuffer(std::move(buffer)), executor(std::move(exec)),
+        : imageBuffer(std::move(buffer)), executor(std::move(exec)), processingActive(false),
           motionFilter(new MotionFilter(mfp)),
           faceRecogFilter(new FaceRecogFilter(frfp)),
           abort(false), processingType(processingType), processingTimes(15), processingTime_ms(0),

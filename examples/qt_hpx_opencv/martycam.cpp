@@ -28,7 +28,7 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
   this->renderWidget = boost::make_shared<RenderWidget>(this);
   this->ui.gridLayout->addWidget(this->renderWidget.get(), 0, Qt::AlignHCenter || Qt::AlignTop);
 
-  this->imageBuffer             = ImageBuffer(new ConcurrentCircularBuffer<cv::Mat>(IMAGE_BUFF_CAPACITY));
+  this->imageBuffer = ImageBuffer(new ConcurrentCircularBuffer<cv::Mat>(IMAGE_BUFF_CAPACITY));
 
   //
   // create a dock widget to hold the settings
@@ -78,7 +78,7 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
       this->deleteCaptureThread();
     }
   }
-  if (this->captureThread->getImageSize().width>0) {
+  if (this->captureThread->getImageSize().width > 0) {
     this->renderWidget->setCVSize(this->captureThread->getImageSize());
     this->createProcessingThread(nullptr, defaultExecutor, this->settingsWidget->getCurentProcessingType());
   }
