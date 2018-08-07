@@ -25,28 +25,28 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
   QSettings settings(settingsFileName, QSettings::IniFormat);
   restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
   //
-  this->renderWidget = new RenderWidget(this);
-  this->ui.gridLayout->addWidget(this->renderWidget, 0, Qt::AlignHCenter || Qt::AlignTop);
+  this->renderWidget = boost::make_shared<RenderWidget>(this);
+  this->ui.gridLayout->addWidget(this->renderWidget.get(), 0, Qt::AlignHCenter || Qt::AlignTop);
 
   this->imageBuffer             = ImageBuffer(new ConcurrentCircularBuffer<cv::Mat>(IMAGE_BUFF_CAPACITY));
 
   //
   // create a dock widget to hold the settings
   //
-  settingsDock = new QDockWidget("Settings", this);
+  settingsDock = boost::make_shared<QDockWidget>("Settings", this);
   settingsDock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
   settingsDock->setObjectName("SettingsDock");
   //
   // create the settings widget itself
   //
-  this->settingsWidget = new SettingsWidget(this);
-  this->settingsWidget->setRenderWidget(this->renderWidget);
-  settingsDock->setWidget(this->settingsWidget);
+  this->settingsWidget = boost::make_shared<SettingsWidget>(this);
+  this->settingsWidget->setRenderWidget(this->renderWidget.get());
+  settingsDock->setWidget(this->settingsWidget.get());
   settingsDock->setMinimumWidth(300);
-  addDockWidget(Qt::RightDockWidgetArea, settingsDock);
-  connect(this->settingsWidget, SIGNAL(resolutionSelected(cv::Size)), this, SLOT(onResolutionSelected(cv::Size)));
-  connect(this->settingsWidget, SIGNAL(rotationChanged(int)), this, SLOT(onRotationChanged(int)));
-  connect(this->settingsWidget, SIGNAL(CameraIndexChanged(int,QString)), this, SLOT(onCameraIndexChanged(int,QString)));
+  addDockWidget(Qt::RightDockWidgetArea, settingsDock.get());
+  connect(this->settingsWidget.get(), SIGNAL(resolutionSelected(cv::Size)), this, SLOT(onResolutionSelected(cv::Size)));
+  connect(this->settingsWidget.get(), SIGNAL(rotationChanged(int)), this, SLOT(onRotationChanged(int)));
+  connect(this->settingsWidget.get(), SIGNAL(CameraIndexChanged(int,QString)), this, SLOT(onCameraIndexChanged(int,QString)));
   connect(this->ui.actionQuit, SIGNAL(triggered()), this, SLOT(close()));
   //
   this->loadSettings();
@@ -114,8 +114,6 @@ void MartyCam::deleteCaptureThread()
   this->settingsWidget->unsetCaptureThread();
   this->captureThread = nullptr;
 
-//  this->captureThread = nullptr;
-  // push an empty image to the image buffer to ensure that any waiting processing thread is freed
   this->imageBuffer->send(cv::Mat());
 }
 //----------------------------------------------------------------------------
@@ -127,7 +125,7 @@ void MartyCam::createProcessingThread(ProcessingThread *oldThread,
   FaceRecogFilterParams frfp = this->settingsWidget->getFaceRecogFilterParams();
     this->processingThread = boost::make_shared<ProcessingThread>(imageBuffer, exec, processingType, mfp, frfp);
   if (oldThread) this->processingThread->CopySettings(oldThread);
-  this->processingThread->setRootFilter(renderWidget);
+  this->processingThread->setRootFilter(renderWidget.get());
   this->processingThread->startProcessing();
 
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
@@ -138,8 +136,8 @@ void MartyCam::createProcessingThread(ProcessingThread *oldThread,
 void MartyCam::deleteProcessingThread()
 {
   this->processingThread->stopProcessing();
-  processingThread.reset();
-//  this->processingThread = nullptr;
+  this->settingsWidget->unsetProcessingThread();
+  this->processingThread = nullptr;
 }
 //----------------------------------------------------------------------------
 void MartyCam::onCameraIndexChanged(int index, QString URL)

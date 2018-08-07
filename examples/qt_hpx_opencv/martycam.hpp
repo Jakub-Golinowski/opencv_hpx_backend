@@ -12,13 +12,17 @@
 //
 #include "ui_martycam.h"
 #include "capturethread.hpp"
+#include "renderwidget.hpp"
 #include "processingthread.hpp"
+#include "settings.hpp"
 //
 #include <boost/make_shared.hpp>
 
 class RenderWidget;
 class QDockWidget;
 class SettingsWidget;
+
+typedef boost::shared_ptr<QDockWidget> QDockWidget_SP;
 
 class MartyCam : public QMainWindow {
 Q_OBJECT
@@ -52,9 +56,9 @@ public:
   CaptureThread_SP captureThread;
   ProcessingThread_SP processingThread;
 
-  RenderWidget            *renderWidget;
-  QDockWidget             *settingsDock;
-  SettingsWidget          *settingsWidget;
+  RenderWidget_SP          renderWidget;
+  QDockWidget_SP           settingsDock;
+  SettingsWidget_SP        settingsWidget;
   int                      cameraIndex;
 
   ImageBuffer              imageBuffer;

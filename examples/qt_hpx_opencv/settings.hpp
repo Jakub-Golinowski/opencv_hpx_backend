@@ -12,6 +12,9 @@
 class RenderWidget;
 class IPCameraForm;
 
+class SettingsWidget;
+typedef boost::shared_ptr<SettingsWidget> SettingsWidget_SP;
+
 template<class T>
 class QMySignalBlocker
 {
