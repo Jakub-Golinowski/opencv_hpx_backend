@@ -21,7 +21,7 @@ ProcessingThread::ProcessingThread(ImageBuffer buffer,
         : imageBuffer(buffer), executor(exec),
           motionFilter(new MotionFilter(mfp)),
           faceRecogFilter(new FaceRecogFilter(frfp)),
-          abort(false), processingType(processingType),
+          abort(false), processingType(processingType), processingTimes(15), processingTime_ms(0),
           QObject(nullptr) {}
 //----------------------------------------------------------------------------
 ProcessingThread::~ProcessingThread()
@@ -50,6 +50,9 @@ void ProcessingThread::setFaceRecognitionProcessing(){
 //----------------------------------------------------------------------------
 void ProcessingThread::run() {
   int framenum = 0;
+  QTime processingTime;
+  processingTime.start();
+
   while (!this->abort) {
     // blocking : waits until next image is available if necessary
     cv::Mat cameraImage = imageBuffer->receive();
@@ -59,7 +62,8 @@ void ProcessingThread::run() {
       continue;
     }
     cv::Mat cameracopy = cameraImage.clone();
-    //
+
+    processingTime.restart();
     switch(this->processingType){
         case ProcessingType::motionDetection :
           this->motionFilter->process(cameracopy);
@@ -68,6 +72,7 @@ void ProcessingThread::run() {
           this->faceRecogFilter->process(cameracopy);
           break;
     }
+    updateProcessingTime(processingTime.elapsed());
     emit (NewData());
   }
 
@@ -98,4 +103,11 @@ bool ProcessingThread::stopProcessing() {
     this->stopLock.unlock();
   }
   return wasActive;
+}
+//----------------------------------------------------------------------------
+void ProcessingThread::updateProcessingTime(int time_ms) {
+  processingTimes.push_back(time_ms);
+
+  processingTime_ms = static_cast<int>(std::accumulate(processingTimes.begin(),
+          processingTimes.end(), 0) / processingTimes.size());
 }

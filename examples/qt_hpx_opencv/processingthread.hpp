@@ -15,16 +15,13 @@
 #include <boost/shared_ptr.hpp>
 #include "ConcurrentCircularBuffer.hpp"
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
+typedef boost::circular_buffer< int > IntCircBuff;
 //
 class Filter;
 class PSNRFilter;
 class GraphUpdateFilter;
 #include "MotionFilter.hpp"
 #include "FaceRecogFilter.hpp"
-
-struct processingThreadParams{
-
-};
 
 enum class ProcessingType: int
 {
@@ -55,6 +52,7 @@ public:
   void setEyesRecogState(int val) { this->faceRecogFilter->setEyesRecogState((bool)val); }
   void setDecimationCoeff(int val) {
     this->faceRecogFilter->setDecimationCoeff(val); }
+  int getProcessingTime() { return this->processingTime_ms; }
   void run();
   bool startProcessing();
   bool stopProcessing();
@@ -68,6 +66,7 @@ signals:
     void NewData();
 
 private:
+  void updateProcessingTime(int time_ms);
 
   //
   QMutex           stopLock;
@@ -78,6 +77,8 @@ private:
   //
   ImageBuffer  imageBuffer;
   ProcessingType processingType;
+  int processingTime_ms;
+  IntCircBuff processingTimes;
 };
 
 #endif

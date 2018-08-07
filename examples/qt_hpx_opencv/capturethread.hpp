@@ -18,7 +18,7 @@
 #include "ConcurrentCircularBuffer.hpp"
 #define IMAGE_QUEUE_LEN 1024
 
-typedef boost::circular_buffer< int > FrameSpeedBuffer;
+typedef boost::circular_buffer< int > IntCircBuff;
 typedef boost::shared_ptr< ConcurrentCircularBuffer<cv::Mat> > ImageBuffer;
 typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree::capacity<IMAGE_QUEUE_LEN>> > ImageQueue;
 
@@ -72,7 +72,8 @@ public:
 
 private:
   void setAbort(bool a) { this->abort = a; }
-  void updateActualFps(int time);
+  void updateActualFps(int time_ms);
+  void updateCaptureTime(int time_ms);
 
   //
   QMutex           stopLock;
@@ -90,7 +91,8 @@ private:
   int              requestedFps;
   int              sleepTime_ms;
   int              captureTime_ms;
-  FrameSpeedBuffer frameTimes;
+  IntCircBuff      frameTimes;
+  IntCircBuff      captureTimes;
   int              deviceIndex;
   int              rotation;
   int              FrameCounter;

@@ -46,9 +46,13 @@ cv::Mat Deinterlace(cv::Mat &src)
 //----------------------------------------------------------------------------
 //TODO make behaviour consistent. For now I think it would be best that the CaptureThread
 // constructor connects to camera and enforces the given resolution or at least stores tha actual resolutions in the settings
-CaptureThread::CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device, const std::string &URL,
+CaptureThread::CaptureThread(ImageBuffer imageBuffer,
+                             const cv::Size &size,
+                             int device,
+                             const std::string &URL,
                              hpx::threads::executors::pool_executor exec,
-                             int requestedFps) : frameTimes(50)
+                             int requestedFps) : frameTimes(50),
+                                                 captureTimes(15)
 {
   this->executor = exec;
   this->abort                = false;
@@ -190,11 +194,9 @@ void CaptureThread::run()
     cv::Mat frame;
     captureWaitTime.restart();
     this->capture >> frame;
-    this->captureTime_ms = captureWaitTime.elapsed();
+    updateCaptureTime(captureWaitTime.elapsed());
 
-
-
-      if (frame.empty()) {
+    if (frame.empty()) {
       this->setAbort(true);
       std::cout << "Empty camera image, aborting this->capture " <<std::endl;
       continue;
@@ -293,6 +295,13 @@ void CaptureThread::updateActualFps(int time) {
   else {
     actualFps = 0;
   }
+}
+//----------------------------------------------------------------------------
+void CaptureThread::updateCaptureTime(int time_ms) {
+  captureTimes.push_back(time_ms);
+
+  captureTime_ms = static_cast<int>(std::accumulate(captureTimes.begin(),
+          captureTimes.end(), 0) / captureTimes.size());
 }
 //----------------------------------------------------------------------------
 void CaptureThread::saveAVI(const cv::Mat &image) 

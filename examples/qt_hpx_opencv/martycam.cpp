@@ -187,13 +187,15 @@ void MartyCam::updateGUI() {
 
   statusBar()->showMessage(QString("FPS : %1 | Frame Counter : %2 "
                                    "| Image Buffer Occupancy : %3\% "
-                                   "| Sleep in CT: %4ms "
-                                   "| Capture Time: %5ms ").
+                                   "| Sleep in CaptureThread: %4ms "
+                                   "| Capture Time: %5ms "
+                                   "| Processing Time: %6ms").
     arg(this->captureThread->getFPS(), 5, 'f', 2).
     arg(captureThread->GetFrameCounter(), 5).
     arg(100 * (float)this->imageBuffer->size()/IMAGE_BUFF_CAPACITY, 4).
     arg(captureThread->getSleepTime()).
-    arg(captureThread->getCaptureTime()));
+    arg(captureThread->getCaptureTime()).
+    arg(processingThread->getProcessingTime()));
 }
 //----------------------------------------------------------------------------
 void MartyCam::clearGraphs()
