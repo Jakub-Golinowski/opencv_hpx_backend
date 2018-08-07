@@ -41,6 +41,8 @@ public:
   //
   void setRequestedFps(int value);
   double getFPS() { return actualFps; }
+  int getSleepTime() {return sleepTime_ms; }
+  int getCaptureTime() { return captureTime_ms; }
   bool isCapturing() { return captureActive; }
   
   int  GetFrameCounter() { return this->FrameCounter; }
@@ -86,6 +88,8 @@ private:
   cv::VideoCapture capture;
   double           actualFps;
   int              requestedFps;
+  int              sleepTime_ms;
+  int              captureTime_ms;
   FrameSpeedBuffer frameTimes;
   int              deviceIndex;
   int              rotation;

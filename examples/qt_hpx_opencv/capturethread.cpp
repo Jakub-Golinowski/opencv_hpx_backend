@@ -168,6 +168,9 @@ void CaptureThread::run()
   QTime requestedFpsTime;
   requestedFpsTime.start();
 
+  QTime captureWaitTime;
+  captureWaitTime.start();
+
   while (!this->abort) {
     if (!captureActive) {
       std::cout << "WARN: CaptureThread::run() still running even though captureActive=false";
@@ -177,18 +180,21 @@ void CaptureThread::run()
     int frameProcessingTime_ms = requestedFpsTime.elapsed();
     int requestedFrameTime_ms = 1000 / this->requestedFps;
 
-    int time_to_wait = requestedFrameTime_ms - frameProcessingTime_ms;
+    this->sleepTime_ms = requestedFrameTime_ms - frameProcessingTime_ms;
 
-    if(time_to_wait > 0){
-        boost::this_thread::sleep(boost::posix_time::milliseconds(time_to_wait));
+    if(sleepTime_ms > 0){
+        boost::this_thread::sleep(boost::posix_time::milliseconds(sleepTime_ms));
     }
 
     // get latest frame from webcam
     cv::Mat frame;
+    captureWaitTime.restart();
     this->capture >> frame;
+    this->captureTime_ms = captureWaitTime.elapsed();
 
 
-    if (frame.empty()) {
+
+      if (frame.empty()) {
       this->setAbort(true);
       std::cout << "Empty camera image, aborting this->capture " <<std::endl;
       continue;
