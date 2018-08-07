@@ -47,12 +47,14 @@ cv::Mat Deinterlace(cv::Mat &src)
 //TODO make behaviour consistent. For now I think it would be best that the CaptureThread
 // constructor connects to camera and enforces the given resolution or at least stores tha actual resolutions in the settings
 CaptureThread::CaptureThread(ImageBuffer imageBuffer,
-                             const cv::Size &size,
+                             const cv::Size& size,
+                             int rotation,
                              int device,
                              const std::string &URL,
                              hpx::threads::executors::pool_executor exec,
-                             int requestedFps) : frameTimes(50),
-                                                 captureTimes(15)
+                             int requestedFps)
+        : frameTimes(50),
+          captureTimes(15)
 {
   this->executor = exec;
   this->abort                = false;
@@ -71,16 +73,13 @@ CaptureThread::CaptureThread(ImageBuffer imageBuffer,
   // initialize font and precompute text size
   QString timestring = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
   this->text_size = cv::getTextSize( timestring.toUtf8().constData(), CV_FONT_HERSHEY_PLAIN, 1.0, 1, NULL);
-  // TODO: for now this connects to camera and uses its default resolution
-  this->connectCamera(this->deviceIndex, this->CameraURL);
-  // TODO Here we overwrite the default resolution from the camera for the arbitrary one - not safe when the resolution is not supported!
-  this->setResolution(size);
-  this->imageSize         = cv::Size(size.width, size.height);
-  this->rotatedSize       = cv::Size(size.height, size.width);
-  // code for getting the current resolution
-//  int w = this->capture.get(CV_CAP_PROP_FRAME_WIDTH);
-//  int h = this->capture.get(CV_CAP_PROP_FRAME_HEIGHT);
 
+  // Connect to camera and use its default resolution
+  this->connectCamera(this->deviceIndex, this->CameraURL);
+  // Overwrite the default camera settings
+  requestedSizeCorrect = this->setResolution(size);
+
+  this->setRotation(rotation);
 }
 //----------------------------------------------------------------------------
 CaptureThread::~CaptureThread() 
@@ -90,9 +89,6 @@ CaptureThread::~CaptureThread()
   this->capture.release();
 }
 //----------------------------------------------------------------------------
-//TODO it seems that after opening the camera these values in caputure are overriden by what was actually opened by camera?
-// This function is HPX-free - such that it does not uses HPX API
-// BUT! I plan to have stopCapture to be HPX-dependent
 bool CaptureThread::connectCamera(int index, const std::string &URL)
 {
   bool wasActive = this->stopCapture();
@@ -121,7 +117,7 @@ bool CaptureThread::connectCamera(int index, const std::string &URL)
       this->capture.open(CV_CAP_DSHOW + index );
 #else
 //      CvCapture* camera = cvCaptureFromCAM(CV_CAP_ANY);
-      capture.open(index );
+      capture.open(index);
 #endif
     }
     if (!this->capture.isOpened()) {
@@ -135,16 +131,26 @@ bool CaptureThread::connectCamera(int index, const std::string &URL)
   return true;
 }
 //----------------------------------------------------------------------------
-void CaptureThread::setResolution(const cv::Size &res)
+//Returns true if the resolution was actually changed and false if not.
+bool CaptureThread::setResolution(const cv::Size &res)
 {
   if (this->imageSize==res) {
-    return;
+    return false;
   }
+
   bool wasActive = this->stopCapture();
   this->imageBuffer->clear();
-  this->imageSize = res;
-  this->rotatedSize = cv::Size(this->imageSize.height, this->imageSize.width);
-  if (wasActive) this->startCapture(); 
+
+  //TODO: 1. check if the requested res is supported. 2. If yes ->switch to it. 3. If no stay where you are and inform the user.
+  bool resolutionUpdated = this->tryResolutionUpdate(res);
+  if (resolutionUpdated){
+    this->imageSize = res;
+    this->rotatedSize = cv::Size(this->imageSize.height, this->imageSize.width);
+  }
+
+  if (wasActive) this->startCapture();
+
+  return resolutionUpdated;
 }
 //----------------------------------------------------------------------------
 void CaptureThread::setRotation(int value) 
@@ -315,8 +321,8 @@ void CaptureThread::saveAVI(const cv::Mat &image)
     std::string path = this->AVI_Directory + "/" + this->MotionAVI_Name + std::string(".avi");
     this->MotionAVI_Writer.open(
       path.c_str(),
-      CV_FOURCC('X', 'V', 'I', 'D'),  
-      this->getFPS(),
+      CV_FOURCC('X', 'V', 'I', 'D'),
+      this->getActualFps(),
       image.size()
     );
 //    emit(RecordingState(true));
@@ -377,5 +383,17 @@ void CaptureThread::captionImage(cv::Mat &image)
   cv::putText(image, timestring.toLatin1().data(),
     cvPoint(image.size().width - text_size.width - 4, text_size.height+4), 
     CV_FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255, 0), 1);
+}
+//----------------------------------------------------------------------------
+// If the requested resolution is available switches to it and returns true.
+// Otherwise leaves the current resolution and returns false
+bool CaptureThread::tryResolutionUpdate(cv::Size requestedResolution)
+{
+  this->capture.set(CV_CAP_PROP_FRAME_WIDTH, requestedResolution.width);
+  this->capture.set(CV_CAP_PROP_FRAME_HEIGHT, requestedResolution.height);
+  auto width = static_cast<int>(capture.get(CV_CAP_PROP_FRAME_WIDTH));
+  auto height = static_cast<int>(capture.get(CV_CAP_PROP_FRAME_HEIGHT));
+
+  return width == requestedResolution.width && height == requestedResolution.height;
 }
 //----------------------------------------------------------------------------

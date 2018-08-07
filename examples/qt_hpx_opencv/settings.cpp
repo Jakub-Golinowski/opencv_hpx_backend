@@ -51,6 +51,7 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   //
   connect(ui.snapButton, SIGNAL(clicked()), this, SLOT(onSnapClicked()));
 
+  numberOfResolutions = 5;
   ResolutionButtonGroup.addButton(ui.res1600,4);
   ResolutionButtonGroup.addButton(ui.res1280,3);
   ResolutionButtonGroup.addButton(ui.res720,2);
@@ -424,4 +425,14 @@ void SettingsWidget::onDecimationCoeffChanged(int value){
 
 ProcessingType SettingsWidget::getCurentProcessingType() {
   return ProcessingType(this->ui.tabWidget->currentIndex());
+}
+//---------------------------------------------------------------------------
+void SettingsWidget::switchToNextResolution(){
+  int currentIndex = this->ResolutionButtonGroup.checkedId();
+  int newIndex = (currentIndex + 1) % 5;
+  SilentCall(&this->ResolutionButtonGroup)->button(newIndex)->click();
+}
+//---------------------------------------------------------------------------
+int SettingsWidget::getNumOfResolutions(){
+  return this->numberOfResolutions;
 }

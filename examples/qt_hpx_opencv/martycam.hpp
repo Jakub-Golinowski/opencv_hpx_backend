@@ -41,7 +41,7 @@ protected:
   void createCaptureThread(int FPS, cv::Size &size, int camera,
                            const std::string &cameraname, hpx::threads::executors::pool_executor exec);
   void deleteProcessingThread();
-  void createProcessingThread(cv::Size &size, ProcessingThread *oldThread, hpx::threads::executors::pool_executor exec,
+  void createProcessingThread(cv::Size size, ProcessingThread *oldThread, hpx::threads::executors::pool_executor exec,
   ProcessingType processingType);
 
   void resetChart();
@@ -54,8 +54,6 @@ public:
   QDockWidget             *progressToolbar;
   QDockWidget             *settingsDock;
   SettingsWidget          *settingsWidget;
-  //TODO maybe the imageSize member variable can be deleted since it is also stored in the captureThread
-  cv::Size                 imageSize;
   int                      cameraIndex;
   CaptureThread           *captureThread;
   ProcessingThread        *processingThread;

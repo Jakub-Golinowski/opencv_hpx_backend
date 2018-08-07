@@ -34,9 +34,7 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
 
   this->EventRecordCounter      = 0;
   this->insideMotionEvent       = 0;
-  this->imageSize               = cv::Size(0,0);
   this->imageBuffer             = ImageBuffer(new ConcurrentCircularBuffer<cv::Mat>(IMAGE_BUFF_CAPACITY));
-  this->cameraIndex             = 1;
 
   //
   // create a dock widget to hold the settings
@@ -63,23 +61,32 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
   std::string camerastring;
   this->cameraIndex = this->settingsWidget->getCameraIndex(camerastring);
   //
-  while (this->imageSize.width==0 && this->cameraIndex>=0) {
-
-    cv::Size res = this->settingsWidget->getSelectedResolution();
-    this->createCaptureThread(15, res, this->cameraIndex, camerastring, blockingExecutor);
-    this->imageSize = this->captureThread->getImageSize();
-    if (this->imageSize.width==0) {
-      this->cameraIndex -=1;
+  bool captureLaunched = false;
+  while (!captureLaunched && this->cameraIndex >= 0) {
+    bool requestedSizeCorrect = false;
+    int numeResolutionsToTry = this->settingsWidget->getNumOfResolutions();
+    while (!requestedSizeCorrect  && numeResolutionsToTry > 0) {
+      // Loop over different resolutions to make sure the one supported by webcam is chosen
+      cv::Size res = this->settingsWidget->getSelectedResolution();
+      this->createCaptureThread(15, res, this->cameraIndex, camerastring, blockingExecutor);
+      requestedSizeCorrect = captureThread->isRequestedSizeCorrect();
+      if(!requestedSizeCorrect) {
+        this->deleteCaptureThread();
+        this->settingsWidget->switchToNextResolution();
+      } else {
+        captureLaunched = true;
+      }
+    }
+    if (this->captureThread->getImageSize().width == 0) {
+      this->cameraIndex -= 1;
       camerastring = "";
       this->deleteCaptureThread();
     }
   }
-  if (this->imageSize.width>0) {
-    this->renderWidget->setCVSize(this->imageSize);
-    this->createProcessingThread(this->imageSize, nullptr, defaultExec,
-    this->settingsWidget->getCurentProcessingType());
-    //
-    this->initChart();
+  if (this->captureThread->getImageSize().width>0) {
+    this->renderWidget->setCVSize(this->captureThread->getImageSize());
+    this->createProcessingThread(this->captureThread->getImageSize(), nullptr, defaultExec,
+                                 this->settingsWidget->getCurentProcessingType());
   }
   else {
     //abort if no camera devices connected
@@ -98,12 +105,9 @@ void MartyCam::closeEvent(QCloseEvent*) {
 void MartyCam::createCaptureThread(int FPS, cv::Size &size, int camera, const std::string &cameraname,
                                    hpx::threads::executors::pool_executor exec)
 {
-  this->captureThread = new CaptureThread(imageBuffer, size, camera, cameraname, this->blockingExecutor, this->settingsWidget->getRequestedFps());
-  this->captureThread->setRotation(this->settingsWidget->getSelectedRotation());
-  //TODO for now I need to enforce the resolution size here again but it is more of a hotfix than a good solution -> ultimately I want all this encapsulated in the Capture thread constructor.
-  this->captureThread->setResolution(size);
+  this->captureThread = new CaptureThread(imageBuffer, size, this->settingsWidget->getSelectedRotation(),
+          camera, cameraname, this->blockingExecutor, this->settingsWidget->getRequestedFps());
   this->captureThread->startCapture();
-
   this->settingsWidget->setThreads(this->captureThread, this->processingThread);
 }
 //----------------------------------------------------------------------------
@@ -117,7 +121,7 @@ void MartyCam::deleteCaptureThread()
   this->imageBuffer->send(cv::Mat());
 }
 //----------------------------------------------------------------------------
-void MartyCam::createProcessingThread(cv::Size &size, ProcessingThread *oldThread,
+void MartyCam::createProcessingThread(cv::Size size, ProcessingThread *oldThread,
                                       hpx::threads::executors::pool_executor exec,
                                       ProcessingType processingType)
 {
@@ -157,15 +161,15 @@ void MartyCam::onCameraIndexChanged(int index, QString URL)
 //----------------------------------------------------------------------------
 void MartyCam::onResolutionSelected(cv::Size newSize)
 {
-  if (newSize==this->imageSize) {
-    return;
-  }
+//  if (newSize==this->imageSize) {
+//    return;
+//  }
 
-  this->imageSize = newSize;
-  this->captureThread->setResolution(newSize);
+//  this->imageSize = newSize;
+  if(this->captureThread->setResolution(newSize))
+    // Update GUI renderwidget size
+    this->renderWidget->setCVSize(newSize);
 
-  // Update GUI renderwidget size
-  this->renderWidget->setCVSize(newSize);
 }
 //----------------------------------------------------------------------------
 void MartyCam::onRotationChanged(int rotation)
@@ -190,7 +194,7 @@ void MartyCam::updateGUI() {
                                    "| Sleep in CaptureThread: %4ms "
                                    "| Capture Time: %5ms "
                                    "| Processing Time: %6ms").
-    arg(this->captureThread->getFPS(), 5, 'f', 2).
+    arg(this->captureThread->getActualFps(), 5, 'f', 2).
     arg(captureThread->GetFrameCounter(), 5).
     arg(100 * (float)this->imageBuffer->size()/IMAGE_BUFF_CAPACITY, 4).
     arg(captureThread->getSleepTime()).

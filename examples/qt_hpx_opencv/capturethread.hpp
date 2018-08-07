@@ -25,7 +25,7 @@ typedef boost::shared_ptr< boost::lockfree::spsc_queue<cv::Mat, boost::lockfree:
 
 class CaptureThread{
 public: 
-   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int device,
+   CaptureThread(ImageBuffer imageBuffer, const cv::Size &size, int rotation, int device,
                  const std::string &URL,
                  hpx::threads::executors::pool_executor exec,
                  int requestedFps);
@@ -37,13 +37,14 @@ public:
   bool startCapture();
   bool stopCapture();
   //
-  void setResolution(const cv::Size &res);
+  bool setResolution(const cv::Size &res);
   //
   void setRequestedFps(int value);
-  double getFPS() { return actualFps; }
+  double getActualFps() { return actualFps; }
   int getSleepTime() {return sleepTime_ms; }
   int getCaptureTime() { return captureTime_ms; }
   bool isCapturing() { return captureActive; }
+  bool isRequestedSizeCorrect() { return requestedSizeCorrect; }
   
   int  GetFrameCounter() { return this->FrameCounter; }
   std::string getCaptureStatusString() { return this->CaptureStatus; }
@@ -71,6 +72,8 @@ public:
   cv::Size getRotatedSize() { return this->rotatedSize; }
 
 private:
+  bool tryResolutionUpdate(cv::Size requestedResolution);
+
   void setAbort(bool a) { this->abort = a; }
   void updateActualFps(int time_ms);
   void updateCaptureTime(int time_ms);
@@ -85,6 +88,7 @@ private:
   bool             captureActive;
   bool             deInterlace;
   cv::Size         imageSize;
+  bool             requestedSizeCorrect;
   cv::Size         rotatedSize;
   cv::VideoCapture capture;
   double           actualFps;

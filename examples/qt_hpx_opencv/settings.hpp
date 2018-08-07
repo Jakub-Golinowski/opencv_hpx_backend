@@ -43,11 +43,13 @@ public:
   cv::Size  getSelectedResolution();
   int       getSelectedRotation();
   int       getRequestedFps();
+  int       getNumOfResolutions();
 
   void      RecordMotionAVI(bool state);
 
   void setThreads(CaptureThread *capthread, ProcessingThread *procthread);
   void setRenderWidget(RenderWidget *rw) { this->renderWidget = rw; }
+  void switchToNextResolution();
 
   int getCameraIndex(std::string &text);
   ProcessingType getCurentProcessingType();
@@ -99,6 +101,7 @@ protected:
   QButtonGroup        ImageButtonGroup;
   QButtonGroup        RotateButtonGroup;
   QButtonGroup        ResolutionButtonGroup;
+  int                 numberOfResolutions;
   RenderWidget       *renderWidget;
   IPCameraForm       *cameraForm;
   int                 NumDevices;
