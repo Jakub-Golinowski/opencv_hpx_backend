@@ -36,6 +36,7 @@ MartyCam::MartyCam(const hpx::threads::executors::pool_executor& defaultExec,
   //
   settingsDock = boost::make_shared<QDockWidget>("Choose Processing Type", this);
   settingsDock->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+  settingsDock->setFeatures(QDockWidget::DockWidgetMovable);
   settingsDock->setObjectName("SettingsDock");
   //
   // create the settings widget itself
