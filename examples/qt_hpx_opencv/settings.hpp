@@ -96,6 +96,8 @@ signals:
   void CameraIndexChanged(int, QString);
 
 protected:
+  QString decimationCoeffToQString(int sliderVal);
+
   Ui::SettingsWidget  ui;
   CaptureThread_SP      capturethread;
   ProcessingThread_SP   processingthread;

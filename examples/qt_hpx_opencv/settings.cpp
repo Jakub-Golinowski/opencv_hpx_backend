@@ -370,7 +370,7 @@ void SettingsWidget::loadSettings()
   SilentCall(this->ui.eyesRecog_CheckBox)->setChecked(settings.value("eyesRecognition", false).toBool());
   SilentCall(this->ui.decimationCoeff_HorizontalSlider)->setValue(settings.value("decimationCoeff",50).toInt());
   SilentCall(this->ui.decimationCoeff_Label)->setText(
-          QString::number((settings.value("decimationCoeff", 50).toFloat()/100)));
+          decimationCoeffToQString((settings.value("decimationCoeff", 50).toInt())));
   settings.endGroup();
 
   settings.beginGroup("GeneralSettings");
@@ -422,12 +422,8 @@ void SettingsWidget::onEyesRecogStateChanged(int value){
 }
 
 void SettingsWidget::onDecimationCoeffChanged(int value){
-  if(value < 100)
-    this->ui.decimationCoeff_Label->setText(QString("0.%1").arg(value, 2));
-  else if(value == 100)
-    this->ui.decimationCoeff_Label->setText(QString("1.00"));
-  else
-    std::cout << "Current Decimation Coeff = " << value << "is unsupported\n";
+  this->decimationCoeffToQString(value);
+  this->ui.decimationCoeff_Label->setText(decimationCoeffToQString(value));
   this->processingthread->setDecimationCoeff(value);
 }
 
@@ -443,4 +439,19 @@ void SettingsWidget::switchToNextResolution(){
 //---------------------------------------------------------------------------
 int SettingsWidget::getNumOfResolutions(){
   return this->numberOfResolutions;
+}
+//---------------------------------------------------------------------------
+QString SettingsWidget::decimationCoeffToQString(int sliderVal){
+  if(sliderVal > 100 || sliderVal < 0){
+    //return QString();
+    QMessageBox::warning(
+            this,
+            tr("Unsupported decimation Coeff Value."),
+            tr(qPrintable("Current Decimation Coeff = " + QString::number(sliderVal) + "is unsupported\n")) );
+    return "?";
+  }
+  else if(sliderVal == 100)
+    return QString("1.00");
+  else // ( 0 <= sliderVal < 100 )
+    return QString("0.%1").arg(sliderVal, 2);
 }
