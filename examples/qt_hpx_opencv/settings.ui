@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>363</width>
-    <height>918</height>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -129,7 +129,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="2">
+          <item row="3" column="2">
            <widget class="QSlider" name="erode">
             <property name="minimum">
              <number>0</number>
@@ -148,7 +148,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
+          <item row="4" column="2">
            <widget class="QSlider" name="dilate">
             <property name="minimum">
              <number>0</number>
@@ -167,7 +167,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="4">
+          <item row="3" column="4">
            <widget class="QLabel" name="e_label">
             <property name="minimumSize">
              <size>
@@ -183,7 +183,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="3" colspan="2">
+          <item row="4" column="3" colspan="2">
            <widget class="QLabel" name="d_label">
             <property name="minimumSize">
              <size>
@@ -199,53 +199,17 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_10">
             <property name="text">
              <string>Dilate</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_13">
             <property name="text">
              <string>Erode</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_14">
-            <property name="text">
-             <string>Median Kernel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="4">
-           <widget class="QLabel" name="m_label">
-            <property name="minimumSize">
-             <size>
-              <width>32</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>3</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QSlider" name="median">
-            <property name="maximum">
-             <number>255</number>
-            </property>
-            <property name="value">
-             <number>3</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
