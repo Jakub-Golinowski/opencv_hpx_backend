@@ -194,7 +194,6 @@ void MotionFilter::process(const cv::Mat &image)
     if (renderer) {
       renderer->process(shownImage);
     }
-    //    std::cout << "Processed frame " << framenum++ << std::endl;
   }
   //
   this->lastFrame = image;

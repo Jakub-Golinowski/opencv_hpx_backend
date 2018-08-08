@@ -128,7 +128,7 @@ bool CaptureThread::setResolution(const cv::Size &res)
 
   bool wasActive = this->stopCapture();
   this->imageBuffer->clear();
-  
+
   bool resolutionUpdated = this->tryResolutionUpdate(res);
   if (resolutionUpdated){
     this->imageSize = res;

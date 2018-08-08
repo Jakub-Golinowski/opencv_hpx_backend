@@ -304,9 +304,6 @@ void SettingsWidget::onResolutionSelection(int btn) {
     currentResolutionButtonIndex = btn;
   }
 
-  std::cout << "Previous button: " << std::to_string(previousResolutionButtonIndex)
-            << "Current button : " << std::to_string(btn) << "\n";
-
   emit(resolutionSelected(getSelectedResolution()));
 }
 //----------------------------------------------------------------------------
@@ -431,8 +428,6 @@ void SettingsWidget::onRequestedFpsChanged(int value){
 }
 //---------------------------------------------------------------------------
 void SettingsWidget::onEyesRecogStateChanged(int value){
-  std::cout << "EyesRecognition CheckBox New State is: "
-               << std::to_string(value) << "\n";
   this->processingthread->setEyesRecogState(value);
 }
 

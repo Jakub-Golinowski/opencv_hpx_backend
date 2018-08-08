@@ -125,7 +125,6 @@ void RenderWidget::paintEvent(QPaintEvent*) {
 //----------------------------------------------------------------------------
 void RenderWidget::UpdateTrigger(bool, int) {
   this->repaint();
-//  std::cout << "Rendered frame " << std::endl;
 }
 //----------------------------------------------------------------------------
 void RenderWidget::mouseDoubleClickEvent ( QMouseEvent * event )

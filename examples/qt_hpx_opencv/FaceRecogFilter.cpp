@@ -129,7 +129,6 @@ void FaceRecogFilter::process(const cv::Mat &img)
   if (renderer) {
     renderer->process(img);
   }
-  //    std::cout << "Processed frame " << framenum++ << std::endl;
 }
 void FaceRecogFilter::setDecimationCoeff(int val){
   this->scale = static_cast<double>(100) / val;
