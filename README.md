@@ -73,15 +73,14 @@ This directory is contains any data required for the applications to run (for ex
 In order to build all the examples from this repository the following dependencies are necessary:
 
 1. [HPX](http://stellar-group.org/libraries/hpx/docs/)
-1. [OpenCV (built with HPX backend)](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend) 
-Note: this is the link to my branch of OpenCV repository with the OpenCV backend implemented. In order to build OpenCV with HPX backend perform the forllowing steps:
-  * Clone [my fork](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend) of the OpenCV repository
-  * Follow the [build steps of OpenCV](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) but add the following parameters to the cmake command:
-  ```bash
-  -DWITH_HPX=ON -DHPX_DIR=[1]
-  ``` 
-  where [1] is a path to the subdirectory [...]/lib/cmake/HPX/ of the HPX build directory
-1. [Boost](https://www.boost.org/)
+1. [OpenCV (built with HPX backend)](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend). This is the link to my branch of OpenCV repository with the OpenCV backend implemented. In order to build OpenCV with HPX backend perform the forllowing steps:
+    * Clone [my fork](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend) of the OpenCV repository
+    * Follow the [build steps of OpenCV](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) but add the following parameters to the cmake command:
+    ```bash
+    -DWITH_HPX=ON -DHPX_DIR=[1]
+    ```
+    where [1] is a path to the subdirectory [...]/lib/cmake/HPX/ of the HPX build directory
+3. [Boost](https://www.boost.org/)
 1. [QT5](http://doc.qt.io/qt-5/gettingstarted.html)
 
 ### Building examples
