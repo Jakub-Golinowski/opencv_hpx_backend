@@ -51,6 +51,8 @@ SettingsWidget::SettingsWidget(QWidget* parent) : QWidget(parent)
   //
   connect(ui.snapButton, SIGNAL(clicked()), this, SLOT(onSnapClicked()));
 
+  previousResolutionButtonIndex = -1;
+  currentResolutionButtonIndex = -1;
   numberOfResolutions = 5;
   ResolutionButtonGroup.addButton(ui.res1600,4);
   ResolutionButtonGroup.addButton(ui.res1280,3);
@@ -290,8 +292,21 @@ cv::Size SettingsWidget::getSelectedResolution()
   return cv::Size(320,240);
 }
 //----------------------------------------------------------------------------
-void SettingsWidget::onResolutionSelection(int btn)
-{
+int SettingsWidget::getSelectedResolutionButton(){
+  return this->ResolutionButtonGroup.checkedId();
+}
+//----------------------------------------------------------------------------
+void SettingsWidget::onResolutionSelection(int btn) {
+  if(currentResolutionButtonIndex == -1)
+    currentResolutionButtonIndex = btn;
+  else {
+    previousResolutionButtonIndex = currentResolutionButtonIndex;
+    currentResolutionButtonIndex = btn;
+  }
+
+  std::cout << "Previous button: " << std::to_string(previousResolutionButtonIndex)
+            << "Current button : " << std::to_string(btn) << "\n";
+
   emit(resolutionSelected(getSelectedResolution()));
 }
 //----------------------------------------------------------------------------
@@ -435,6 +450,11 @@ void SettingsWidget::switchToNextResolution(){
   int currentIndex = this->ResolutionButtonGroup.checkedId();
   int newIndex = (currentIndex + 1) % 5;
   SilentCall(&this->ResolutionButtonGroup)->button(newIndex)->click();
+}
+//---------------------------------------------------------------------------
+void SettingsWidget::switchToPreviousResolution(){
+ if(this-previousResolutionButtonIndex >=0)
+   this->ResolutionButtonGroup.button(previousResolutionButtonIndex)->click();
 }
 //---------------------------------------------------------------------------
 int SettingsWidget::getNumOfResolutions(){

@@ -123,13 +123,12 @@ bool CaptureThread::connectCamera(int index, const std::string &URL)
 bool CaptureThread::setResolution(const cv::Size &res)
 {
   if (this->imageSize==res) {
-    return false;
+    return true;
   }
 
   bool wasActive = this->stopCapture();
   this->imageBuffer->clear();
-
-  //TODO: 1. check if the requested res is supported. 2. If yes ->switch to it. 3. If no stay where you are and inform the user.
+  
   bool resolutionUpdated = this->tryResolutionUpdate(res);
   if (resolutionUpdated){
     this->imageSize = res;

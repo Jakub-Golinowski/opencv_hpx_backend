@@ -8,6 +8,7 @@
 //
 #include <hpx/lcos/future.hpp>
 #include <hpx/include/async.hpp>
+#include <QtWidgets/QMessageBox>
 
 //
 //----------------------------------------------------------------------------
@@ -157,6 +158,15 @@ void MartyCam::onResolutionSelected(cv::Size newSize)
   if(this->captureThread->setResolution(newSize))
     // Update GUI renderwidget size
     this->renderWidget->setCVSize(newSize);
+  else{
+    QMessageBox::warning(
+            this,
+            tr("Unsupported Resolution."),
+            tr(qPrintable(QString("Requested Resolution %1 x %2 is unsupported by your webcam. \n")
+                                  .arg(newSize.width).arg(newSize.height)))
+            + QString("Keeping the current resolution."));
+    this->settingsWidget->switchToPreviousResolution();
+  }
 }
 //----------------------------------------------------------------------------
 void MartyCam::onRotationChanged(int rotation)
