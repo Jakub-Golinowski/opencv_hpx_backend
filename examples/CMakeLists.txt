@@ -3,6 +3,7 @@ set(subdirs
     hpx_start_myargv
     hpx_start_stop
     opencv_mandelbrot
+    qt_with_cmake
  )
 
 if(BACKEND_STARTSTOP)
@@ -13,6 +14,7 @@ else()
     set(subdirs ${subdirs}
     hpx_image_load
     hpx_opencv_webcam
+    qt_hpx_opencv
     )
 endif()
 

@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 
-project(Example CXX)
+project(qt_hpx_opencv CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(DATA_PATH "${PROJECT_SOURCE_DIR}/data")
 
 #-----------------------------------------------------------------------------
 # Set DATA_PATH directory of the repository
@@ -12,7 +10,7 @@ set(DATA_PATH "${PROJECT_SOURCE_DIR}/data")
 get_directory_property(hasParent PARENT_DIRECTORY)
 
 if(hasParent)
- message(STATUS "Project has a parent scope. DATA_PATH=${DATA_PATH}")
+ message(STATUS "${PROJECT_NAME} has a parent scope. DATA_PATH=${DATA_PATH}")
 else()
  get_filename_component(DATA_PATH ../../data ABSOLUTE)
  message(STATUS "Project Does *not* have a parent scope. DATA_PATH=${DATA_PATH}")
