@@ -1,0 +1,2 @@
+// The path to the directory with all the auxiliary data files
+#define DATA_PATH "@DATA_PATH@"

@@ -12,6 +12,8 @@
 #include <iostream>
 //
 #include <opencv2/opencv.hpp>
+//
+#include <config.h>
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -138,6 +140,7 @@ int hpx_main(boost::program_options::variables_map& vm)
 
     std::string img_path = vm["img-path"].as<std::string>();
 
+
     // schedule image loading on the opencv pool
     hpx::future<cv::Mat> f_image = hpx::async(opencv_executor, &load_image,
             img_path);
@@ -164,11 +167,14 @@ int hpx_main(boost::program_options::variables_map& vm)
 // hpx_main on an hpx thread
 int main(int argc, char* argv[])
 {
+    std::string defaultImagePath =
+            DATA_PATH + std::string("/rose.jpeg");
+
     namespace po = boost::program_options;
     po::options_description desc_cmdline("Options");
     desc_cmdline.add_options()
         ("img-path",
-         po::value<std::string>()->default_value(("./")),
+         po::value<std::string>()->default_value((defaultImagePath)),
          "Specify path to the image")
         ("use-opencv-pool,u", "Enable advanced HPX thread pools and executors")
         ("opencv_tp_num_threads,m",
