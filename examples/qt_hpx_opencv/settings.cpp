@@ -448,7 +448,7 @@ void SettingsWidget::switchToNextResolution(){
 }
 //---------------------------------------------------------------------------
 void SettingsWidget::switchToPreviousResolution(){
- if(this-previousResolutionButtonIndex >=0)
+ if(this->previousResolutionButtonIndex >=0)
    this->ResolutionButtonGroup.button(previousResolutionButtonIndex)->click();
 }
 //---------------------------------------------------------------------------
