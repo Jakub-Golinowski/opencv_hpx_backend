@@ -73,6 +73,10 @@ This directory is contains any data required for the applications to run (for ex
 In order to build all the examples from this repository the following dependencies are necessary:
 
 1. [HPX](http://stellar-group.org/libraries/hpx/docs/)
+    * Note: Add the following CMake option while building HPX:
+    ```bash
+    -DHPX_WITH_CXX11=ON
+    ```
 1. [OpenCV (built with HPX backend)](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend). This is the link to my branch of OpenCV repository with the OpenCV backend implemented. In order to build OpenCV with HPX backend perform the following steps:
     * Clone [my fork](https://github.com/Jakub-Golinowski/opencv/tree/hpx_backend) of the OpenCV repository
     * Follow the [build steps of OpenCV](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) but add the following parameters to the cmake command:
