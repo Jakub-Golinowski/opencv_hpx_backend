@@ -7,7 +7,7 @@ As a Google Summer of Code (GSoC) student in 2018 I developed an HPX backend for
 1. user gets greater control over the execution of OpenCV parallel algorithms (more below).
 
 #### Current state of the project
-The backend was developed as part of the OpenCV code base and is now being reviewed as the Pull Request to OpenCV master branch ([current state of the PR to OpenCV][HPX_backend_PR])
+The backend was developed as part of the OpenCV code base and on August 2018 was merged to the official OpenCV repository. It's now available since version 4.0.0-alpha. You can read about the pull request to OpenCV master branch at: ([current state of the PR to OpenCV][HPX_backend_PR])
 
 ## HPX Primer
 
@@ -69,7 +69,24 @@ This directory is contains any data required for the applications to run (for ex
 
 ## Installation
 
-### Dependencies
+### OpenCV with HPX backend (recommended)
+To build the official OpenCV repository with the HPX backend you will need to install:
+
+1. [HPX](http://stellar-group.org/libraries/hpx/docs/)
+    * Note: Add the following CMake option while building HPX:
+    ```bash
+    -DHPX_WITH_CXX11=ON
+    ```
+2. [OpenCV (4.0.0-alpha or greater)](https://opencv.org/releases/)
+    * Note: The start_stop version of the backend originally conceived has been removed in the official opencv repository.
+    * Add the following parameter to your cmake command (cmake should handle the rest):
+    ```bash
+    -D WITH_HPX=ON
+    ```
+
+### OpenCV with HPX backend (this repository)
+**_IMPORTANT: This is for experimentation only, for the official OpenCV backend read above._** 
+
 In order to build all the examples from this repository the following dependencies are necessary:
 
 1. [HPX](http://stellar-group.org/libraries/hpx/docs/)
@@ -84,10 +101,10 @@ In order to build all the examples from this repository the following dependenci
     -DWITH_HPX=ON -DHPX_DIR=[1]
     ```
     where [1] is a path to the subdirectory [...]/lib/cmake/HPX/ of the HPX build directory
-3. [Boost](https://www.boost.org/)
+1. [Boost](https://www.boost.org/)
 1. [QT5](http://doc.qt.io/qt-5/gettingstarted.html)
 
-### Building examples
+### Building examples (this repository)
 
 To build the examples in the release mode perform the following steps (*note: you are assumed to start from this repository root direcotry*):
 ```bash
